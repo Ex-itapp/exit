@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { useDiary } from "@/lib/useDiary";
 import { useFlags } from "@/lib/useFlags";
 import { useCheckins } from "@/lib/useCheckins";
-import { ArrowLeft, Sparkles, MessageSquare, Send } from "lucide-react";
+import { ArrowLeft, Sparkles, MessageSquare, Send, BookOpen, Flag, Zap } from "lucide-react";
 
 interface Message {
   role: 'user' | 'model';
@@ -192,20 +192,49 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
         <div className="flex-1 flex flex-col bg-bg border-4 border-ink brutalist-shadow min-h-0 relative overflow-hidden">
           {/* Chat Messages */}
           <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth">
-            {messages.map((msg, i) => (
-              <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div 
-                  className={`max-w-[85%] p-4 border-2 border-ink brutalist-shadow-sm ${
-                    msg.role === 'user' ? 'bg-ink text-bg' : 'bg-brand text-ink'
-                  }`}
-                >
-                  {msg.role === 'model' && <p className="font-mono text-xs opacity-50 uppercase font-bold mb-2">Therapist</p>}
-                  <div className="font-sans text-[15px] leading-relaxed whitespace-pre-wrap">
-                    {msg.parts[0].text}
+            {messages.map((msg, i) => {
+              const lowerText = msg.parts[0].text.toLowerCase();
+              const isModel = msg.role === 'model';
+              const showDiary = isModel && lowerText.includes('diary');
+              const showFlags = isModel && (lowerText.includes('red flag') || lowerText.includes('flag'));
+              const showStreak = isModel && lowerText.includes('streak');
+              const hasActions = showDiary || showFlags || showStreak;
+
+              return (
+                <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div 
+                    className={`max-w-[85%] p-4 border-2 border-ink brutalist-shadow-sm ${
+                      msg.role === 'user' ? 'bg-ink text-bg' : 'bg-brand text-ink'
+                    }`}
+                  >
+                    {msg.role === 'model' && <p className="font-mono text-xs opacity-50 uppercase font-bold mb-2">Therapist</p>}
+                    <div className="font-sans text-[15px] leading-relaxed whitespace-pre-wrap">
+                      {msg.parts[0].text}
+                    </div>
+
+                    {hasActions && (
+                      <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t-2 border-ink/20">
+                        {showDiary && (
+                          <Button onClick={() => navigate.push('/diary')} size="sm" variant="secondary" className="brutalist-shadow-sm border-2 border-ink text-xs h-8 bg-white hover:bg-white/90 text-ink">
+                            <BookOpen className="w-3 h-3 mr-1" /> Open Diary
+                          </Button>
+                        )}
+                        {showFlags && (
+                          <Button onClick={() => navigate.push('/flags')} size="sm" variant="secondary" className="brutalist-shadow-sm border-2 border-ink text-xs h-8 bg-white hover:bg-white/90 text-ink">
+                            <Flag className="w-3 h-3 mr-1" /> Log Red Flag
+                          </Button>
+                        )}
+                        {showStreak && (
+                          <Button onClick={() => navigate.push('/streak')} size="sm" variant="secondary" className="brutalist-shadow-sm border-2 border-ink text-xs h-8 bg-white hover:bg-white/90 text-ink">
+                            <Zap className="w-3 h-3 mr-1" /> View Streak
+                          </Button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             
             {isLoading && (
               <div className="flex justify-start">
