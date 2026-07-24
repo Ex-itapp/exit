@@ -72,9 +72,9 @@ Yesterday's check-in summary: ${yesterdaySummary}`;
       addCheckin(checkinText, data.classifierResult, data.aiReply, data.crisisPathTriggered);
       setCheckinText("");
       setCheckinDone(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert('Failed to run AI Check-In. Check console.');
+      alert(`AI Check-In Failed: ${error.message}`);
     } finally {
       setIsLoading(false);
     }

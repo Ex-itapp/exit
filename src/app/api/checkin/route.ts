@@ -46,7 +46,8 @@ User check-in text:
       });
       
       if (!response.ok) {
-        throw new Error(`Gemini API Error: ${response.statusText}`);
+        const errData = await response.text();
+        throw new Error(`Gemini API Error (${response.status}): ${errData}`);
       }
       
       const data = await response.json();
@@ -92,8 +93,8 @@ Write the reply now.`;
       aiReply
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('API Error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
   }
 }
