@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Book, Flag, Target, Home, Clock, Zap } from "lucide-react";
+import { useUser } from "@/lib/useUser";
 
 const navItems = [
   { icon: Home, path: "/" },
@@ -16,11 +17,18 @@ const navItems = [
 
 export function BottomNav() {
   const pathname = usePathname();
+  const { appMode } = useUser();
+
+  const filteredNavItems = navItems.filter(item => {
+    if (appMode === 'no_contact' && item.path === '/flags') return false;
+    if (appMode === 'evaluating' && item.path === '/streak') return false;
+    return true;
+  });
 
   return (
     <div className="fixed bottom-6 left-0 right-0 z-50 pointer-events-none flex justify-center w-full px-4">
       <nav className="bg-bg border-4 border-ink brutalist-shadow rounded-full flex items-center justify-between px-1 py-2 pointer-events-auto w-full max-w-2xl overflow-x-auto custom-scrollbar">
-        {navItems.map((item) => {
+        {filteredNavItems.map((item) => {
           const isActive = pathname === item.path;
           return (
             <Link

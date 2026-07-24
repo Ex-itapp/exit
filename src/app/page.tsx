@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Textarea } from "@/components/ui/Textarea";
-import { BookOpen, Clock, CheckCircle, Flag } from "lucide-react";
+import { BookOpen, Clock, CheckCircle, Flag, Zap } from "lucide-react";
 import { useCheckins } from "@/lib/useCheckins";
 import { useUser } from "@/lib/useUser";
 import { CalendarTile } from "@/components/CalendarTile";
@@ -80,23 +80,33 @@ export default function Home() {
           <Button 
             variant="secondary" 
             className="h-32 sm:h-40 flex-col gap-3 brutalist-shadow-sm hover:scale-[1.02] transition-transform bg-blue text-ink hover:bg-blue/90 border-4 border-ink"
-            onClick={() => navigate('/diary')}
+            onClick={() => navigate.push('/diary')}
           >
             <BookOpen className="w-8 h-8 md:w-10 md:h-10" />
             <span className="text-sm md:text-base font-bold font-mono tracking-widest uppercase">Full Diary</span>
           </Button>
           
-          <Button 
-            className="h-32 sm:h-40 flex-col gap-3 brutalist-shadow-sm hover:scale-[1.02] transition-transform bg-purple text-ink hover:bg-purple/90 border-4 border-ink"
-            onClick={() => navigate('/flags')}
-          >
-            <Flag className="w-8 h-8 md:w-10 md:h-10" />
-            <span className="text-sm md:text-base font-bold font-mono tracking-widest uppercase">Log Red Flag</span>
-          </Button>
+          {appMode !== 'no_contact' ? (
+            <Button 
+              className="h-32 sm:h-40 flex-col gap-3 brutalist-shadow-sm hover:scale-[1.02] transition-transform bg-purple text-ink hover:bg-purple/90 border-4 border-ink"
+              onClick={() => navigate.push('/flags')}
+            >
+              <Flag className="w-8 h-8 md:w-10 md:h-10" />
+              <span className="text-sm md:text-base font-bold font-mono tracking-widest uppercase">Log Red Flag</span>
+            </Button>
+          ) : (
+            <Button 
+              className="h-32 sm:h-40 flex-col gap-3 brutalist-shadow-sm hover:scale-[1.02] transition-transform bg-accent text-bg hover:bg-accent/90 border-4 border-ink"
+              onClick={() => navigate.push('/streak')}
+            >
+              <Zap className="w-8 h-8 md:w-10 md:h-10" />
+              <span className="text-sm md:text-base font-bold font-mono tracking-widest uppercase">Your Streak</span>
+            </Button>
+          )}
 
           <Button 
             className="h-32 sm:h-40 flex-col gap-3 brutalist-shadow-sm hover:scale-[1.02] transition-transform bg-brand text-ink hover:bg-brand/90 border-4 border-ink"
-            onClick={() => navigate('/timeline')}
+            onClick={() => navigate.push('/timeline')}
           >
             <Clock className="w-8 h-8 md:w-10 md:h-10" />
             <span className="text-sm md:text-base font-bold font-mono tracking-widest uppercase">Timeline</span>

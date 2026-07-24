@@ -17,8 +17,14 @@ const navItems = [
 ];
 
 export function Sidebar() {
-  const { caseNo, streakDays } = useUser();
+  const { caseNo, streakDays, appMode } = useUser();
   const pathname = usePathname();
+
+  const filteredNavItems = navItems.filter(item => {
+    if (appMode === 'no_contact' && item.path === '/flags') return false;
+    if (appMode === 'evaluating' && item.path === '/streak') return false;
+    return true;
+  });
 
   return (
     <aside className="w-64 border-r-4 border-ink bg-bg h-screen sticky top-0 flex flex-col hidden md:flex">
@@ -30,7 +36,7 @@ export function Sidebar() {
         </div>
       </div>
       <nav className="flex-1 overflow-y-auto p-4 space-y-2">
-        {navItems.map((item) => {
+        {filteredNavItems.map((item) => {
           const isActive = pathname === item.path;
           return (
             <Link
@@ -51,7 +57,7 @@ export function Sidebar() {
       </nav>
       <div className="p-6 border-t-4 border-ink">
         <div className="font-mono text-xs font-bold text-ink/70">
-          <p>STREAK: {streakDays} DAYS</p>
+          {appMode === 'no_contact' && <p>STREAK: {streakDays} DAYS</p>}
           <p>CASE NO. {caseNo}</p>
         </div>
       </div>
