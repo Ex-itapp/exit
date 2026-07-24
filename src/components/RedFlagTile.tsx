@@ -1,9 +1,11 @@
-import { useNavigate } from "react-router-dom";
+"use client";
+
+import { useRouter } from "next/navigation";
 import { Flag, ShieldAlert } from "lucide-react";
-import { useFlags } from "../lib/useFlags";
+import { useFlags } from "@/lib/useFlags";
 
 export function RedFlagTile() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { flags } = useFlags();
   
   // Count flags in the last 30 days
@@ -16,7 +18,7 @@ export function RedFlagTile() {
   return (
     <div 
       className="relative w-full aspect-square max-w-[280px] mx-auto cursor-pointer group hover:-translate-y-1 hover:translate-x-1 transition-transform"
-      onClick={() => navigate('/flags')}
+      onClick={() => router.push('/flags')}
     >
       {/* Shadow */}
       <div className="absolute inset-0 bg-ink rounded-xl translate-x-2 translate-y-2 group-hover:translate-x-3 group-hover:translate-y-3 transition-transform" />

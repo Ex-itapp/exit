@@ -1,0 +1,13 @@
+var R=require("../../chunks/ssr/[turbopack]_runtime.js")("server/app/glow-up/page.js")
+R.c("server/chunks/ssr/[root-of-the-server]__0hlue28._.js")
+R.c("server/chunks/ssr/1z8-_next_dist_esm_build_templates_app-page_1obxe5q.js")
+R.c("server/chunks/ssr/[root-of-the-server]__03bpo7f._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__1jsno_4._.js")
+R.c("server/chunks/ssr/src_app_api_chat_unsent-app_src_app_08ld02v._.js")
+R.c("server/chunks/ssr/1z8-_next_dist_client_components_080n9m3._.js")
+R.c("server/chunks/ssr/1z8-_next_dist_client_components_builtin_forbidden_17s5c01.js")
+R.c("server/chunks/ssr/1z8-_next_dist_client_components_builtin_unauthorized_1gszhsf.js")
+R.c("server/chunks/ssr/1z8-_next_dist_client_components_builtin_global-error_0p4dtiv.js")
+R.c("server/chunks/ssr/1fos_app_api_chat_unsent-app__next-internal_server_app_glow-up_page_actions_0ho1k24.js")
+R.m(36769)
+module.exports=R.m(36769).exports

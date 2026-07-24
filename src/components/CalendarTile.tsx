@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useUser } from "../lib/useUser";
+import { useUser } from "@/lib/useUser";
 
 export function CalendarTile() {
   const { streakDays, punchToday, punchedDates } = useUser();

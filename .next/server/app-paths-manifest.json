@@ -1,0 +1,14 @@
+{
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/case-file/page": "app/case-file/page.js",
+  "/closure/page": "app/closure/page.js",
+  "/diary/new/page": "app/diary/new/page.js",
+  "/diary/page": "app/diary/page.js",
+  "/flags/new/page": "app/flags/new/page.js",
+  "/flags/page": "app/flags/page.js",
+  "/glow-up/page": "app/glow-up/page.js",
+  "/page": "app/page.js",
+  "/streak/page": "app/streak/page.js",
+  "/timeline/page": "app/timeline/page.js"
+}

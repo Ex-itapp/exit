@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/glow-up/layout,_N_T_/glow-up/page,_N_T_/glow-up"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/glow-up/__PAGE__",
+    "/glow-up",
+    "/_index",
+    "/_head"
+  ]
+}

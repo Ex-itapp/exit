@@ -1,7 +1,10 @@
-import { NavLink } from "react-router-dom";
-import { cn } from "../../lib/utils";
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 import { Book, Flag, Target, Award, Home, Clock, Zap } from "lucide-react";
-import { useUser } from "../../lib/useUser";
+import { useUser } from "@/lib/useUser";
 
 const navItems = [
   { icon: Home, label: "Today", path: "/" },
@@ -15,6 +18,7 @@ const navItems = [
 
 export function Sidebar() {
   const { caseNo, streakDays } = useUser();
+  const pathname = usePathname();
 
   return (
     <aside className="w-64 border-r-4 border-ink bg-bg h-screen sticky top-0 flex flex-col hidden md:flex">
@@ -26,23 +30,24 @@ export function Sidebar() {
         </div>
       </div>
       <nav className="flex-1 overflow-y-auto p-4 space-y-2">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            className={({ isActive }) =>
-              cn(
+        {navItems.map((item) => {
+          const isActive = pathname === item.path;
+          return (
+            <Link
+              key={item.path}
+              href={item.path}
+              className={cn(
                 "flex items-center gap-3 px-4 py-3 border-4 font-mono font-bold text-sm snappy-transition group",
                 isActive
                   ? "border-ink bg-brand text-ink brutalist-shadow-sm"
                   : "border-transparent text-ink hover:border-ink hover:brutalist-shadow-sm hover:bg-white"
-              )
-            }
-          >
-            <item.icon className="w-5 h-5" strokeWidth={2.5} />
-            {item.label}
-          </NavLink>
-        ))}
+              )}
+            >
+              <item.icon className="w-5 h-5" strokeWidth={2.5} />
+              {item.label}
+            </Link>
+          );
+        })}
       </nav>
       <div className="p-6 border-t-4 border-ink">
         <div className="font-mono text-xs font-bold text-ink/70">

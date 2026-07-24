@@ -1,0 +1,14 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/case-file/page": "/case-file",
+  "/closure/page": "/closure",
+  "/diary/new/page": "/diary/new",
+  "/diary/page": "/diary",
+  "/flags/new/page": "/flags/new",
+  "/flags/page": "/flags",
+  "/glow-up/page": "/glow-up",
+  "/page": "/",
+  "/streak/page": "/streak",
+  "/timeline/page": "/timeline"
+}
