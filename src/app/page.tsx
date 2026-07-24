@@ -9,22 +9,75 @@ import { Textarea } from "@/components/ui/Textarea";
 import { BookOpen, Clock, CheckCircle, Flag, Zap } from "lucide-react";
 import { useCheckins } from "@/lib/useCheckins";
 import { useUser } from "@/lib/useUser";
+import { useDiary } from "@/lib/useDiary";
+import { useFlags } from "@/lib/useFlags";
 import { CalendarTile } from "@/components/CalendarTile";
 import { RedFlagTile } from "@/components/RedFlagTile";
 
 export default function Home() {
   const navigate = useRouter();
   const { appMode } = useUser();
-  const { addCheckin } = useCheckins();
+  const { checkins, addCheckin } = useCheckins();
+  const { entries } = useDiary();
+  const { flags } = useFlags();
   const [checkinText, setCheckinText] = useState("");
   const [checkinDone, setCheckinDone] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleCheckin = () => {
+  // Get today's checkin if it exists
+  const todayCheckin = checkins.find(c => {
+    return new Date(c.createdAt).toDateString() === new Date().toDateString();
+  });
+
+  const handleCheckin = async () => {
     if (!checkinText.trim()) return;
-    addCheckin(checkinText);
-    setCheckinText("");
-    setCheckinDone(true);
-    setTimeout(() => setCheckinDone(false), 3000);
+    setIsLoading(true);
+    
+    try {
+      // Build Context Block
+      const recentEntries = entries.slice(0, 5).map((e, i) => 
+        `${i + 1}. [${e.moods.join(', ')}] ${e.content.substring(0, 150)}${e.content.length > 150 ? '...' : ''}`
+      ).join('\n');
+
+      const recentFlags = flags
+        .filter(f => (new Date().getTime() - new Date(f.createdAt).getTime()) < 7 * 24 * 60 * 60 * 1000)
+        .map(f => f.category)
+        .join(', ') || 'none logged';
+
+      const yesterdayCheckin = checkins.find(c => {
+        const checkinDate = new Date(c.createdAt);
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        return checkinDate.toDateString() === yesterday.toDateString();
+      });
+      const yesterdaySummary = yesterdayCheckin ? yesterdayCheckin.content.substring(0, 100) : 'no entry yesterday';
+
+      const contextBlock = `Recent diary entries (most recent first):
+${recentEntries || 'none'}
+
+Red flags logged this week: ${recentFlags}
+
+Yesterday's check-in summary: ${yesterdaySummary}`;
+
+      // Call API
+      const res = await fetch('/api/checkin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contextBlock, userText: checkinText })
+      });
+
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+
+      addCheckin(checkinText, data.classifierResult, data.aiReply, data.crisisPathTriggered);
+      setCheckinText("");
+      setCheckinDone(true);
+    } catch (error) {
+      console.error(error);
+      alert('Failed to run AI Check-In. Check console.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -42,19 +95,54 @@ export default function Home() {
           <CardHeader className="bg-ink text-bg border-b-[4px] border-ink p-4 flex-shrink-0">
             <div className="flex items-center justify-between">
               <CardTitle className="text-xl">DAILY MISSION</CardTitle>
-              {checkinDone ? (
+              {todayCheckin || checkinDone ? (
                 <Badge variant="positive" className="border-bg">Logged</Badge>
               ) : (
                 <Badge variant="accent" className="animate-pulse border-bg">Required</Badge>
               )}
             </div>
           </CardHeader>
-          <CardContent className="flex-1 flex flex-col p-4 bg-bg">
-            {checkinDone ? (
-              <div className="flex-1 flex flex-col items-center justify-center space-y-3 py-6 text-center">
-                <CheckCircle className="w-10 h-10 text-positive" />
-                <p className="font-heading uppercase">Check-in Complete.</p>
-                <p className="font-mono text-xs opacity-70">Good job showing up for yourself today.</p>
+          <CardContent className="flex-1 flex flex-col p-4 bg-bg overflow-y-auto">
+            {todayCheckin || checkinDone ? (
+              <div className="flex-1 flex flex-col h-full animate-in fade-in duration-500 space-y-4">
+                {/* User's Original Text */}
+                <div className="bg-white border-2 border-ink p-4 brutalist-shadow-sm">
+                  <p className="font-mono text-xs text-ink/50 uppercase font-bold mb-2">Your Check-In</p>
+                  <p className="font-sans font-medium text-ink">{todayCheckin?.content || checkinText}</p>
+                </div>
+
+                {/* AI Reply / Crisis Response */}
+                {(todayCheckin?.aiReply) && (
+                  todayCheckin.crisisPathTriggered ? (
+                    <div className="bg-ink text-bg border-2 border-ink p-6 brutalist-shadow-sm space-y-4">
+                      <p className="font-sans text-lg font-bold">
+                        It sounds like you're carrying something heavy right now, and I want to take that seriously.
+                      </p>
+                      <p className="font-sans text-base">
+                        I'm not the right support for this moment — please reach out to a crisis line or someone you trust right now:
+                      </p>
+                      <div className="space-y-2 py-2">
+                        <a href="tel:9152987821" className="block w-full bg-bg text-ink p-3 text-center font-bold font-mono text-lg brutalist-shadow-sm active:translate-y-1">iCall: 9152987821</a>
+                        <a href="tel:18602662345" className="block w-full bg-bg text-ink p-3 text-center font-bold font-mono text-lg brutalist-shadow-sm active:translate-y-1">Vandrevala: 1860-2662-345</a>
+                        <a href="tel:112" className="block w-full bg-bg text-ink p-3 text-center font-bold font-mono text-lg brutalist-shadow-sm active:translate-y-1">Emergency: 112</a>
+                      </div>
+                      <p className="font-sans text-base font-medium">You don't have to handle this alone.</p>
+                    </div>
+                  ) : (
+                    <div className="bg-brand border-2 border-ink p-6 brutalist-shadow-sm relative">
+                      <div className="absolute top-0 left-0 w-full h-2 bg-ink/10" />
+                      <p className="font-mono text-xs text-ink/50 uppercase font-bold mb-4">Therapist Note</p>
+                      
+                      <div className="font-mono text-sm leading-relaxed text-ink space-y-4">
+                        {todayCheckin.aiReply.split('\n\n').map((paragraph, i, arr) => (
+                          <p key={i} className={i === arr.length - 1 ? "font-bold text-base mt-6" : ""}>
+                            {paragraph}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                )}
               </div>
             ) : (
               <div className="space-y-4 flex flex-col h-full">
@@ -64,8 +152,15 @@ export default function Home() {
                   className="flex-1 min-h-[120px] resize-none border-ink"
                   value={checkinText}
                   onChange={(e) => setCheckinText(e.target.value)}
+                  disabled={isLoading}
                 />
-                <Button className="w-full h-12 text-lg brutalist-shadow-sm hover:-translate-y-0.5 transition-transform" onClick={handleCheckin} disabled={!checkinText.trim()}>Log Check-in</Button>
+                <Button 
+                  className="w-full h-12 text-lg brutalist-shadow-sm hover:-translate-y-0.5 transition-transform" 
+                  onClick={handleCheckin} 
+                  disabled={!checkinText.trim() || isLoading}
+                >
+                  {isLoading ? "Analyzing..." : "Log Check-in"}
+                </Button>
               </div>
             )}
           </CardContent>

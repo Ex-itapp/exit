@@ -4,6 +4,9 @@ export interface Checkin {
   id: string;
   content: string;
   createdAt: string;
+  classifierResult?: 'SAFE' | 'RISK';
+  aiReply?: string | null;
+  crisisPathTriggered?: boolean;
 }
 
 export function useCheckins() {
@@ -16,11 +19,19 @@ export function useCheckins() {
     }
   }, []);
 
-  const addCheckin = (content: string) => {
+  const addCheckin = (
+    content: string, 
+    classifierResult?: 'SAFE' | 'RISK', 
+    aiReply?: string | null, 
+    crisisPathTriggered?: boolean
+  ) => {
     const newCheckin: Checkin = {
       id: crypto.randomUUID(),
       content,
       createdAt: new Date().toISOString(),
+      classifierResult,
+      aiReply,
+      crisisPathTriggered
     };
     
     const updated = [newCheckin, ...checkins];
