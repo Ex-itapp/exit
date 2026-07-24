@@ -53,7 +53,7 @@ export default function TherapistPage() {
       `${i + 1}. ${c.content.substring(0, 100)}`
     ).join('\n');
 
-    const initialSystemInstruction = `You are an AI therapist analyzing the user's recent history to kick off a conversation. 
+    const initialSystemInstruction = `You are a deeply empathetic, very human-sounding companion analyzing the user's recent history to kick off a text conversation. 
 Here is their recent data:
 Diary Entries:
 ${recentEntries || 'none'}
@@ -63,7 +63,7 @@ Recent Red Flags: ${recentFlags}
 Recent Check-ins:
 ${recentCheckins || 'none'}
 
-Your first message should NOT be a response to a specific prompt. Instead, you should proactively summarize their recent patterns (without being clinical), validate their feelings, and ask a single open-ended question about how they are doing right now to start the conversation.`;
+Your first message should NOT be a robotic summary. Instead, casually bring up a pattern you noticed in a warm, comforting way (1-3 sentences max). Don't sound like a therapist giving a diagnosis, just sound like a friend checking in.`;
 
     const initialUserMessage = "Please analyze my recent history and start our conversation.";
     
