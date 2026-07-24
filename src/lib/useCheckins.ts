@@ -7,6 +7,7 @@ export interface Checkin {
   classifierResult?: 'SAFE' | 'RISK';
   aiReply?: string | null;
   crisisPathTriggered?: boolean;
+  followUpAnswer?: string;
 }
 
 export function useCheckins() {
@@ -39,5 +40,13 @@ export function useCheckins() {
     localStorage.setItem('unsent_checkins', JSON.stringify(updated));
   };
 
-  return { checkins, addCheckin };
+  const addFollowUp = (id: string, answer: string) => {
+    const updated = checkins.map(c => 
+      c.id === id ? { ...c, followUpAnswer: answer } : c
+    );
+    setCheckins(updated);
+    localStorage.setItem('unsent_checkins', JSON.stringify(updated));
+  };
+
+  return { checkins, addCheckin, addFollowUp };
 }

@@ -17,10 +17,11 @@ import { RedFlagTile } from "@/components/RedFlagTile";
 export default function Home() {
   const navigate = useRouter();
   const { appMode } = useUser();
-  const { checkins, addCheckin } = useCheckins();
+  const { checkins, addCheckin, addFollowUp } = useCheckins();
   const { entries } = useDiary();
   const { flags } = useFlags();
   const [checkinText, setCheckinText] = useState("");
+  const [followUpText, setFollowUpText] = useState("");
   const [checkinDone, setCheckinDone] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -140,6 +141,36 @@ Yesterday's check-in summary: ${yesterdaySummary}`;
                           </p>
                         ))}
                       </div>
+                    </div>
+                  )
+                )}
+
+                {/* Follow Up Section */}
+                {(todayCheckin?.aiReply && !todayCheckin.crisisPathTriggered) && (
+                  todayCheckin.followUpAnswer ? (
+                    <div className="bg-white border-2 border-ink p-4 brutalist-shadow-sm">
+                      <p className="font-mono text-xs text-ink/50 uppercase font-bold mb-2">Your Answer</p>
+                      <p className="font-sans font-medium text-ink">{todayCheckin.followUpAnswer}</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4 mt-4">
+                      <Textarea 
+                        placeholder="Answer the question..." 
+                        className="w-full min-h-[100px] resize-none border-ink"
+                        value={followUpText}
+                        onChange={(e) => setFollowUpText(e.target.value)}
+                      />
+                      <Button 
+                        className="w-full h-12 text-lg brutalist-shadow-sm hover:-translate-y-0.5 transition-transform"
+                        disabled={!followUpText.trim()}
+                        onClick={() => {
+                          if (todayCheckin.id) {
+                            addFollowUp(todayCheckin.id, followUpText);
+                          }
+                        }}
+                      >
+                        Complete Session
+                      </Button>
                     </div>
                   )
                 )}
