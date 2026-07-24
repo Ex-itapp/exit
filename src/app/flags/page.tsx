@@ -37,7 +37,7 @@ export default function Flags() {
           <p className="font-mono text-ink/70 mt-2 text-sm md:text-base">WRITE IT DOWN SO YOU DON'T FORGET.</p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={() => navigate('/flags/new')} className="brutalist-shadow-sm group bg-accent hover:bg-accent/90 text-bg border-accent">
+          <Button onClick={() => navigate.push('/flags/new')} className="brutalist-shadow-sm group bg-accent hover:bg-accent/90 text-bg border-accent">
             <Plus className="w-5 h-5 mr-2 group-hover:scale-125 transition-transform" />
             Log Flag
           </Button>

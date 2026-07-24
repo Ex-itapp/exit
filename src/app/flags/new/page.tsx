@@ -20,13 +20,13 @@ export default function NewFlagEntry() {
   const handleSave = () => {
     if (!content.trim()) return;
     addFlag(content, selectedCategory);
-    navigate('/flags');
+    navigate.push('/flags');
   };
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in zoom-in-95 duration-200 min-h-[80vh] flex flex-col">
       <header className="flex items-center justify-between">
-        <Button variant="ghost" onClick={() => navigate('/flags')} className="px-0 hover:bg-transparent hover:opacity-70">
+        <Button variant="ghost" onClick={() => navigate.push('/flags')} className="px-0 hover:bg-transparent hover:opacity-70">
           <ArrowLeft className="w-5 h-5 mr-2" />
           Back to Flags
         </Button>

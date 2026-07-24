@@ -41,7 +41,7 @@ export default function Diary() {
           <Button variant="ghost" size="icon" className="border-2 border-transparent hover:border-ink">
             <Filter className="w-5 h-5" />
           </Button>
-          <Button onClick={() => navigate('/diary/new')} className="brutalist-shadow-sm group">
+          <Button onClick={() => navigate.push('/diary/new')} className="brutalist-shadow-sm group">
             <PenLine className="w-4 h-4 mr-2 group-hover:animate-pulse" />
             New Entry
           </Button>

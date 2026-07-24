@@ -21,7 +21,7 @@ export default function NewDiaryEntry() {
   const handleSave = () => {
     if (!content.trim()) return;
     addEntry(content, isUnsentMode ? [] : selectedMoods, isUnsentMode);
-    navigate('/diary');
+    navigate.push('/diary');
   };
 
   const toggleMood = (mood: string) => {
@@ -33,7 +33,7 @@ export default function NewDiaryEntry() {
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in zoom-in-95 duration-200 min-h-[80vh] flex flex-col">
       <header className="flex items-center justify-between">
-        <Button variant="ghost" onClick={() => navigate('/diary')} className="px-0 hover:bg-transparent hover:opacity-70">
+        <Button variant="ghost" onClick={() => navigate.push('/diary')} className="px-0 hover:bg-transparent hover:opacity-70">
           <ArrowLeft className="w-5 h-5 mr-2" />
           Back to Diary
         </Button>
