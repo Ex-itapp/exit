@@ -53,13 +53,13 @@ export function Timeline() {
               {isUnsent ? (
                 <>
                   <Lock className="w-4 h-4 text-accent" />
-                  <Badge variant="danger">Unsent Message</Badge>
+                  <Badge variant="accent">Unsent Message</Badge>
                 </>
               ) : (
                 <>
                   <BookOpen className="w-4 h-4 text-brand" />
                   <Badge variant="outline">Diary Entry</Badge>
-                  {data.moods?.map((m: string) => <Badge key={m} variant="secondary" className="text-[10px] py-0">{m}</Badge>)}
+                  {data.moods?.map((m: string) => <Badge key={m} variant="outline" className="text-[10px] py-0">{m}</Badge>)}
                 </>
               )}
               <span className="font-mono text-xs opacity-50 ml-auto">{formatTime(event.timestamp)}</span>

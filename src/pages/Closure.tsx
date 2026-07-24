@@ -10,7 +10,7 @@ export function Closure() {
       <header className="space-y-2">
         <div className="flex items-center justify-between">
           <h1 className="text-5xl font-heading tracking-tighter">TALK TO THEM</h1>
-          <Badge variant="ink" className="text-lg py-1 px-3">2 SESSIONS REMAINING</Badge>
+          <Badge variant="default" className="text-lg py-1 px-3 bg-ink text-bg">2 SESSIONS REMAINING</Badge>
         </div>
         <p className="font-mono text-ink/70">CLOSURE IS A BOUNDED EXERCISE. NOT A HANGOUT.</p>
       </header>

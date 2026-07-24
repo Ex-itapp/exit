@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/Button";
 import { Card, CardContent } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
-import { Lock, Plus, Filter, Trash2, PenLine } from "lucide-react";
+import { Lock, Filter, Trash2, PenLine } from "lucide-react";
 import { useDiary } from "../lib/useDiary";
 import { ShareModal, type ShareEntryData } from "../components/ShareModal";
 

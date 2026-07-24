@@ -4,7 +4,7 @@ import { Button } from "../components/ui/Button";
 import { Card, CardContent } from "../components/ui/Card";
 import { Textarea } from "../components/ui/Textarea";
 import { Badge } from "../components/ui/Badge";
-import { Flag as FlagIcon, Plus, ArrowLeft } from "lucide-react";
+import { Plus, ArrowLeft } from "lucide-react";
 import { useFlags } from "../lib/useFlags";
 
 const CATEGORIES = ["Gaslighting", "Inconsistency", "Disrespect", "Manipulation", "Avoidance"];

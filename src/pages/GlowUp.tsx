@@ -72,14 +72,14 @@ export function GlowUp() {
               <label className="font-mono font-bold uppercase text-sm">Select Category</label>
               <div className="flex gap-4">
                 <Button 
-                  variant={newGoalCategory === 'physical' ? 'secondary' : 'outline'}
+                  variant={newGoalCategory === 'physical' ? 'secondary' : 'ghost'}
                   className={`flex-1 h-14 ${newGoalCategory === 'physical' ? 'border-ink bg-brand' : ''}`}
                   onClick={() => setNewGoalCategory('physical')}
                 >
                   <Activity className="w-5 h-5 mr-2" /> Physical
                 </Button>
                 <Button 
-                  variant={newGoalCategory === 'mental' ? 'secondary' : 'outline'}
+                  variant={newGoalCategory === 'mental' ? 'secondary' : 'ghost'}
                   className={`flex-1 h-14 ${newGoalCategory === 'mental' ? 'border-ink bg-purple text-ink' : ''}`}
                   onClick={() => setNewGoalCategory('mental')}
                 >
