@@ -1,4 +1,7 @@
+"use client";
+
 import { useState, useEffect } from 'react';
+import { supabase } from './supabase';
 
 export interface DiaryEntry {
   id: string;
@@ -8,34 +11,67 @@ export interface DiaryEntry {
   createdAt: string;
 }
 
+const STORAGE_KEY = 'unsent_diary_clean';
+
 export function useDiary() {
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
 
   useEffect(() => {
-    const saved = localStorage.getItem('unsent_diary');
-    if (saved) {
-      setEntries(JSON.parse(saved));
+    if (typeof window === 'undefined') return;
+
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) try { setEntries(JSON.parse(saved)); } catch (e) {}
+
+    async function syncDB() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
+      const { data } = await supabase.from('diary_entries').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false });
+      if (data) {
+        const mapped: DiaryEntry[] = data.map(d => ({
+          id: d.id,
+          content: d.content,
+          moods: d.moods || [],
+          isUnsent: d.is_unsent,
+          createdAt: d.created_at
+        }));
+        setEntries(mapped);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(mapped));
+      }
     }
+    syncDB();
   }, []);
 
-  const addEntry = (content: string, moods: string[], isUnsent: boolean) => {
-    const newEntry: DiaryEntry = {
-      id: crypto.randomUUID(),
-      content,
-      moods,
-      isUnsent,
-      createdAt: new Date().toISOString(),
-    };
+  const addEntry = async (content: string, moods: string[], isUnsent: boolean) => {
+    const id = crypto.randomUUID();
+    const createdAt = new Date().toISOString();
+    const newEntry: DiaryEntry = { id, content, moods, isUnsent, createdAt };
     
     const newEntries = [newEntry, ...entries];
     setEntries(newEntries);
-    localStorage.setItem('unsent_diary', JSON.stringify(newEntries));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newEntries));
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      await supabase.from('diary_entries').insert({
+        id,
+        user_id: session.user.id,
+        content,
+        moods,
+        is_unsent: isUnsent,
+        created_at: createdAt
+      });
+    }
   };
 
-  const deleteEntry = (id: string) => {
+  const deleteEntry = async (id: string) => {
     const newEntries = entries.filter(e => e.id !== id);
     setEntries(newEntries);
-    localStorage.setItem('unsent_diary', JSON.stringify(newEntries));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newEntries));
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      await supabase.from('diary_entries').delete().eq('id', id).eq('user_id', session.user.id);
+    }
   };
 
   return { entries, addEntry, deleteEntry };

@@ -1,18 +1,34 @@
 "use client";
 
 import { ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { useUser } from "@/lib/useUser";
+import { useAuth } from "@/lib/useAuth";
+import { CompulsoryAuthGate } from "@/components/auth/CompulsoryAuthGate";
 
 export function ClientLayout({ children }: { children: ReactNode }) {
   const { appMode, setAppMode } = useUser();
+  const { user, loading } = useAuth();
+  const pathname = usePathname();
 
   const toggleMode = () => {
     setAppMode(appMode === 'no_contact' ? 'evaluating' : 'no_contact');
   };
 
+  if (pathname === '/onboarding') {
+    return (
+      <div className="min-h-screen bg-bg w-full transition-colors duration-500">
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div className={`flex justify-center min-h-screen w-full transition-colors duration-500 ${appMode === 'evaluating' ? 'bg-purple/10' : 'bg-bg'}`}>
+      {/* Compulsory Authentication Gate (Blocks main app if not logged in) */}
+      {!loading && !user && <CompulsoryAuthGate />}
+
       <div className="flex-1 flex flex-col h-[100dvh] w-full relative overflow-hidden">
         <header className="border-b-4 border-ink p-4 flex items-center justify-between sticky top-0 z-40 bg-transparent shrink-0 backdrop-blur-md">
           <h1 className="text-2xl font-heading tracking-tighter">UNSENT</h1>

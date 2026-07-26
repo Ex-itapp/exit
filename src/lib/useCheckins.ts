@@ -1,4 +1,7 @@
+"use client";
+
 import { useState, useEffect } from 'react';
+import { supabase } from './supabase';
 
 export interface Checkin {
   id: string;
@@ -10,34 +13,59 @@ export interface Checkin {
   followUpAnswer?: string;
 }
 
+const STORAGE_KEY = 'unsent_checkins_clean';
+
 export function useCheckins() {
   const [checkins, setCheckins] = useState<Checkin[]>([]);
 
   useEffect(() => {
-    const saved = localStorage.getItem('unsent_checkins');
-    if (saved) {
-      setCheckins(JSON.parse(saved));
+    if (typeof window === 'undefined') return;
+
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) try { setCheckins(JSON.parse(saved)); } catch (e) {}
+
+    async function syncDB() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
+      const { data } = await supabase.from('checkins').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false });
+      if (data) {
+        const mapped: Checkin[] = data.map(c => ({
+          id: c.id,
+          content: c.content,
+          createdAt: c.created_at,
+          mood: c.mood
+        }));
+        setCheckins(mapped);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(mapped));
+      }
     }
+    syncDB();
   }, []);
 
-  const addCheckin = (
+  const addCheckin = async (
     content: string, 
     classifierResult?: 'SAFE' | 'RISK', 
     aiReply?: string | null, 
     crisisPathTriggered?: boolean
   ) => {
-    const newCheckin: Checkin = {
-      id: crypto.randomUUID(),
-      content,
-      createdAt: new Date().toISOString(),
-      classifierResult,
-      aiReply,
-      crisisPathTriggered
-    };
+    const id = crypto.randomUUID();
+    const createdAt = new Date().toISOString();
+    const newCheckin: Checkin = { id, content, createdAt, classifierResult, aiReply, crisisPathTriggered };
     
     const updated = [newCheckin, ...checkins];
     setCheckins(updated);
-    localStorage.setItem('unsent_checkins', JSON.stringify(updated));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      await supabase.from('checkins').insert({
+        id,
+        user_id: session.user.id,
+        content,
+        mood: classifierResult || 'SAFE',
+        created_at: createdAt
+      });
+    }
   };
 
   const addFollowUp = (id: string, answer: string) => {
@@ -45,7 +73,7 @@ export function useCheckins() {
       c.id === id ? { ...c, followUpAnswer: answer } : c
     );
     setCheckins(updated);
-    localStorage.setItem('unsent_checkins', JSON.stringify(updated));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   };
 
   return { checkins, addCheckin, addFollowUp };

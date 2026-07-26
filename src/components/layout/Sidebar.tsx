@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Book, Flag, Target, Award, Home, Clock, Zap } from "lucide-react";
+import { Book, Flag, Target, Award, Home, Clock, Zap, User } from "lucide-react";
 import { useUser } from "@/lib/useUser";
 
 const navItems = [
@@ -13,12 +13,15 @@ const navItems = [
   { icon: Flag, label: "Red Flags", path: "/flags" },
   { icon: Target, label: "Glow-Up", path: "/glow-up" },
   { icon: Zap, label: "Streak", path: "/streak" },
-  { icon: Award, label: "Case File", path: "/case-file" },
+  { icon: Award, label: "Rewards", path: "/rewards" },
+  { icon: User, label: "Account", path: "/account" },
 ];
 
 export function Sidebar() {
-  const { caseNo, streakDays, appMode } = useUser();
+  const { userName, streakDays, appMode } = useUser();
   const pathname = usePathname();
+
+  if (pathname === '/onboarding') return null;
 
   const filteredNavItems = navItems.filter(item => {
     if (appMode === 'no_contact' && item.path === '/flags') return false;
@@ -58,7 +61,7 @@ export function Sidebar() {
       <div className="p-6 border-t-4 border-ink">
         <div className="font-mono text-xs font-bold text-ink/70">
           {appMode === 'no_contact' && <p>STREAK: {streakDays} DAYS</p>}
-          <p>CASE NO. {caseNo}</p>
+          <p className="uppercase">HEALING: {userName}</p>
         </div>
       </div>
     </aside>

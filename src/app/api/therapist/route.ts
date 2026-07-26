@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { callAIRouter } from '@/lib/ai/router';
 
 export async function POST(req: Request) {
   try {
@@ -8,43 +9,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing messages array' }, { status: 400 });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({ error: 'Server misconfiguration: API key missing' }, { status: 500 });
-    }
-
     // Get the latest user message to run through the crisis classifier
     const latestMessage = messages[messages.length - 1];
     if (latestMessage.role !== 'user') {
       return NextResponse.json({ error: 'Last message must be from user' }, { status: 400 });
     }
-    const userText = latestMessage.parts[0].text;
+    const userText = latestMessage.parts?.[0]?.text || typeof latestMessage.content === 'string' ? latestMessage.content : "";
 
-    const callGemini = async (payload: any, temperature = 0.7) => {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': apiKey,
-        },
-        body: JSON.stringify({
-          ...payload,
-          generationConfig: {
-            temperature,
-          }
-        }),
-      });
-      
-      if (!response.ok) {
-        const errData = await response.text();
-        throw new Error(`Gemini API Error (${response.status}): ${errData}`);
-      }
-      
-      const data = await response.json();
-      return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
-    };
-
-    // Call 1 - Crisis Classifier (Only on the latest message)
+    // Call 1 - Crisis Classifier (Only on the latest message, using lightning classifier tier)
     const classifierPrompt = `System: You are a safety classifier for a breakup-support app. Read the user's check-in text below. Respond with ONLY one word: "RISK" or "SAFE".
 
 Respond "RISK" if the text indicates:
@@ -60,8 +32,8 @@ Do not explain your answer. Respond with exactly one word.
 User check-in text:
 "${userText}"`;
 
-    const classifierResultText = await callGemini({ contents: [{ parts: [{ text: classifierPrompt }] }] }, 0.1);
-    const isSafe = classifierResultText.toUpperCase().includes('SAFE');
+    const classifierResultText = await callAIRouter({ prompt: classifierPrompt, tier: 'classifier', temperature: 0.1 });
+    const isSafe = !classifierResultText || classifierResultText.toUpperCase().includes('SAFE');
 
     if (!isSafe) {
       return NextResponse.json({
@@ -72,7 +44,6 @@ User check-in text:
     }
 
     // Call 2 - The Chat Response
-    // We inject the system instruction and the full conversation history.
     const defaultSystemInstruction = `You are a deeply empathetic, very human-sounding companion in a breakup-recovery app. You are texting with the user.
 
 Hard rules:
@@ -83,17 +54,23 @@ Hard rules:
 - Instead of just asking questions forever, recognize when the conversation reaches a natural conclusion. 
 - When wrapping up, gently suggest the user use another feature in the app to help them cope (e.g., "Maybe try logging a Red Flag to get it out of your system", "Why don't you check your Streak to see how far you've come?", "Drop this into your Full Diary so you can look back on it later").`;
 
-    const payload = {
-      system_instruction: { parts: [{ text: systemInstruction || defaultSystemInstruction }] },
-      contents: messages
-    };
+    // Format messages for router
+    const formattedHistory = messages.map((m: any) => ({
+      role: m.role === 'model' || m.role === 'assistant' ? 'assistant' as const : 'user' as const,
+      content: m.parts?.[0]?.text || m.content || ""
+    })).filter(m => m.content.length > 0);
 
-    const aiReply = await callGemini(payload, 0.7);
+    const aiReply = await callAIRouter({
+      systemPrompt: systemInstruction || defaultSystemInstruction,
+      messages: formattedHistory,
+      tier: 'fast',
+      temperature: 0.7
+    });
 
     return NextResponse.json({
       classifierResult: 'SAFE',
       crisisPathTriggered: false,
-      aiReply
+      aiReply: aiReply || "I hear you. Tell me a little more about what's on your mind right now."
     });
 
   } catch (error: any) {
