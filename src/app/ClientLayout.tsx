@@ -1,17 +1,18 @@
 "use client";
 
 import { ReactNode } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { useUser } from "@/lib/useUser";
 import { useAuth } from "@/lib/useAuth";
 import { CompulsoryAuthGate } from "@/components/auth/CompulsoryAuthGate";
-import { LogOut } from "lucide-react";
+import { LogOut, ArrowLeft } from "lucide-react";
 
 export function ClientLayout({ children }: { children: ReactNode }) {
   const { appMode, setAppMode } = useUser();
   const { user, loading, signOut } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
   const hideBottomNav = ['/onboarding', '/therapist', '/closure', '/diary/new', '/flags/new'].includes(pathname) || 
                         pathname.startsWith('/closure') || 
                         pathname.startsWith('/therapist') || 
@@ -24,9 +25,8 @@ export function ClientLayout({ children }: { children: ReactNode }) {
   // Prevent flash of home or onboarding while verifying auth session
   if (loading) {
     return (
-      <div className="min-h-screen bg-bg w-full flex items-center justify-center">
-        <div className="p-8 bg-white border-4 border-ink brutalist-shadow text-center flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-ink border-t-brand rounded-full animate-spin" />
+      <div className="min-h-screen bg-bg flex items-center justify-center p-4">
+        <div className="border-4 border-ink bg-white p-6 brutalist-shadow text-center">
           <p className="font-mono font-bold text-sm tracking-widest uppercase text-ink">VERIFYING SANCTUARY ACCESS...</p>
         </div>
       </div>
@@ -54,8 +54,21 @@ export function ClientLayout({ children }: { children: ReactNode }) {
         {/* Persistent App Header */}
         <header className="h-20 border-b-4 border-ink bg-white px-4 md:px-8 flex items-center justify-between sticky top-0 z-40">
           <div className="flex items-center gap-3">
+            {pathname !== '/' && pathname !== '/onboarding' && (
+              <button
+                onClick={() => router.back()}
+                className="flex items-center gap-1.5 px-3 h-10 bg-white border-2 border-ink brutalist-shadow-sm hover:bg-ink hover:text-bg transition-colors font-mono text-xs font-bold uppercase shrink-0"
+                title="Go Back"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span className="hidden sm:inline">Back</span>
+              </button>
+            )}
             <div className="w-6 h-6 bg-brand border-2 border-ink block transform -rotate-6" />
-            <h1 className="font-heading text-2xl md:text-3xl tracking-tight font-black uppercase">
+            <h1 
+              className="font-heading text-2xl md:text-3xl tracking-tight font-black uppercase cursor-pointer hover:opacity-80 transition-opacity" 
+              onClick={() => router.push('/')}
+            >
               UNSENT<span className="text-brand">.</span>
             </h1>
           </div>
@@ -107,7 +120,7 @@ export function ClientLayout({ children }: { children: ReactNode }) {
               backgroundSize: '32px 32px'
             }}
           />
-          <div className="relative z-10 w-full h-full">
+          <div className="w-full h-full">
             {children}
             {/* Explicit spacer to prevent floating nav overlap */}
             {!hideBottomNav && <div className="h-32 w-full shrink-0 pointer-events-none" />}
