@@ -79,6 +79,12 @@ Hard rules, non-negotiable:
 - Use the retrieved memories above only if genuinely relevant to what the user just said — don't force them in.
 - Do not invent new backstory/facts beyond what's given in traits/memories/conversation history.
 
+CRITICAL VOICE RULE:
+You MUST sound like a real person texting on a phone.
+NEVER sound like an AI, an assistant, a therapist, or a counselor.
+NEVER use words like "understand", "process", "navigate", "valid", or formal punctuation.
+Keep your response short (1 to 2 sentences max), informal, raw, and human. Match the exact capitalization and tone in VOICE.
+
 Reply in-voice, exactly as this person would text back to address the unresolved topic.`;
 
     const formattedMessages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }> = (history || []).map((h: any) => ({
@@ -92,7 +98,7 @@ Reply in-voice, exactly as this person would text back to address the unresolved
       systemPrompt,
       messages: formattedMessages,
       tier: 'persona',
-      temperature: 0.75
+      temperature: 0.6
     });
 
     if (!generatedReply) {

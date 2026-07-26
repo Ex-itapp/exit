@@ -133,7 +133,7 @@ export default function ClosurePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userMessage: userText,
-          history: sessionMsgs,
+          history: [...sessionMsgs, { role: 'user', content: userText }],
           voiceProfile: profile?.voice_profile,
           traitProfile: profile?.trait_profile,
           retrievedMemories: relevantMems
@@ -418,10 +418,10 @@ export default function ClosurePage() {
             </Card>
           ) : (
             /* ACTIVE CHAT SCREEN */
-            <div className="border-4 border-ink brutalist-shadow bg-white flex flex-col h-[650px] relative overflow-hidden">
+            <div className="fixed inset-0 z-50 bg-bg flex flex-col w-full h-full overflow-hidden">
               
               {/* Chat Header with Progress Bar */}
-              <div className="bg-ink text-bg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0 border-b-4 border-ink">
+              <div className="bg-ink text-bg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0 border-b-4 border-ink shadow-md">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 bg-positive rounded-full animate-pulse" />
                   <div>
@@ -472,7 +472,7 @@ export default function ClosurePage() {
               </div>
 
               {/* Chat Messages List */}
-              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-bg/30 custom-scrollbar">
+              <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-4 bg-bg custom-scrollbar max-w-4xl mx-auto w-full">
                 {sessionMsgs.map((m) => {
                   const isUser = m.role === 'user';
                   const isSystem = m.role === 'system_scripted';
@@ -560,7 +560,7 @@ export default function ClosurePage() {
               </div>
 
               {/* Chat Input Bar */}
-              <div className="p-4 bg-white border-t-4 border-ink flex gap-3 shrink-0">
+              <div className="p-4 bg-white border-t-4 border-ink flex gap-3 shrink-0 max-w-4xl mx-auto w-full shadow-lg">
                 <Textarea
                   placeholder="Type your message... (keep it short like a real text)"
                   value={inputMsg}

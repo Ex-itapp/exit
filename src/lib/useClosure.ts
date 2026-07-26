@@ -338,18 +338,24 @@ export function useClosure() {
       flagged_and_regenerated: flagged,
       created_at: new Date().toISOString()
     };
-    const updatedMessages = [...messages, newMsg];
-    setMessagesState(updatedMessages);
-    localStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(updatedMessages));
-
-    const updatedSessions = sessions.map(s => {
-      if (s.id === sessionId) {
-        return { ...s, message_count: s.message_count + 1 };
-      }
-      return s;
+    let updatedMessages: ClosureMessage[] = [];
+    setMessagesState(prev => {
+      updatedMessages = [...prev, newMsg];
+      localStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(updatedMessages));
+      return updatedMessages;
     });
-    setSessionsState(updatedSessions);
-    localStorage.setItem(STORAGE_KEY_SESSIONS, JSON.stringify(updatedSessions));
+
+    let updatedSessions: ClosureSession[] = [];
+    setSessionsState(prevSess => {
+      updatedSessions = prevSess.map(s => {
+        if (s.id === sessionId) {
+          return { ...s, message_count: s.message_count + 1 };
+        }
+        return s;
+      });
+      localStorage.setItem(STORAGE_KEY_SESSIONS, JSON.stringify(updatedSessions));
+      return updatedSessions;
+    });
 
     // Sync to Supabase DB
     const { data: { session } } = await supabase.auth.getSession();
