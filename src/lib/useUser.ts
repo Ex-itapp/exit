@@ -13,6 +13,7 @@ export interface UserState {
   punchedDates: string[];
   appMode: AppMode;
   hasCompletedOnboarding: boolean;
+  isProfileSyncing: boolean;
   streakDays: number;
 }
 
@@ -24,6 +25,7 @@ export function useUser() {
   const [punchedDates, setPunchedDates] = useState<string[]>([]);
   const [appModeState, setAppModeState] = useState<AppMode>('no_contact');
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean>(false);
+  const [isProfileSyncing, setIsProfileSyncing] = useState<boolean>(true);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -59,7 +61,10 @@ export function useUser() {
 
     async function syncWithSupabase() {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) return;
+      if (!session?.user) {
+        setIsProfileSyncing(false);
+        return;
+      }
       
       const { data } = await supabase.from('user_profiles').select('*').eq('id', session.user.id).maybeSingle();
       if (data) {
@@ -77,15 +82,26 @@ export function useUser() {
         if (data.app_mode) localStorage.setItem('unsent_app_mode_clean', data.app_mode);
         localStorage.setItem('unsent_onboarding_done_clean', data.has_completed_onboarding ? 'true' : 'false');
       }
+      setIsProfileSyncing(false);
     }
 
     syncWithSupabase();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setIsProfileSyncing(true);
+        syncWithSupabase();
+      } else {
+        setIsProfileSyncing(false);
+      }
+    });
 
     const handleSync = () => loadState();
     window.addEventListener('unsent_sync', handleSync);
     
     return () => {
       window.removeEventListener('unsent_sync', handleSync);
+      subscription.unsubscribe();
     };
   }, []);
 
@@ -202,6 +218,7 @@ export function useUser() {
     punchedDates,
     appMode: appModeState,
     hasCompletedOnboarding,
+    isProfileSyncing,
     streakDays,
     punchToday,
     setAppMode,

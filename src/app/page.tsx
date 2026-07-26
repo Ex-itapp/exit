@@ -15,11 +15,13 @@ import { CalendarTile } from "@/components/CalendarTile";
 import { RedFlagTile } from "@/components/RedFlagTile";
 import { AnchorModal } from "@/components/AnchorModal";
 import { Anchor } from "lucide-react";
+import { useAuth } from "@/lib/useAuth";
 import { useEffect } from "react";
 
 export default function Home() {
   const navigate = useRouter();
-  const { appMode, userName, hasCompletedOnboarding } = useUser();
+  const { appMode, userName, hasCompletedOnboarding, isProfileSyncing } = useUser();
+  const { loading: authLoading } = useAuth();
   const { checkins, addCheckin } = useCheckins();
   const { entries } = useDiary();
   const { flags } = useFlags();
@@ -28,13 +30,13 @@ export default function Home() {
   const [showAnchor, setShowAnchor] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && !hasCompletedOnboarding) {
+    if (typeof window !== 'undefined' && !authLoading && !isProfileSyncing && !hasCompletedOnboarding) {
       const isDone = localStorage.getItem('unsent_onboarding_done_clean');
       if (isDone !== 'true') {
         navigate.push('/onboarding');
       }
     }
-  }, [hasCompletedOnboarding, navigate]);
+  }, [authLoading, isProfileSyncing, hasCompletedOnboarding, navigate]);
 
   // Get today's checkin if it exists
   const todayCheckin = checkins.find(c => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -12,7 +12,13 @@ import { motion, AnimatePresence } from "motion/react";
 
 export default function OnboardingPage() {
   const navigate = useRouter();
-  const { completeOnboarding } = useUser();
+  const { completeOnboarding, hasCompletedOnboarding, isProfileSyncing } = useUser();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !isProfileSyncing && (hasCompletedOnboarding || localStorage.getItem('unsent_onboarding_done_clean') === 'true')) {
+      navigate.push('/');
+    }
+  }, [isProfileSyncing, hasCompletedOnboarding, navigate]);
 
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");

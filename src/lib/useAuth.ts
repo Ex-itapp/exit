@@ -95,6 +95,15 @@ export function useAuth() {
     if (!error) {
       setUser(null);
       setSession(null);
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("unsent_onboarding_done_clean");
+        localStorage.removeItem("unsent_user_name_clean");
+        localStorage.removeItem("unsent_user_goal_clean");
+        localStorage.removeItem("unsent_user_anchor_clean");
+        localStorage.removeItem("unsent_breakup_date_clean");
+        localStorage.removeItem("unsent_app_mode_clean");
+        window.location.href = "/";
+      }
     }
     return { error };
   };
