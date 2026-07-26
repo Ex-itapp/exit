@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { useUser, type AppMode } from "@/lib/useUser";
-import { useAuth } from "@/lib/useAuth";
 import { Sparkles, Heart, Shield, Compass, ArrowRight, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
@@ -14,7 +13,6 @@ import { motion, AnimatePresence } from "motion/react";
 export default function OnboardingPage() {
   const navigate = useRouter();
   const { completeOnboarding } = useUser();
-  const { user, signInAnonymously } = useAuth();
 
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
@@ -31,9 +29,6 @@ export default function OnboardingPage() {
   ];
 
   const handleFinish = async () => {
-    if (!user) {
-      await signInAnonymously();
-    }
     completeOnboarding(
       name.trim() || "Friend",
       goal || "Finding peace and clarity",

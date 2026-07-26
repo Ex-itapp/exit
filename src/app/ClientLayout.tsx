@@ -19,6 +19,7 @@ export function ClientLayout({ children }: { children: ReactNode }) {
   if (pathname === '/onboarding') {
     return (
       <div className="min-h-screen bg-bg w-full transition-colors duration-500">
+        {!loading && !user && <CompulsoryAuthGate />}
         {children}
       </div>
     );

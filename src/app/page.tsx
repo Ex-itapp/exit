@@ -29,7 +29,7 @@ export default function Home() {
 
   useEffect(() => {
     if (typeof window !== 'undefined' && !hasCompletedOnboarding) {
-      const isDone = localStorage.getItem('unsent_onboarding_done');
+      const isDone = localStorage.getItem('unsent_onboarding_done_clean');
       if (isDone !== 'true') {
         navigate.push('/onboarding');
       }
