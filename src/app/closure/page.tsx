@@ -289,9 +289,9 @@ export default function ClosurePage() {
           <div className="p-3 bg-white border-4 border-ink brutalist-shadow-sm flex items-center gap-3">
             <MessageSquare className="w-6 h-6 text-brand shrink-0" />
             <div>
-              <div className="font-mono text-[10px] font-bold uppercase opacity-70">Weekly Allowance</div>
+              <div className="font-mono text-[10px] font-bold uppercase opacity-70">Total Sessions</div>
               <div className="font-heading text-lg leading-none uppercase">
-                {sessionsRemaining} of {maxSessionsAllowed} Remaining
+                {sessionsUsedCount} Completed
               </div>
             </div>
           </div>
@@ -369,7 +369,7 @@ export default function ClosurePage() {
               <div className="max-w-md mx-auto space-y-2">
                 <h2 className="text-3xl font-heading uppercase tracking-tight">Initiate Closure Session with {profile.label}</h2>
                 <p className="font-sans text-sm sm:text-base text-ink/80 leading-relaxed">
-                  Before you start, know what specific question or unsaid feeling you want to process today. Once initiated, you have a bounded 15-message window.
+                  Before you start, know what specific question or unsaid feeling you want to process today.
                 </p>
               </div>
 
@@ -377,10 +377,9 @@ export default function ClosurePage() {
                 <Button 
                   className="h-14 px-8 text-lg bg-brand hover:bg-brand/90 text-ink shadow-md font-bold uppercase"
                   onClick={handleStartSession}
-                  disabled={sessionsRemaining <= 0}
                 >
                   <MessageSquare className="w-5 h-5 mr-2" />
-                  {sessionsRemaining > 0 ? "Start Bounded Session" : "Session Cap Reached"}
+                  Start Session
                 </Button>
 
                 <Button

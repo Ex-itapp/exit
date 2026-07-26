@@ -75,7 +75,7 @@ export function useClosure() {
   const [sessions, setSessionsState] = useState<ClosureSession[]>([]);
   const [messages, setMessagesState] = useState<ClosureMessage[]>([]);
   const [sessionsUsedCount, setSessionsUsedCountState] = useState<number>(0);
-  const maxSessionsAllowed = 3; // 3 per week
+  const maxSessionsAllowed = 9999; // Unlimited
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -263,10 +263,6 @@ export function useClosure() {
   const createSession = async (): Promise<{ session?: ClosureSession; error?: string }> => {
     const active = getActiveSession();
     if (active) return { session: active };
-
-    if (sessionsUsedCount >= maxSessionsAllowed) {
-      return { error: "Session cap reached for this week. Closure is a bounded exercise." };
-    }
 
     if (!profile) {
       return { error: "Please set up your Person Engine profile before initiating a session." };
