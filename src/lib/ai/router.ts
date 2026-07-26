@@ -147,43 +147,46 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
     }
   };
 
-  // ROUTING LOGIC BASED ON TIER (Strict order with free model guarantees)
+  // ROUTING LOGIC BASED ON TIER (Strict order prioritizing Google Gemini)
   if (tier === 'persona') {
-    return await callGroq('llama-3.3-70b-versatile') ||
+    return await callGemini('gemini-1.5-flash') ||
+      await callGemini('gemini-2.0-flash') ||
+      await callOpenRouter('google/gemini-2.0-flash-lite-preview-02-05:free') ||
+      await callOpenRouter('google/gemini-2.0-pro-exp-02-05:free') ||
+      await callGroq('llama-3.3-70b-versatile') ||
       await callGroq('llama-3.1-8b-instant') ||
       await callOpenRouter('meta-llama/llama-3.3-70b-instruct:free') ||
-      await callOpenRouter('google/gemini-2.0-flash-lite-preview-02-05:free') ||
-      await callGemini('gemini-1.5-flash') ||
-      await callGemini('gemini-2.0-flash') ||
       await callGroq('mixtral-8x7b-32768') ||
       await callOpenRouter('mistralai/mistral-7b-instruct:free');
   }
 
   if (tier === 'fast') {
-    return await callGroq('llama-3.1-8b-instant') ||
-      await callGroq('llama-3.3-70b-versatile') ||
+    return await callGemini('gemini-1.5-flash') ||
+      await callGemini('gemini-2.0-flash') ||
       await callOpenRouter('google/gemini-2.0-flash-lite-preview-02-05:free') ||
-      await callGemini('gemini-1.5-flash');
+      await callGroq('llama-3.1-8b-instant') ||
+      await callGroq('llama-3.3-70b-versatile');
   }
 
   if (tier === 'heavy') {
-    return await callOpenRouter('meta-llama/llama-3.3-70b-instruct:free') ||
+    return await callGemini('gemini-1.5-pro') ||
+      await callGemini('gemini-1.5-flash') ||
       await callOpenRouter('google/gemini-2.0-pro-exp-02-05:free') ||
-      await callGroq('llama-3.3-70b-versatile') ||
-      await callGemini('gemini-1.5-pro') ||
-      await callGemini('gemini-1.5-flash');
+      await callOpenRouter('meta-llama/llama-3.3-70b-instruct:free') ||
+      await callGroq('llama-3.3-70b-versatile');
   }
 
   if (tier === 'classifier' || tier === 'embed') {
-    return await callGroq('llama-3.1-8b-instant') ||
+    return await callGemini('gemini-1.5-flash') ||
       await callOpenRouter('google/gemini-2.0-flash-lite-preview-02-05:free') ||
-      await callGemini('gemini-1.5-flash');
+      await callGroq('llama-3.1-8b-instant');
   }
 
   // Default fallback chain
-  return await callGroq('llama-3.3-70b-versatile') ||
-    await callOpenRouter('meta-llama/llama-3.3-70b-instruct:free') ||
-    await callGemini('gemini-1.5-flash');
+  return await callGemini('gemini-1.5-flash') ||
+    await callOpenRouter('google/gemini-2.0-flash-lite-preview-02-05:free') ||
+    await callGroq('llama-3.3-70b-versatile') ||
+    await callOpenRouter('meta-llama/llama-3.3-70b-instruct:free');
 }
 
 /**

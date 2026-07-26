@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { callAIRouter } from '@/lib/ai/router';
 
 export async function POST(req: Request) {
   try {
@@ -6,11 +7,6 @@ export async function POST(req: Request) {
     
     if (!userText) {
       return NextResponse.json({ error: 'Missing user check-in text' }, { status: 400 });
-    }
-
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({ error: 'Server misconfiguration: API key missing' }, { status: 500 });
     }
 
     // Call 1 - Crisis Classifier
@@ -29,34 +25,13 @@ Do not explain your answer. Respond with exactly one word.
 User check-in text:
 "${userText}"`;
 
-    const callGemini = async (prompt: string, temperature = 0.7) => {
-      // We use gemini-1.5-flash as the fastest and most cost-effective model for this
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': apiKey,
-        },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature,
-          }
-        }),
-      });
-      
-      if (!response.ok) {
-        const errData = await response.text();
-        throw new Error(`Gemini API Error (${response.status}): ${errData}`);
-      }
-      
-      const data = await response.json();
-      return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
-    };
-
-    // Low temp for deterministic classification
-    const classifierResultText = await callGemini(classifierPrompt, 0.1);
-    const isSafe = classifierResultText.toUpperCase().includes('SAFE');
+    // Use fast tier which prioritizes Google Gemini 1.5 Flash
+    const classifierResultText = await callAIRouter({ 
+      prompt: classifierPrompt, 
+      tier: 'classifier', 
+      temperature: 0.1 
+    });
+    const isSafe = !classifierResultText || classifierResultText.toUpperCase().includes('SAFE');
 
     if (!isSafe) {
       return NextResponse.json({
@@ -85,7 +60,11 @@ Today's check-in:
 
 Write the reply now.`;
 
-    const aiReply = await callGemini(reframePrompt, 0.7);
+    const aiReply = await callAIRouter({
+      prompt: reframePrompt,
+      tier: 'fast',
+      temperature: 0.7
+    });
 
     return NextResponse.json({
       classifierResult: 'SAFE',
