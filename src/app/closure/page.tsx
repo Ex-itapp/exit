@@ -93,6 +93,8 @@ export default function ClosurePage() {
       setPersonLabel(profile.label || "Them");
       setVoiceForm(profile.voice_profile);
       setTraitForm(profile.trait_profile);
+    } else {
+      setActiveTab('engine');
     }
   }, [profile]);
 

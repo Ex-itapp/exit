@@ -2,7 +2,7 @@ export interface AIOptions {
   prompt?: string;
   systemPrompt?: string;
   messages?: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>;
-  tier?: 'fast' | 'heavy' | 'embed' | 'classifier';
+  tier?: 'fast' | 'heavy' | 'embed' | 'classifier' | 'persona';
   temperature?: number;
   jsonMode?: boolean;
 }
@@ -101,7 +101,7 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
   };
 
   // Helper 3: Call Google Gemini API
-  const callGemini = async (model = 'gemini-1.5-flash-latest'): Promise<string | null> => {
+  const callGemini = async (model = 'gemini-1.5-flash'): Promise<string | null> => {
     if (!geminiKey) return null;
     try {
       const geminiContents: any[] = [];
@@ -148,6 +148,19 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
   };
 
   // ROUTING LOGIC BASED ON TIER
+  if (tier === 'persona') {
+    // 1. Try Groq 70B (High psychological fidelity, super fast)
+    let reply = await callGroq('llama-3.3-70b-versatile');
+    if (reply) return reply;
+
+    // 2. Fallback to Gemini Pro / Flash (1M context, exceptional roleplay instruction adherence)
+    reply = await callGemini('gemini-1.5-pro') || await callGemini('gemini-1.5-flash');
+    if (reply) return reply;
+
+    // 3. Fallback to OpenRouter 70B
+    return await callOpenRouter('meta-llama/llama-3.3-70b-instruct');
+  }
+
   if (tier === 'fast') {
     // 1. Try Groq LPU (Ultra fast ~300+ t/s)
     let reply = await callGroq('llama-3.3-70b-versatile');
@@ -158,7 +171,7 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
     if (reply) return reply;
 
     // 3. Fallback to Gemini Flash
-    reply = await callGemini('gemini-1.5-flash-latest');
+    reply = await callGemini('gemini-1.5-flash');
     if (reply) return reply;
 
     // 4. Fallback to OpenRouter
@@ -175,7 +188,7 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
     if (reply) return reply;
 
     // 3. Fallback to Gemini Pro/Flash
-    return await callGemini('gemini-1.5-pro-latest') || await callGemini('gemini-1.5-flash-latest');
+    return await callGemini('gemini-1.5-pro') || await callGemini('gemini-1.5-flash');
   }
 
   if (tier === 'classifier' || tier === 'embed') {
@@ -184,7 +197,7 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
     if (reply) return reply;
 
     // 2. Fallback to Gemini Flash 8B / Flash
-    return await callGemini('gemini-1.5-flash-8b-latest') || await callGemini('gemini-1.5-flash-latest');
+    return await callGemini('gemini-1.5-flash-8b') || await callGemini('gemini-1.5-flash');
   }
 
   // Default fallback chain

@@ -79,20 +79,20 @@ Hard rules, non-negotiable:
 - Use the retrieved memories above only if genuinely relevant to what the user just said — don't force them in.
 - Do not invent new backstory/facts beyond what's given in traits/memories/conversation history.
 
-Recent conversation:
-${(history || []).map((h: any) => `${h.role === 'user' ? 'User' : 'Them'}: ${h.content}`).join('\n')}
-
-New message from the user:
-"${userMessage}"
-
 Reply in-voice, exactly as this person would text back to address the unresolved topic.`;
 
-    // Call AI Router with tier='fast' (Groq 70B -> Groq 8B -> Gemini Flash -> OpenRouter)
+    const formattedMessages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }> = (history || []).map((h: any) => ({
+      role: h.role === 'ex_simulation' || h.role === 'assistant' ? 'assistant' : 'user',
+      content: h.content
+    }));
+    formattedMessages.push({ role: 'user', content: userMessage });
+
+    // Call AI Router with tier='persona' (Groq 70B -> Gemini Pro/Flash -> OpenRouter 70B)
     let generatedReply = await callAIRouter({
-      prompt: userMessage,
       systemPrompt,
-      tier: 'fast',
-      temperature: 0.7
+      messages: formattedMessages,
+      tier: 'persona',
+      temperature: 0.75
     });
 
     if (!generatedReply) {

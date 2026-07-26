@@ -131,9 +131,24 @@ export function useClosure() {
         setSessionsState(sessData as ClosureSession[]);
         localStorage.setItem(STORAGE_KEY_SESSIONS, JSON.stringify(sessData));
       }
+
+      // 4. Fetch Messages
+      const { data: msgData } = await supabase.from('closure_messages').select('*').eq('user_id', userId).order('created_at', { ascending: true });
+      if (msgData) {
+        setMessagesState(msgData as ClosureMessage[]);
+        localStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(msgData));
+      }
     }
 
     syncWithSupabase();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      syncWithSupabase();
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const saveProfile = async (newProf: ExProfile) => {

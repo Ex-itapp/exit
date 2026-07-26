@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     if (latestMessage.role !== 'user') {
       return NextResponse.json({ error: 'Last message must be from user' }, { status: 400 });
     }
-    const userText = latestMessage.parts?.[0]?.text || typeof latestMessage.content === 'string' ? latestMessage.content : "";
+    const userText = latestMessage.parts?.[0]?.text || (typeof latestMessage.content === 'string' ? latestMessage.content : "");
 
     // Call 1 - Crisis Classifier (Only on the latest message, using lightning classifier tier)
     const classifierPrompt = `System: You are a safety classifier for a breakup-support app. Read the user's check-in text below. Respond with ONLY one word: "RISK" or "SAFE".
@@ -67,10 +67,18 @@ Hard rules:
       temperature: 0.7
     });
 
+    if (!aiReply) {
+      return NextResponse.json({
+        classifierResult: 'SAFE',
+        crisisPathTriggered: false,
+        aiReply: "I hear you. That sounds like a lot to hold onto by yourself—tell me a little more about what's been on your mind today."
+      });
+    }
+
     return NextResponse.json({
       classifierResult: 'SAFE',
       crisisPathTriggered: false,
-      aiReply: aiReply || "I hear you. Tell me a little more about what's on your mind right now."
+      aiReply: aiReply
     });
 
   } catch (error: any) {

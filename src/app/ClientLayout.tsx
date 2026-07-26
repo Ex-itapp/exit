@@ -12,6 +12,10 @@ export function ClientLayout({ children }: { children: ReactNode }) {
   const { appMode, setAppMode } = useUser();
   const { user, loading, signOut } = useAuth();
   const pathname = usePathname();
+  const hideBottomNav = ['/onboarding', '/therapist', '/closure', '/diary/new', '/flags/new'].includes(pathname) || 
+                        pathname.startsWith('/closure') || 
+                        pathname.startsWith('/therapist') || 
+                        pathname.startsWith('/onboarding');
 
   const toggleMode = () => {
     setAppMode(appMode === 'no_contact' ? 'evaluating' : 'no_contact');
@@ -34,34 +38,41 @@ export function ClientLayout({ children }: { children: ReactNode }) {
     return <CompulsoryAuthGate />;
   }
 
+  // If user is logged in, Onboarding is handled inside Onboarding page or via route redirect in main app
   if (pathname === '/onboarding') {
     return (
-      <div className="min-h-screen bg-bg w-full transition-colors duration-500">
+      <div className="min-h-screen bg-bg text-ink font-sans antialiased selection:bg-brand selection:text-ink">
         {children}
       </div>
     );
   }
 
   return (
-    <div className={`flex justify-center min-h-screen w-full transition-colors duration-500 ${appMode === 'evaluating' ? 'bg-purple/10' : 'bg-bg'}`}>
-      <div className="flex-1 flex flex-col h-[100dvh] w-full relative overflow-hidden">
-        <header className="border-b-4 border-ink p-4 flex items-center justify-between sticky top-0 z-40 bg-transparent shrink-0 backdrop-blur-md">
-          <h1 className="text-2xl font-heading tracking-tighter">UNSENT</h1>
-          
+    <div className="min-h-screen bg-bg text-ink font-sans antialiased selection:bg-brand selection:text-ink">
+      <div className="max-w-4xl mx-auto min-h-screen flex flex-col border-x-0 md:border-x-4 border-ink bg-bg relative shadow-2xl">
+        
+        {/* Persistent App Header */}
+        <header className="h-20 border-b-4 border-ink bg-white px-4 md:px-8 flex items-center justify-between sticky top-0 z-40">
           <div className="flex items-center gap-3">
-            {/* Sleek Mode Toggle */}
-            <button 
+            <div className="w-6 h-6 bg-brand border-2 border-ink block transform -rotate-6" />
+            <h1 className="font-heading text-2xl md:text-3xl tracking-tight font-black uppercase">
+              UNSENT<span className="text-brand">.</span>
+            </h1>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {/* Mode Switcher Pill */}
+            <button
               onClick={toggleMode}
-              className="relative flex items-center w-48 h-12 bg-white border-[3px] border-ink rounded-full p-1 cursor-pointer brutalist-shadow-sm group select-none"
+              className="group relative flex items-center h-12 bg-bg border-[3px] border-ink p-1 cursor-pointer overflow-hidden brutalist-shadow-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_var(--color-ink)] transition-all"
+              title="Toggle Healing Mode"
             >
-              {/* Sliding Pill Container */}
-              <div className="absolute inset-1 pointer-events-none">
-                <div 
-                  className={`w-1/2 h-full bg-ink rounded-full transition-transform duration-500 ease-out ${
-                    appMode === 'no_contact' ? 'translate-x-0' : 'translate-x-full'
-                  }`}
-                />
-              </div>
+              {/* Sliding Background */}
+              <div 
+                className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-ink transition-transform duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) ${
+                  appMode === 'no_contact' ? 'translate-x-0' : 'translate-x-[100%]'
+                }`} 
+              />
               
               {/* Text Labels */}
               <div className="relative z-10 flex-1 h-full flex items-center justify-center">
@@ -99,10 +110,10 @@ export function ClientLayout({ children }: { children: ReactNode }) {
           <div className="relative z-10 w-full h-full">
             {children}
             {/* Explicit spacer to prevent floating nav overlap */}
-            <div className="h-32 w-full shrink-0 pointer-events-none" />
+            {!hideBottomNav && <div className="h-32 w-full shrink-0 pointer-events-none" />}
           </div>
         </main>
-        <BottomNav />
+        {!hideBottomNav && <BottomNav />}
       </div>
     </div>
   );
