@@ -113,7 +113,7 @@ export function ShareModal({ entry, onClose }: ShareModalProps) {
                 {formatTime(entry.createdAt)}
               </span>
               <div className="flex items-center gap-1 font-heading text-lg tracking-tighter">
-                UNSENT {entry.type === 'flag' ? <FlagIcon className="w-3 h-3 inline" /> : '#'}
+                EX-it. {entry.type === 'flag' ? <FlagIcon className="w-3 h-3 inline" /> : '#'}
               </div>
             </div>
           </div>

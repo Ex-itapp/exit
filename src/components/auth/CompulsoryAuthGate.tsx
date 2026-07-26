@@ -97,7 +97,7 @@ export function CompulsoryAuthGate() {
           </span>
           <h1 className="text-3xl font-heading uppercase tracking-tight mt-1">AUTHENTICATION REQUIRED</h1>
           <p className="font-sans text-xs sm:text-sm text-ink/80 leading-relaxed">
-            To protect your private diary entries, Person Engine profiles, and healing metrics, authentication is compulsory to enter UNSENT.
+            To protect your private diary entries, Person Engine profiles, and healing metrics, authentication is compulsory to enter EX-it.
           </p>
         </div>
 
@@ -134,7 +134,7 @@ export function CompulsoryAuthGate() {
           <div className="space-y-4 pt-2">
             <div className="p-4 bg-bg border-2 border-ink space-y-2 text-center">
               <p className="font-mono text-xs leading-relaxed text-ink/80">
-                Sign in securely with your Google account. One-click instant cloud sync with Supabase Row Level Security.
+                Sign in securely with your Google account. One-click instant cloud sync and private backup.
               </p>
             </div>
 
@@ -235,7 +235,7 @@ export function CompulsoryAuthGate() {
 
         <div className="pt-4 border-t-2 border-ink/10 flex items-center justify-center gap-2 text-[10px] font-mono text-ink/60">
           <ShieldCheck className="w-4 h-4 text-positive" />
-          <span>Encrypted by Supabase Auth • End-to-End Privacy</span>
+          <span>Secure Cloud Sync • End-to-End Privacy</span>
         </div>
       </motion.div>
     </div>

@@ -19,27 +19,20 @@ const navItems = [
 
 export function BottomNav() {
   const pathname = usePathname();
-  const { appMode } = useUser();
 
-  if (pathname === '/onboarding') return null;
-
-  const filteredNavItems = navItems.filter(item => {
-    if (appMode === 'no_contact' && item.path === '/flags') return false;
-    if (appMode === 'evaluating' && item.path === '/streak') return false;
-    return true;
-  });
+  if (pathname === '/onboarding' || pathname.startsWith('/closure') || pathname.startsWith('/therapist') || pathname.startsWith('/onboarding') || pathname.includes('/new') || pathname.includes('/edit')) return null;
 
   return (
-    <div className="fixed bottom-6 left-0 right-0 z-50 pointer-events-none flex justify-center w-full px-4">
-      <nav className="bg-bg border-4 border-ink brutalist-shadow rounded-full flex items-center justify-between p-1.5 pointer-events-auto w-full max-w-2xl overflow-x-auto custom-scrollbar shadow-2xl">
-        {filteredNavItems.map((item) => {
+    <div className="fixed bottom-3 sm:bottom-6 left-0 right-0 z-50 pointer-events-none flex justify-center w-full px-2 sm:px-4">
+      <nav className="bg-bg border-3 sm:border-4 border-ink brutalist-shadow rounded-full flex items-center justify-between p-1 sm:p-1.5 pointer-events-auto w-full max-w-2xl shadow-2xl">
+        {navItems.map((item) => {
           const isActive = pathname === item.path;
           return (
             <Link
               key={item.path}
               href={item.path}
               className={cn(
-                "relative flex-1 flex justify-center items-center py-3 px-2 rounded-full transition-colors min-w-[3.2rem] group select-none cursor-pointer",
+                "relative flex-1 flex justify-center items-center py-2 sm:py-3 px-1 sm:px-2 rounded-full transition-colors min-w-[2.3rem] sm:min-w-[3.2rem] group select-none cursor-pointer",
                 isActive ? "text-bg" : "text-ink hover:text-ink/80"
               )}
             >
@@ -63,7 +56,7 @@ export function BottomNav() {
                 whileHover={{ scale: 1.1 }}
                 transition={{ type: "spring", stiffness: 400, damping: 20 }}
               >
-                <item.icon className="w-5 h-5 md:w-6 md:h-6 shrink-0" strokeWidth={2.5} />
+                <item.icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 shrink-0" strokeWidth={2.5} />
               </motion.div>
             </Link>
           );

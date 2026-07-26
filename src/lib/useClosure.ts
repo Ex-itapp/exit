@@ -127,16 +127,28 @@ export function useClosure() {
 
       // 3. Fetch Sessions
       const { data: sessData } = await supabase.from('closure_sessions').select('*').eq('user_id', userId).order('started_at', { ascending: false });
-      if (sessData) {
-        setSessionsState(sessData as ClosureSession[]);
-        localStorage.setItem(STORAGE_KEY_SESSIONS, JSON.stringify(sessData));
+      if (sessData && sessData.length > 0) {
+        setSessionsState(prev => {
+          const map = new Map<string, ClosureSession>();
+          prev.forEach(s => map.set(s.id, s));
+          (sessData as ClosureSession[]).forEach(s => map.set(s.id, s));
+          const merged = Array.from(map.values()).sort((a, b) => new Date(b.started_at).getTime() - new Date(a.started_at).getTime());
+          localStorage.setItem(STORAGE_KEY_SESSIONS, JSON.stringify(merged));
+          return merged;
+        });
       }
 
       // 4. Fetch Messages
       const { data: msgData } = await supabase.from('closure_messages').select('*').eq('user_id', userId).order('created_at', { ascending: true });
-      if (msgData) {
-        setMessagesState(msgData as ClosureMessage[]);
-        localStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(msgData));
+      if (msgData && msgData.length > 0) {
+        setMessagesState(prev => {
+          const map = new Map<string, ClosureMessage>();
+          prev.forEach(m => map.set(m.id, m));
+          (msgData as ClosureMessage[]).forEach(m => map.set(m.id, m));
+          const merged = Array.from(map.values()).sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+          localStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(merged));
+          return merged;
+        });
       }
     }
 

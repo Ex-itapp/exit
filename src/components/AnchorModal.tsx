@@ -43,10 +43,10 @@ export function AnchorModal({ onClose }: AnchorModalProps) {
           </div>
           <div>
             <span className="font-mono text-xs uppercase font-bold tracking-widest bg-white px-2 py-0.5 border border-ink">
-              Emergency Grounding Tool
+              Daily Grounding Reminder
             </span>
             <h2 className="text-3xl font-heading uppercase tracking-tight leading-none mt-1">
-              Your Personal Anchor
+              Your Reason for Leaving
             </h2>
           </div>
         </div>
@@ -54,7 +54,7 @@ export function AnchorModal({ onClose }: AnchorModalProps) {
         {/* The Anchor Quote Box */}
         <div className="bg-brand/20 border-4 border-ink p-6 relative">
           <div className="absolute -top-3 left-4 bg-ink text-bg px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-widest">
-            Why You Started
+            The Reason
           </div>
           <p className="font-heading text-xl md:text-2xl text-ink leading-relaxed italic pt-2">
             "{userAnchor || 'I deserve someone who chooses me without hesitation every single day.'}"

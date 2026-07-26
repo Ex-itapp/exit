@@ -4,6 +4,21 @@ import { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 import type { User, Session } from "@supabase/supabase-js";
 
+const isLocalhost = typeof window !== 'undefined' && (
+  window.location.hostname === 'localhost' || 
+  window.location.hostname === '127.0.0.1' || 
+  window.location.hostname.startsWith('192.168.')
+);
+
+const MOCK_LOCAL_USER = {
+  id: "localhost-dev-user-000000000000",
+  email: "localhost-dev@sanctuary.local",
+  app_metadata: {},
+  user_metadata: { name: "Localhost Dev Guest" },
+  aud: "authenticated",
+  created_at: new Date().toISOString()
+} as unknown as User;
+
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -17,12 +32,15 @@ export function useAuth() {
         const { data: { session: currentSession } } = await supabase.auth.getSession();
         if (mounted) {
           setSession(currentSession);
-          setUser(currentSession?.user ?? null);
+          setUser(currentSession?.user ?? (isLocalhost ? MOCK_LOCAL_USER : null));
           setLoading(false);
         }
       } catch (err) {
         console.error("Auth init error:", err);
-        if (mounted) setLoading(false);
+        if (mounted) {
+          setUser(isLocalhost ? MOCK_LOCAL_USER : null);
+          setLoading(false);
+        }
       }
     }
 
@@ -31,7 +49,7 @@ export function useAuth() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
       if (mounted) {
         setSession(newSession);
-        setUser(newSession?.user ?? null);
+        setUser(newSession?.user ?? (isLocalhost ? MOCK_LOCAL_USER : null));
         setLoading(false);
       }
     });

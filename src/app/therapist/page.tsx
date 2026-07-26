@@ -25,6 +25,7 @@ export default function TherapistPage() {
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isCrisis, setIsCrisis] = useState(false);
+  const [errorBanner, setErrorBanner] = useState<string | null>(null);
   
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -91,7 +92,8 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
       ]);
     } catch (error: any) {
       console.error(error);
-      alert(`AI Failed: ${error.message}`);
+      setErrorBanner(`We couldn't connect right now: ${error.message}`);
+      setTimeout(() => setErrorBanner(null), 5000);
       setMode('select');
     } finally {
       setIsLoading(false);
@@ -101,7 +103,7 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
   const startNewChatMode = () => {
     setMode('chat');
     setMessages([
-      { role: 'model', parts: [{ text: "I'm here. What's on your mind right now?" }] }
+      { role: 'model', parts: [{ text: "I'm here for you. What's on your mind or weighing on your heart right now?" }] }
     ]);
   };
 
@@ -131,7 +133,8 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
       setMessages([...updatedMessages, { role: 'model', parts: [{ text: data.aiReply }] }]);
     } catch (error: any) {
       console.error(error);
-      alert(`AI Failed: ${error.message}`);
+      setErrorBanner(`We couldn't reach your companion right now: ${error.message}`);
+      setTimeout(() => setErrorBanner(null), 5000);
     } finally {
       setIsLoading(false);
     }
@@ -140,7 +143,7 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] lg:h-[calc(100vh-6rem)] animate-in fade-in max-w-4xl mx-auto w-full pt-4 px-4 pb-24">
       {/* HEADER */}
-      <div className="flex items-center gap-4 mb-8 shrink-0">
+      <div className="flex items-center gap-4 mb-4 shrink-0">
         <Button 
           variant="secondary" 
           size="icon" 
@@ -149,8 +152,14 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
         >
           <ArrowLeft className="w-6 h-6" />
         </Button>
-        <h1 className="font-heading tracking-tighter text-3xl md:text-4xl uppercase">AI Therapist</h1>
+        <h1 className="font-heading tracking-tighter text-3xl md:text-4xl uppercase">Healing Companion</h1>
       </div>
+
+      {errorBanner && (
+        <div className="bg-danger text-white border-2 border-ink brutalist-shadow-sm p-3 mb-4 font-mono text-xs uppercase font-bold animate-in fade-in">
+          ⚠️ {errorBanner}
+        </div>
+      )}
 
       {mode === 'select' ? (
         /* SELECTION MODE */
@@ -161,9 +170,9 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
           >
             <Sparkles className="w-12 h-12" />
             <div className="space-y-2">
-              <h2 className="font-heading text-2xl uppercase">Analyze My History</h2>
+              <h2 className="font-heading text-2xl uppercase">Reflect On My Journey</h2>
               <p className="font-mono text-sm opacity-80 normal-case">
-                Let the AI scan your last 5 diary entries and recent logs to uncover patterns and start a conversation.
+                Let's gently review your last 5 diary entries and check-ins together to explore your feelings and start our conversation.
               </p>
             </div>
           </Button>
@@ -207,7 +216,7 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
                       msg.role === 'user' ? 'bg-ink text-bg' : 'bg-brand text-ink'
                     }`}
                   >
-                    {msg.role === 'model' && <p className="font-mono text-xs opacity-50 uppercase font-bold mb-2">Therapist</p>}
+                    {msg.role === 'model' && <p className="font-mono text-xs opacity-50 uppercase font-bold mb-2">Your Companion</p>}
                     <div className="font-sans text-[15px] leading-relaxed whitespace-pre-wrap">
                       {msg.parts[0].text}
                     </div>
@@ -251,10 +260,10 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
 
           {/* Chat Input */}
           {!isCrisis && (
-            <div className="shrink-0 p-4 bg-white border-t-4 border-ink flex gap-4">
+            <div className="shrink-0 p-2 sm:p-4 bg-white border-t-4 border-ink flex gap-2 sm:gap-4">
               <Textarea 
                 placeholder="Type your message..." 
-                className="flex-1 min-h-[60px] max-h-[120px] resize-none border-2 border-ink"
+                className="flex-1 min-h-[44px] sm:min-h-[60px] max-h-[120px] resize-none border-2 border-ink text-xs sm:text-base p-2 sm:p-3"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyDown={(e) => {
@@ -266,11 +275,11 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
                 disabled={isLoading}
               />
               <Button 
-                className="h-auto w-[60px] shrink-0 brutalist-shadow-sm border-2 border-ink bg-blue hover:bg-blue/90 text-ink"
+                className="h-auto px-4 sm:w-[60px] shrink-0 brutalist-shadow-sm border-2 border-ink bg-blue hover:bg-blue/90 text-ink"
                 onClick={sendMessage}
                 disabled={!inputText.trim() || isLoading}
               >
-                <Send className="w-6 h-6" />
+                <Send className="w-4 h-4 sm:w-6 sm:h-6" />
               </Button>
             </div>
           )}

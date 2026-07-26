@@ -18,28 +18,22 @@ const navItems = [
 ];
 
 export function Sidebar() {
-  const { userName, streakDays, appMode } = useUser();
+  const { userName, streakDays } = useUser();
   const pathname = usePathname();
 
   if (pathname === '/onboarding') return null;
 
-  const filteredNavItems = navItems.filter(item => {
-    if (appMode === 'no_contact' && item.path === '/flags') return false;
-    if (appMode === 'evaluating' && item.path === '/streak') return false;
-    return true;
-  });
-
   return (
     <aside className="w-64 border-r-4 border-ink bg-bg h-screen sticky top-0 flex flex-col hidden md:flex">
       <div className="p-6 border-b-4 border-ink">
-        <h1 className="text-3xl font-heading tracking-tighter">UNSENT</h1>
+        <h1 className="text-3xl font-heading tracking-tighter">EX-it.</h1>
         <div className="mt-2 flex items-center gap-2">
           <span className="w-3 h-3 bg-positive rounded-none border-2 border-ink block animate-pulse"></span>
           <span className="font-mono text-xs font-bold uppercase">System Active</span>
         </div>
       </div>
       <nav className="flex-1 overflow-y-auto p-4 space-y-2">
-        {filteredNavItems.map((item) => {
+        {navItems.map((item) => {
           const isActive = pathname === item.path;
           return (
             <Link
@@ -60,7 +54,7 @@ export function Sidebar() {
       </nav>
       <div className="p-6 border-t-4 border-ink">
         <div className="font-mono text-xs font-bold text-ink/70">
-          {appMode === 'no_contact' && <p>STREAK: {streakDays} DAYS</p>}
+          <p>STREAK: {streakDays} DAYS</p>
           <p className="uppercase">HEALING: {userName}</p>
         </div>
       </div>

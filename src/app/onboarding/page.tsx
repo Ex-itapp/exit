@@ -193,7 +193,7 @@ export default function OnboardingPage() {
             </motion.div>
           )}
 
-          {/* STEP 4: PERSONAL ANCHOR */}
+          {/* STEP 4: YOUR REASON */}
           {step === 4 && (
             <motion.div 
               key="step4"
@@ -205,7 +205,7 @@ export default function OnboardingPage() {
             >
               <div>
                 <span className="bg-brand text-ink font-mono text-xs font-bold uppercase px-2 py-1 border-2 border-ink inline-block mb-2">
-                  Your Personal Anchor
+                  Your Reason for Leaving
                 </span>
                 <h2 className="text-3xl font-heading uppercase tracking-tight">
                   Why are you staying strong?
@@ -213,7 +213,7 @@ export default function OnboardingPage() {
               </div>
               
               <p className="font-sans text-sm text-ink/80 leading-relaxed">
-                When a hard moment strikes or the urge to reach out hits its peak, what is the <strong>#1 reminder</strong> you want to tell your future self? We will turn this into your personal emergency grounding tool.
+                When a hard moment strikes or the urge to reach out hits its peak, what is the <strong>#1 reminder</strong> you want to tell yourself? This will be your daily grounding reminder.
               </p>
 
               <Textarea
@@ -235,7 +235,7 @@ export default function OnboardingPage() {
             </motion.div>
           )}
 
-          {/* STEP 5: MODE & DAY ZERO */}
+          {/* STEP 5: DAY ZERO */}
           {step === 5 && (
             <motion.div 
               key="step5"
@@ -246,50 +246,8 @@ export default function OnboardingPage() {
               className="space-y-6"
             >
               <h2 className="text-3xl font-heading uppercase tracking-tight">
-                Choose Your Healing Path
+                Set Your Starting Date
               </h2>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <motion.div
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setMode("no_contact")}
-                  className={cn(
-                    "p-4 border-4 border-ink cursor-pointer transition-colors flex flex-col justify-between",
-                    mode === "no_contact" ? "bg-ink text-bg brutalist-shadow-sm" : "bg-bg text-ink hover:bg-white"
-                  )}
-                >
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-heading text-xl uppercase">No Contact</span>
-                      {mode === "no_contact" && <CheckCircle2 className="w-5 h-5 text-brand" />}
-                    </div>
-                    <p className="font-mono text-xs opacity-80 leading-relaxed">
-                      Strict streak counter, red flag logging, and accountability for complete detachment.
-                    </p>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setMode("evaluating")}
-                  className={cn(
-                    "p-4 border-4 border-ink cursor-pointer transition-colors flex flex-col justify-between",
-                    mode === "evaluating" ? "bg-ink text-bg brutalist-shadow-sm" : "bg-bg text-ink hover:bg-white"
-                  )}
-                >
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-heading text-xl uppercase">Clarity Mode</span>
-                      {mode === "evaluating" && <CheckCircle2 className="w-5 h-5 text-brand" />}
-                    </div>
-                    <p className="font-mono text-xs opacity-80 leading-relaxed">
-                      Gentle journaling and pattern reflection without the pressure of streak counters.
-                    </p>
-                  </div>
-                </motion.div>
-              </div>
 
               <div className="space-y-2 pt-2">
                 <label className="font-mono text-xs font-bold uppercase tracking-wider block">

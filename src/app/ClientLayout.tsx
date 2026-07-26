@@ -3,24 +3,20 @@
 import { ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { BottomNav } from "@/components/layout/BottomNav";
-import { useUser } from "@/lib/useUser";
 import { useAuth } from "@/lib/useAuth";
 import { CompulsoryAuthGate } from "@/components/auth/CompulsoryAuthGate";
 import { LogOut, ArrowLeft } from "lucide-react";
 
 export function ClientLayout({ children }: { children: ReactNode }) {
-  const { appMode, setAppMode } = useUser();
   const { user, loading, signOut } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const hideBottomNav = ['/onboarding', '/therapist', '/closure', '/diary/new', '/flags/new'].includes(pathname) || 
                         pathname.startsWith('/closure') || 
                         pathname.startsWith('/therapist') || 
-                        pathname.startsWith('/onboarding');
-
-  const toggleMode = () => {
-    setAppMode(appMode === 'no_contact' ? 'evaluating' : 'no_contact');
-  };
+                        pathname.startsWith('/onboarding') ||
+                        pathname.includes('/new') ||
+                        pathname.includes('/edit');
 
   // Prevent flash of home or onboarding while verifying auth session
   if (loading) {
@@ -33,8 +29,14 @@ export function ClientLayout({ children }: { children: ReactNode }) {
     );
   }
 
-  // Compulsory Auth Gate: Must be logged in before accessing onboarding or any route
-  if (!user) {
+  const isLocalhost = typeof window !== 'undefined' && (
+    window.location.hostname === 'localhost' || 
+    window.location.hostname === '127.0.0.1' || 
+    window.location.hostname.startsWith('192.168.')
+  );
+
+  // If user is not authenticated and not currently on the compulsory auth gate or public assets, gate them (unless on localhost)
+  if (!user && !isLocalhost && pathname !== '/auth') {
     return <CompulsoryAuthGate />;
   }
 
@@ -48,70 +50,34 @@ export function ClientLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-bg text-ink font-sans antialiased selection:bg-brand selection:text-ink">
-      <div className="max-w-4xl mx-auto min-h-screen flex flex-col border-x-0 md:border-x-4 border-ink bg-bg relative shadow-2xl">
+      <div className="w-full min-h-screen flex flex-col bg-bg relative">
         
-        {/* Persistent App Header */}
-        <header className="h-20 border-b-4 border-ink bg-white px-4 md:px-8 flex items-center justify-between sticky top-0 z-40">
-          <div className="flex items-center gap-3">
+        {/* Clean, Minimal Floating Logo Header */}
+        <header className="px-3 sm:px-4 md:px-8 pt-3 sm:pt-6 pb-2 flex items-center justify-between sticky top-0 z-40 bg-transparent pointer-events-none">
+          <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto">
             {pathname !== '/' && pathname !== '/onboarding' && (
               <button
                 onClick={() => router.back()}
-                className="flex items-center gap-1.5 px-3 h-10 bg-white border-2 border-ink brutalist-shadow-sm hover:bg-ink hover:text-bg transition-colors font-mono text-xs font-bold uppercase shrink-0"
+                className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 h-9 sm:h-10 bg-white border-2 border-ink brutalist-shadow-sm hover:bg-ink hover:text-bg transition-colors font-mono text-xs font-bold uppercase shrink-0"
                 title="Go Back"
               >
-                <ArrowLeft className="w-4 h-4" />
-                <span className="hidden sm:inline">Back</span>
+                <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="inline">Back</span>
               </button>
             )}
-            <div className="w-6 h-6 bg-brand border-2 border-ink block transform -rotate-6" />
-            <h1 
-              className="font-heading text-2xl md:text-3xl tracking-tight font-black uppercase cursor-pointer hover:opacity-80 transition-opacity" 
+            <div 
+              className="flex items-center gap-1.5 sm:gap-2 bg-white px-2.5 sm:px-3 py-1 sm:py-1.5 border-2 border-ink brutalist-shadow-sm cursor-pointer hover:opacity-90 transition-opacity" 
               onClick={() => router.push('/')}
             >
-              UNSENT<span className="text-brand">.</span>
-            </h1>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {/* Mode Switcher Pill */}
-            <button
-              onClick={toggleMode}
-              className="group relative flex items-center h-12 bg-bg border-[3px] border-ink p-1 cursor-pointer overflow-hidden brutalist-shadow-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_var(--color-ink)] transition-all"
-              title="Toggle Healing Mode"
-            >
-              {/* Sliding Background */}
-              <div 
-                className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-ink transition-transform duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) ${
-                  appMode === 'no_contact' ? 'translate-x-0' : 'translate-x-[100%]'
-                }`} 
-              />
-              
-              {/* Text Labels */}
-              <div className="relative z-10 flex-1 h-full flex items-center justify-center">
-                <span className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest font-mono transition-colors duration-500 ${appMode === 'no_contact' ? 'text-bg' : 'text-ink/60 group-hover:text-ink'}`}>
-                  No Contact
-                </span>
-              </div>
-              <div className="relative z-10 flex-1 h-full flex items-center justify-center">
-                <span className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest font-mono transition-colors duration-500 ${appMode === 'evaluating' ? 'text-bg' : 'text-ink/60 group-hover:text-ink'}`}>
-                  Clarity
-                </span>
-              </div>
-            </button>
-
-            {/* Global Log Out Button */}
-            <button
-              onClick={signOut}
-              className="flex items-center justify-center w-12 h-12 bg-white border-[3px] border-ink rounded-full brutalist-shadow-sm hover:bg-danger/10 hover:text-danger hover:border-danger transition-colors shrink-0"
-              title="Log Out"
-            >
-              <LogOut className="w-5 h-5" />
-            </button>
+              <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 bg-brand border border-ink block transform -rotate-6" />
+              <h1 className="font-heading text-lg sm:text-xl tracking-tight font-black uppercase">
+                EX-it<span className="text-brand">.</span>
+              </h1>
+            </div>
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 relative custom-scrollbar">
+        <main className="flex-1 overflow-y-auto p-2 sm:p-4 md:p-8 relative custom-scrollbar">
           {/* Subtle background grid pattern for brutalist feel */}
           <div 
             className="absolute inset-0 pointer-events-none opacity-[0.03]"
@@ -128,6 +94,5 @@ export function ClientLayout({ children }: { children: ReactNode }) {
         </main>
         {!hideBottomNav && <BottomNav />}
       </div>
-    </div>
   );
 }

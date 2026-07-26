@@ -3,8 +3,8 @@ import '../index.css';
 import { ClientLayout } from './ClientLayout';
 
 export const metadata: Metadata = {
-  title: 'UNSENT',
-  description: 'A tool for getting through a breakup',
+  title: 'EX-it.',
+  description: 'Your personal breakup recovery space',
 };
 
 export default function RootLayout({

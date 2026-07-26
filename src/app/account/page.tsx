@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { User, Shield, Compass, Anchor, AlertTriangle, RefreshCcw, Save, CheckCircle2, Lock, LogOut, Cloud } from "lucide-react";
+import { User, Shield, Compass, Anchor, AlertTriangle, RefreshCcw, Save, CheckCircle2, Lock, LogOut, Cloud, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function AccountPage() {
@@ -19,6 +19,7 @@ export default function AccountPage() {
   const [anchor, setAnchor] = useState(userAnchor || "");
   const [date, setDate] = useState(breakupDate ? new Date(breakupDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
   const [isSaved, setIsSaved] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
 
   // Auth form
   const [email, setEmail] = useState("");
@@ -52,9 +53,7 @@ export default function AccountPage() {
   };
 
   const handleReset = () => {
-    if (confirm("Are you sure you want to reset all your account data and restart onboarding? This cannot be undone.")) {
-      resetAccount();
-    }
+    setShowResetModal(true);
   };
 
   const handleLogin = async () => {
@@ -94,12 +93,12 @@ export default function AccountPage() {
         </div>
       </header>
 
-      {/* Supabase Cloud Authentication Section */}
+      {/* Cloud Authentication Section */}
       <Card className="border-[4px] border-ink bg-purple/10">
         <CardHeader className="border-b-[4px] border-ink bg-purple text-ink p-4">
           <CardTitle className="text-xl flex items-center gap-2 uppercase">
             <Cloud className="w-5 h-5" />
-            Supabase Cloud Sync & Authentication
+            Cloud Sync & Security
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6 space-y-4">
@@ -114,7 +113,7 @@ export default function AccountPage() {
                   User ID: <code className="bg-bg px-1.5 py-0.5 border border-ink/30 font-bold">{user.id.substring(0, 18)}...</code>
                 </p>
                 <p className="font-mono text-[11px] text-ink/60">
-                  Your Person Engine profiles, memories, diary entries, and red flags are continuously encrypted and backed up to Supabase.
+                  Your profiles, memories, diary entries, and red flags are continuously encrypted and safely backed up to your private cloud storage.
                 </p>
               </div>
 
@@ -170,65 +169,12 @@ export default function AccountPage() {
         </CardContent>
       </Card>
 
-      {/* App Mode Switching */}
-      <Card className="border-[4px] border-ink">
-        <CardHeader className="bg-ink text-bg p-4">
-          <CardTitle className="text-xl flex items-center gap-2">
-            <Shield className="w-5 h-5 text-brand" />
-            HEALING MODE
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 space-y-4">
-          <p className="font-sans text-sm md:text-base text-ink/80">
-            You can switch between healing modes at any time depending on what you need most.
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-            <div
-              onClick={() => setAppMode("no_contact")}
-              className={cn(
-                "p-4 border-4 border-ink cursor-pointer transition-all flex flex-col justify-between",
-                appMode === "no_contact" ? "bg-brand text-ink brutalist-shadow-sm" : "bg-bg text-ink/70 hover:bg-white"
-              )}
-            >
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-heading text-xl uppercase">No Contact Mode</span>
-                  {appMode === "no_contact" && <CheckCircle2 className="w-5 h-5 text-ink" />}
-                </div>
-                <p className="font-mono text-xs opacity-80 leading-relaxed">
-                  Strict streak counter, red flag logging, and accountability for detachment.
-                </p>
-              </div>
-            </div>
-
-            <div
-              onClick={() => setAppMode("evaluating")}
-              className={cn(
-                "p-4 border-4 border-ink cursor-pointer transition-all flex flex-col justify-between",
-                appMode === "evaluating" ? "bg-brand text-ink brutalist-shadow-sm" : "bg-bg text-ink/70 hover:bg-white"
-              )}
-            >
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-heading text-xl uppercase">Clarity Mode</span>
-                  {appMode === "evaluating" && <CheckCircle2 className="w-5 h-5 text-ink" />}
-                </div>
-                <p className="font-mono text-xs opacity-80 leading-relaxed">
-                  Gentle journaling and pattern reflection without streak timers.
-                </p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Profile Preferences */}
       <Card className="border-[4px] border-ink">
         <CardHeader className="border-b-[4px] border-ink bg-bg p-4">
           <CardTitle className="text-xl flex items-center gap-2">
             <Compass className="w-5 h-5" />
-            PERSONAL DETAILS & ANCHOR
+            PERSONAL DETAILS & REASON
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6 space-y-6">
@@ -274,7 +220,7 @@ export default function AccountPage() {
 
           <div className="space-y-2">
             <label className="font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2">
-              <Anchor className="w-4 h-4 text-brand" /> Your Personal Anchor ("My Why")
+              <Anchor className="w-4 h-4 text-brand" /> Your Reason for Leaving
             </label>
             <Textarea
               value={anchor}
@@ -317,10 +263,53 @@ export default function AccountPage() {
           </p>
           <Button variant="danger" className="w-full h-14 text-base" onClick={handleReset}>
             <RefreshCcw className="w-5 h-5 mr-2" />
-            Reset Sanctuary & Restart Onboarding
+            Reset Account & Restart Setup
           </Button>
         </CardContent>
       </Card>
+
+      {/* CUSTOM UI ACCOUNT RESET MODAL */}
+      {showResetModal && (
+        <div className="fixed inset-0 z-50 bg-ink/90 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white border-4 border-ink brutalist-shadow max-w-lg w-full p-6 sm:p-8 space-y-6 text-ink relative shadow-2xl">
+            <button
+              onClick={() => setShowResetModal(false)}
+              className="absolute top-4 right-4 p-1.5 border-2 border-ink hover:bg-ink hover:text-white transition-colors"
+              title="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 border-b-4 border-ink pb-4 text-danger">
+              <AlertTriangle className="w-8 h-8 shrink-0 animate-bounce" />
+              <div>
+                <span className="font-mono text-[10px] uppercase font-bold bg-danger text-white px-2 py-0.5">Danger Action</span>
+                <h3 className="font-heading text-2xl uppercase mt-1">RESET ALL ACCOUNT DATA?</h3>
+              </div>
+            </div>
+
+            <p className="font-sans text-sm sm:text-base font-medium leading-relaxed">
+              Are you sure you want to wipe all your data? This will permanently delete your diary entries, red flags, timeline records, and streak, and restart onboarding from scratch.
+            </p>
+
+            <div className="flex flex-col gap-3 pt-2">
+              <Button
+                onClick={() => setShowResetModal(false)}
+                className="w-full h-12 bg-positive hover:bg-positive/90 text-ink border-3 border-ink font-heading uppercase tracking-tight text-base"
+              >
+                Nevermind, Keep My Data 🛡️
+              </Button>
+              <Button
+                variant="danger"
+                onClick={resetAccount}
+                className="w-full h-12 font-mono uppercase text-xs"
+              >
+                Yes, Wipe Everything & Restart Setup
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
