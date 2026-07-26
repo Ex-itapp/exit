@@ -348,49 +348,6 @@ export default function ClosurePage() {
         </div>
       )}
 
-      {/* Rules Banner */}
-      <div className="bg-accent/15 border-4 border-accent p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-md">
-        <div className="flex items-center gap-3">
-          <AlertTriangle className="w-7 h-7 text-accent shrink-0" />
-          <div>
-            <h3 className="font-heading uppercase text-accent text-lg leading-tight">Strict Engagement Rules</h3>
-            <p className="text-xs font-mono leading-relaxed opacity-90">
-              No roleplay. No creating an ongoing relationship. Every session is hard-capped at 15 messages and requires a mandatory reflection to close the loop.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Navigation Tabs */}
-      <div className="grid grid-cols-3 gap-2 sm:gap-4 border-b-4 border-ink pb-4">
-        <Button
-          variant={activeTab === 'sessions' ? 'default' : 'secondary'}
-          className={cn("h-12 sm:h-14 font-mono font-bold text-xs sm:text-sm uppercase tracking-wider", activeTab === 'sessions' && "bg-ink text-bg")}
-          onClick={() => setActiveTab('sessions')}
-        >
-          <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 mr-2 shrink-0" />
-          <span>1. Sessions Hub</span>
-        </Button>
-
-        <Button
-          variant={activeTab === 'engine' ? 'default' : 'secondary'}
-          className={cn("h-12 sm:h-14 font-mono font-bold text-xs sm:text-sm uppercase tracking-wider", activeTab === 'engine' && "bg-brand text-ink")}
-          onClick={() => { setActiveTab('engine'); setEngineStep(1); }}
-        >
-          <Sliders className="w-4 h-4 sm:w-5 sm:h-5 mr-2 shrink-0" />
-          <span>2. Person Engine ({profile ? "Ready" : "Setup"})</span>
-        </Button>
-
-        <Button
-          variant={activeTab === 'memories' ? 'default' : 'secondary'}
-          className={cn("h-12 sm:h-14 font-mono font-bold text-xs sm:text-sm uppercase tracking-wider", activeTab === 'memories' && "bg-purple text-ink")}
-          onClick={() => setActiveTab('memories')}
-        >
-          <Database className="w-4 h-4 sm:w-5 sm:h-5 mr-2 shrink-0" />
-          <span>3. Memory Bank ({memories.length})</span>
-        </Button>
-      </div>
-
       {/* TAB 1: SESSIONS HUB & CHAT */}
       {activeTab === 'sessions' && (
         <div className="space-y-6">
@@ -430,9 +387,9 @@ export default function ClosurePage() {
                 </p>
               </div>
 
-              <div className="pt-4 flex flex-col sm:flex-row justify-center gap-4">
+              <div className="pt-4 flex flex-col sm:flex-row justify-center gap-4 flex-wrap">
                 <Button 
-                  className="h-14 px-8 text-lg bg-brand hover:bg-brand/90 text-ink shadow-md"
+                  className="h-14 px-8 text-lg bg-brand hover:bg-brand/90 text-ink shadow-md font-bold uppercase"
                   onClick={handleStartSession}
                   disabled={sessionsRemaining <= 0}
                 >
@@ -442,11 +399,20 @@ export default function ClosurePage() {
 
                 <Button
                   variant="secondary"
-                  className="h-14 px-6 text-sm"
+                  className="h-14 px-6 text-sm font-bold uppercase"
                   onClick={() => { setActiveTab('engine'); setEngineStep(1); }}
                 >
                   <Settings className="w-4 h-4 mr-2" />
                   Edit Engine Settings
+                </Button>
+
+                <Button
+                  variant="secondary"
+                  className="h-14 px-6 text-sm font-bold uppercase"
+                  onClick={() => setActiveTab('memories')}
+                >
+                  <Database className="w-4 h-4 mr-2" />
+                  Memory Bank ({memories.length})
                 </Button>
               </div>
             </Card>
@@ -459,7 +425,7 @@ export default function ClosurePage() {
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 bg-positive rounded-full animate-pulse" />
                   <div>
-                    <h3 className="font-heading text-lg uppercase leading-none flex items-center gap-2">
+                    <h3 className="font-heading text-lg uppercase leading-none flex items-center gap-2 flex-wrap">
                       <span>Simulation Active: {profile.label}</span>
                       <button 
                         onClick={() => { setActiveTab('engine'); setEngineStep(1); }}
@@ -467,6 +433,13 @@ export default function ClosurePage() {
                         title="Change voice settings"
                       >
                         <Settings className="w-3 h-3" /> Edit Profile
+                      </button>
+                      <button 
+                        onClick={() => setActiveTab('memories')}
+                        className="text-[10px] font-mono bg-bg/20 hover:bg-bg/40 text-bg px-2 py-0.5 border border-bg/30 flex items-center gap-1 transition-colors"
+                        title="View memory bank"
+                      >
+                        <Database className="w-3 h-3" /> Memories ({memories.length})
                       </button>
                     </h3>
                     <p className="font-mono text-[10px] text-bg/70 mt-0.5">
@@ -704,7 +677,16 @@ export default function ClosurePage() {
 
       {/* TAB 2: PERSON ENGINE (INTERACTIVE STEP-BY-STEP ONBOARDING WIZARD) */}
       {activeTab === 'engine' && (
-        <div className="space-y-8">
+        <div className="space-y-6">
+          {profile && (
+            <Button
+              variant="secondary"
+              onClick={() => setActiveTab('sessions')}
+              className="font-mono font-bold text-xs uppercase bg-white border-2 border-ink h-10 px-4 hover:bg-ink hover:text-white"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back to Talk to Them Hub
+            </Button>
+          )}
           <div className="bg-white border-4 border-ink brutalist-shadow p-6 sm:p-10 space-y-8">
             <div className="border-b-4 border-ink pb-6 flex items-center justify-between">
               <div>
@@ -1007,7 +989,14 @@ export default function ClosurePage() {
 
       {/* TAB 3: MEMORY BANK */}
       {activeTab === 'memories' && (
-        <div className="space-y-8">
+        <div className="space-y-6">
+          <Button
+            variant="secondary"
+            onClick={() => setActiveTab('sessions')}
+            className="font-mono font-bold text-xs uppercase bg-white border-2 border-ink h-10 px-4 hover:bg-ink hover:text-white"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back to Talk to Them Hub
+          </Button>
           <div className="bg-white border-4 border-ink brutalist-shadow p-6 sm:p-8 space-y-6">
             <div className="border-b-4 border-ink pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>

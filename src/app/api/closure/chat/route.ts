@@ -107,7 +107,14 @@ Reply in-voice, exactly as this person would text back to address the unresolved
       } else if (lowerMsg.includes('remember') || lowerMsg.includes('memory') || lowerMsg.includes('time when')) {
         generatedReply = "I remember that too. But keeping those memories alive makes it harder for both of us to move forward.";
       } else {
-        generatedReply = "I hear what you're saying. It's just hard to go back through all of this after how things ended.";
+        const fallbacks = [
+          "I hear what you're saying. It's just hard to go back through all of this after how things ended.",
+          "I didn't know how to explain it back then, but I think we both knew things weren't working.",
+          "Sometimes there isn't a simple answer for why things fell apart between us.",
+          "I think we both need to accept that the past can't be rewritten, even if it still hurts.",
+          "I hope we can both eventually find peace with how things ended."
+        ];
+        generatedReply = fallbacks[(history?.length || 0) % fallbacks.length];
       }
     } else {
       // 3. Safety Layer: Romantic/Sexual Drift Check (Groq 8B / Gemini Flash 8B classifier)

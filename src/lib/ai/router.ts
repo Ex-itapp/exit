@@ -149,42 +149,38 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
 
   // ROUTING LOGIC BASED ON TIER
   if (tier === 'persona') {
-    // 1. Try Groq 70B (High psychological fidelity, super fast)
-    let reply = await callGroq('llama-3.3-70b-versatile');
+    // 1. Try Groq 70B models (High psychological fidelity, super fast)
+    let reply = await callGroq('llama-3.3-70b-versatile') || await callGroq('llama-3.1-70b-versatile') || await callGroq('llama3-70b-8192');
     if (reply) return reply;
 
-    // 2. Fallback to Gemini Pro / Flash (1M context, exceptional roleplay instruction adherence)
-    reply = await callGemini('gemini-1.5-pro') || await callGemini('gemini-1.5-flash');
+    // 2. Fallback to OpenRouter 70B & Mixtral models
+    reply = await callOpenRouter('meta-llama/llama-3.3-70b-instruct') || await callOpenRouter('google/gemini-2.0-flash-001') || await callOpenRouter('mistralai/mixtral-8x7b-instruct');
     if (reply) return reply;
 
-    // 3. Fallback to OpenRouter 70B
-    return await callOpenRouter('meta-llama/llama-3.3-70b-instruct');
+    // 3. Fallback to Google Gemini models
+    return await callGemini('gemini-1.5-flash') || await callGemini('gemini-2.0-flash-exp') || await callGemini('gemini-1.5-pro');
   }
 
   if (tier === 'fast') {
     // 1. Try Groq LPU (Ultra fast ~300+ t/s)
-    let reply = await callGroq('llama-3.3-70b-versatile');
+    let reply = await callGroq('llama-3.3-70b-versatile') || await callGroq('llama-3.1-8b-instant');
     if (reply) return reply;
 
-    // 2. Fallback to Groq 8B instant
-    reply = await callGroq('llama-3.1-8b-instant');
+    // 2. Fallback to OpenRouter fast models
+    reply = await callOpenRouter('meta-llama/llama-3.3-70b-instruct') || await callOpenRouter('google/gemini-2.0-flash-001');
     if (reply) return reply;
 
     // 3. Fallback to Gemini Flash
-    reply = await callGemini('gemini-1.5-flash');
-    if (reply) return reply;
-
-    // 4. Fallback to OpenRouter
-    return await callOpenRouter('meta-llama/llama-3.3-70b-instruct');
+    return await callGemini('gemini-1.5-flash') || await callGemini('gemini-1.5-flash-8b');
   }
 
   if (tier === 'heavy') {
     // 1. Try OpenRouter (Deep analytical instruction following)
-    let reply = await callOpenRouter('mistralai/mistral-large-2411');
+    let reply = await callOpenRouter('mistralai/mistral-large-2411') || await callOpenRouter('meta-llama/llama-3.3-70b-instruct');
     if (reply) return reply;
 
     // 2. Fallback to Groq 70B
-    reply = await callGroq('llama-3.3-70b-versatile');
+    reply = await callGroq('llama-3.3-70b-versatile') || await callGroq('llama3-70b-8192');
     if (reply) return reply;
 
     // 3. Fallback to Gemini Pro/Flash
@@ -193,10 +189,14 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
 
   if (tier === 'classifier' || tier === 'embed') {
     // 1. Try Groq 8B instant (Lightning fast 1-token checks)
-    let reply = await callGroq('llama-3.1-8b-instant');
+    let reply = await callGroq('llama-3.1-8b-instant') || await callGroq('llama-3.3-70b-versatile');
     if (reply) return reply;
 
-    // 2. Fallback to Gemini Flash 8B / Flash
+    // 2. Fallback to OpenRouter
+    reply = await callOpenRouter('google/gemini-2.0-flash-001') || await callOpenRouter('meta-llama/llama-3.1-8b-instruct');
+    if (reply) return reply;
+
+    // 3. Fallback to Gemini Flash 8B / Flash
     return await callGemini('gemini-1.5-flash-8b') || await callGemini('gemini-1.5-flash');
   }
 
