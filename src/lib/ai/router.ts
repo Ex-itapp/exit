@@ -101,7 +101,7 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
   };
 
   // Helper 3: Call Google Gemini API
-  const callGemini = async (model = 'gemini-1.5-flash'): Promise<string | null> => {
+  const callGemini = async (model = 'gemini-3.5-flash'): Promise<string | null> => {
     if (!geminiKey) return null;
     try {
       const geminiContents: any[] = [];
@@ -147,46 +147,45 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
     }
   };
 
-  // ROUTING LOGIC BASED ON TIER (Strict order prioritizing Google Gemini)
+  // ROUTING LOGIC BASED ON TIER (Strict order prioritizing working Google Gemini models)
   if (tier === 'persona') {
-    return await callGemini('gemini-1.5-flash') ||
-      await callGemini('gemini-2.0-flash') ||
-      await callOpenRouter('google/gemini-2.0-flash-lite-preview-02-05:free') ||
-      await callOpenRouter('google/gemini-2.0-pro-exp-02-05:free') ||
+    return await callGemini('gemini-3.5-flash') ||
+      await callGemini('gemini-flash-latest') ||
+      await callGemini('gemini-3-flash-preview') ||
+      await callOpenRouter('google/gemma-4-26b-a4b-it:free') ||
+      await callOpenRouter('inclusionai/ling-3.0-flash:free') ||
       await callGroq('llama-3.3-70b-versatile') ||
-      await callGroq('llama-3.1-8b-instant') ||
-      await callOpenRouter('meta-llama/llama-3.3-70b-instruct:free') ||
-      await callGroq('mixtral-8x7b-32768') ||
-      await callOpenRouter('mistralai/mistral-7b-instruct:free');
+      await callGroq('llama-3.1-8b-instant');
   }
 
   if (tier === 'fast') {
-    return await callGemini('gemini-1.5-flash') ||
-      await callGemini('gemini-2.0-flash') ||
-      await callOpenRouter('google/gemini-2.0-flash-lite-preview-02-05:free') ||
+    return await callGemini('gemini-3.5-flash') ||
+      await callGemini('gemini-flash-latest') ||
+      await callOpenRouter('google/gemma-4-26b-a4b-it:free') ||
       await callGroq('llama-3.1-8b-instant') ||
       await callGroq('llama-3.3-70b-versatile');
   }
 
   if (tier === 'heavy') {
-    return await callGemini('gemini-1.5-pro') ||
-      await callGemini('gemini-1.5-flash') ||
-      await callOpenRouter('google/gemini-2.0-pro-exp-02-05:free') ||
-      await callOpenRouter('meta-llama/llama-3.3-70b-instruct:free') ||
+    return await callGemini('gemini-3.5-flash') ||
+      await callGemini('gemini-flash-latest') ||
+      await callOpenRouter('nvidia/nemotron-3-super-120b-a12b:free') ||
+      await callOpenRouter('google/gemma-4-26b-a4b-it:free') ||
       await callGroq('llama-3.3-70b-versatile');
   }
 
   if (tier === 'classifier' || tier === 'embed') {
-    return await callGemini('gemini-1.5-flash') ||
-      await callOpenRouter('google/gemini-2.0-flash-lite-preview-02-05:free') ||
+    return await callGemini('gemini-3.5-flash') ||
+      await callGemini('gemini-flash-latest') ||
+      await callOpenRouter('google/gemma-4-26b-a4b-it:free') ||
       await callGroq('llama-3.1-8b-instant');
   }
 
   // Default fallback chain
-  return await callGemini('gemini-1.5-flash') ||
-    await callOpenRouter('google/gemini-2.0-flash-lite-preview-02-05:free') ||
-    await callGroq('llama-3.3-70b-versatile') ||
-    await callOpenRouter('meta-llama/llama-3.3-70b-instruct:free');
+  return await callGemini('gemini-3.5-flash') ||
+    await callGemini('gemini-flash-latest') ||
+    await callOpenRouter('google/gemma-4-26b-a4b-it:free') ||
+    await callGroq('llama-3.3-70b-versatile');
 }
 
 /**
