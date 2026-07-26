@@ -278,7 +278,7 @@ export function useClosure() {
       ex_profile_id: profile.id,
       status: 'active',
       message_count: 0,
-      max_messages: 15,
+      max_messages: 9999,
       started_at: new Date().toISOString()
     };
 
@@ -311,7 +311,7 @@ export function useClosure() {
         ex_profile_id: profile.id,
         status: 'active',
         message_count: 0,
-        max_messages: 15,
+        max_messages: 9999,
         started_at: newSession.started_at
       });
 

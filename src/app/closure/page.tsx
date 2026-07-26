@@ -116,11 +116,6 @@ export default function ClosurePage() {
     setInputMsg("");
     await addMessage(activeSession.id, 'user', userText);
 
-    if (activeSession.message_count + 1 >= activeSession.max_messages) {
-      setShowReflectionCard(true);
-      return;
-    }
-
     setIsLoading(true);
     try {
       const relevantMems = retrieveRelevantMemories(userText, 3);
@@ -147,10 +142,6 @@ export default function ClosurePage() {
 
       const aiText = data.aiReply || "I don't know what to say...";
       await addMessage(activeSession.id, 'ex_simulation', aiText);
-
-      if (activeSession.message_count + 2 >= activeSession.max_messages) {
-        setShowReflectionCard(true);
-      }
 
     } catch (err) {
       console.error(err);
@@ -445,14 +436,8 @@ export default function ClosurePage() {
 
                 <div className="flex items-center gap-4">
                   <div className="text-right">
-                    <div className="font-mono text-xs font-bold uppercase text-brand">
-                      Message {activeSession.message_count} of {activeSession.max_messages} Max
-                    </div>
-                    <div className="w-32 bg-bg/20 h-2 mt-1 border border-bg/40 overflow-hidden">
-                      <div 
-                        className="bg-brand h-full transition-all duration-300"
-                        style={{ width: `${Math.min(100, (activeSession.message_count / activeSession.max_messages) * 100)}%` }}
-                      />
+                    <div className="font-mono text-xs font-bold uppercase text-brand bg-bg/20 px-3 py-1.5 border border-bg/30">
+                      Messages: {activeSession.message_count}
                     </div>
                   </div>
 
