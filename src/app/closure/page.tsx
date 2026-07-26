@@ -55,28 +55,24 @@ export default function ClosurePage() {
   const [isAnalyzingVoice, setIsAnalyzingVoice] = useState(false);
   const [personLabel, setPersonLabel] = useState(profile?.label || "Them");
   const [voiceForm, setVoiceForm] = useState<VoiceProfile>(profile?.voice_profile || {
-    capitalization: "lowercase mostly",
-    punctuation_habits: "minimal periods, uses '...' when hesitating",
-    avg_message_length: "short 1-2 sentences",
-    emoji_usage: "occasional",
-    common_words_phrases: ["honestly", "look", "it wasn't like that"],
-    tone_baseline: "guarded but polite",
-    tone_under_conflict: "defensive and quiet",
-    tone_when_affectionate: "soft and nostalgic",
-    recurring_topics: ["the breakup", "misunderstandings"],
-    top_verbatim_example_lines: [
-      "I just think we were going in different directions.",
-      "honestly I didn't mean to hurt you.",
-      "can we not talk about this right now?"
-    ]
+    capitalization: "",
+    punctuation_habits: "",
+    avg_message_length: "",
+    emoji_usage: "",
+    common_words_phrases: [],
+    tone_baseline: "",
+    tone_under_conflict: "",
+    tone_when_affectionate: "",
+    recurring_topics: [],
+    top_verbatim_example_lines: []
   });
 
   const [traitForm, setTraitForm] = useState<TraitProfile>(profile?.trait_profile || {
-    values: "Personal peace, career goals over emotional heavy lifting",
-    love_language: "Quality time and acts of service",
-    conflict_behavior: "Shut down and withdraw rather than argue",
-    humor_notes: "Sarcastic and self-deprecating",
-    relationship_context: "We dated in the past and ended abruptly after an argument."
+    values: "",
+    love_language: "",
+    conflict_behavior: "",
+    humor_notes: "",
+    relationship_context: ""
   });
 
   // Memory Bank New Entry Form State
@@ -134,8 +130,8 @@ export default function ClosurePage() {
         body: JSON.stringify({
           userMessage: userText,
           history: [...sessionMsgs, { role: 'user', content: userText }],
-          voiceProfile: profile?.voice_profile,
-          traitProfile: profile?.trait_profile,
+          voiceProfile: profile?.voice_profile || voiceForm,
+          traitProfile: profile?.trait_profile || traitForm,
           retrievedMemories: relevantMems
         })
       });
@@ -221,7 +217,6 @@ export default function ClosurePage() {
       alert("Error analyzing samples. Using current settings.");
     } finally {
       setIsAnalyzingVoice(false);
-      setSampleText("");
     }
   };
 

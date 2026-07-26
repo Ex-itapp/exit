@@ -22,9 +22,9 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
     jsonMode = false,
   } = options;
 
-  const groqKey = process.env.GROQ_API_KEY;
-  const openRouterKey = process.env.OPENROUTER_API_KEY;
-  const geminiKey = process.env.GEMINI_API_KEY;
+  const groqKey = process.env.GROQ_API_KEY || process.env.NEXT_PUBLIC_GROQ_API_KEY;
+  const openRouterKey = process.env.OPENROUTER_API_KEY || process.env.NEXT_PUBLIC_OPENROUTER_API_KEY;
+  const geminiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
   // Build standard messages array
   const formattedMessages: Array<{ role: string; content: string }> = [];
@@ -58,7 +58,7 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
         }),
       });
       if (!res.ok) {
-        console.warn(`Groq API Error (${res.status}): ${await res.text()}`);
+        console.warn(`Groq API Error (${res.status} on ${model}): ${await res.text()}`);
         return null;
       }
       const data = await res.json();
@@ -69,8 +69,8 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
     }
   };
 
-  // Helper 2: Call OpenRouter API (OpenAI-compatible)
-  const callOpenRouter = async (model = 'meta-llama/llama-3.3-70b-instruct'): Promise<string | null> => {
+  // Helper 2: Call OpenRouter API (OpenAI-compatible) - uses :free suffix to prevent 402 on free keys
+  const callOpenRouter = async (model = 'meta-llama/llama-3.3-70b-instruct:free'): Promise<string | null> => {
     if (!openRouterKey) return null;
     try {
       const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -89,7 +89,7 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
         }),
       });
       if (!res.ok) {
-        console.warn(`OpenRouter API Error (${res.status}): ${await res.text()}`);
+        console.warn(`OpenRouter API Error (${res.status} on ${model}): ${await res.text()}`);
         return null;
       }
       const data = await res.json();
@@ -136,7 +136,7 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
         }),
       });
       if (!res.ok) {
-        console.warn(`Gemini API Error (${res.status}): ${await res.text()}`);
+        console.warn(`Gemini API Error (${res.status} on ${model}): ${await res.text()}`);
         return null;
       }
       const data = await res.json();
@@ -147,61 +147,43 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
     }
   };
 
-  // ROUTING LOGIC BASED ON TIER
+  // ROUTING LOGIC BASED ON TIER (Strict order with free model guarantees)
   if (tier === 'persona') {
-    // 1. Try Groq 70B models (High psychological fidelity, super fast)
-    let reply = await callGroq('llama-3.3-70b-versatile') || await callGroq('llama-3.1-70b-versatile') || await callGroq('llama3-70b-8192');
-    if (reply) return reply;
-
-    // 2. Fallback to OpenRouter 70B & Mixtral models
-    reply = await callOpenRouter('meta-llama/llama-3.3-70b-instruct') || await callOpenRouter('google/gemini-2.0-flash-001') || await callOpenRouter('mistralai/mixtral-8x7b-instruct');
-    if (reply) return reply;
-
-    // 3. Fallback to Google Gemini models
-    return await callGemini('gemini-1.5-flash') || await callGemini('gemini-2.0-flash-exp') || await callGemini('gemini-1.5-pro');
+    return await callGroq('llama-3.3-70b-versatile') ||
+      await callGroq('llama-3.1-8b-instant') ||
+      await callOpenRouter('meta-llama/llama-3.3-70b-instruct:free') ||
+      await callOpenRouter('google/gemini-2.0-flash-lite-preview-02-05:free') ||
+      await callGemini('gemini-1.5-flash') ||
+      await callGemini('gemini-2.0-flash') ||
+      await callGroq('mixtral-8x7b-32768') ||
+      await callOpenRouter('mistralai/mistral-7b-instruct:free');
   }
 
   if (tier === 'fast') {
-    // 1. Try Groq LPU (Ultra fast ~300+ t/s)
-    let reply = await callGroq('llama-3.3-70b-versatile') || await callGroq('llama-3.1-8b-instant');
-    if (reply) return reply;
-
-    // 2. Fallback to OpenRouter fast models
-    reply = await callOpenRouter('meta-llama/llama-3.3-70b-instruct') || await callOpenRouter('google/gemini-2.0-flash-001');
-    if (reply) return reply;
-
-    // 3. Fallback to Gemini Flash
-    return await callGemini('gemini-1.5-flash') || await callGemini('gemini-1.5-flash-8b');
+    return await callGroq('llama-3.1-8b-instant') ||
+      await callGroq('llama-3.3-70b-versatile') ||
+      await callOpenRouter('google/gemini-2.0-flash-lite-preview-02-05:free') ||
+      await callGemini('gemini-1.5-flash');
   }
 
   if (tier === 'heavy') {
-    // 1. Try OpenRouter (Deep analytical instruction following)
-    let reply = await callOpenRouter('mistralai/mistral-large-2411') || await callOpenRouter('meta-llama/llama-3.3-70b-instruct');
-    if (reply) return reply;
-
-    // 2. Fallback to Groq 70B
-    reply = await callGroq('llama-3.3-70b-versatile') || await callGroq('llama3-70b-8192');
-    if (reply) return reply;
-
-    // 3. Fallback to Gemini Pro/Flash
-    return await callGemini('gemini-1.5-pro') || await callGemini('gemini-1.5-flash');
+    return await callOpenRouter('meta-llama/llama-3.3-70b-instruct:free') ||
+      await callOpenRouter('google/gemini-2.0-pro-exp-02-05:free') ||
+      await callGroq('llama-3.3-70b-versatile') ||
+      await callGemini('gemini-1.5-pro') ||
+      await callGemini('gemini-1.5-flash');
   }
 
   if (tier === 'classifier' || tier === 'embed') {
-    // 1. Try Groq 8B instant (Lightning fast 1-token checks)
-    let reply = await callGroq('llama-3.1-8b-instant') || await callGroq('llama-3.3-70b-versatile');
-    if (reply) return reply;
-
-    // 2. Fallback to OpenRouter
-    reply = await callOpenRouter('google/gemini-2.0-flash-001') || await callOpenRouter('meta-llama/llama-3.1-8b-instruct');
-    if (reply) return reply;
-
-    // 3. Fallback to Gemini Flash 8B / Flash
-    return await callGemini('gemini-1.5-flash-8b') || await callGemini('gemini-1.5-flash');
+    return await callGroq('llama-3.1-8b-instant') ||
+      await callOpenRouter('google/gemini-2.0-flash-lite-preview-02-05:free') ||
+      await callGemini('gemini-1.5-flash');
   }
 
   // Default fallback chain
-  return await callGroq() || await callGemini() || await callOpenRouter();
+  return await callGroq('llama-3.3-70b-versatile') ||
+    await callOpenRouter('meta-llama/llama-3.3-70b-instruct:free') ||
+    await callGemini('gemini-1.5-flash');
 }
 
 /**
