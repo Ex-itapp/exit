@@ -1,334 +1,360 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/Button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
-import { Textarea } from "@/components/ui/Textarea";
-import { Input } from "@/components/ui/Input";
-import { Flag, Zap, MessageSquare, Anchor, Sparkles, ShieldAlert, Check, ArrowRight } from "lucide-react";
-import { useCheckins } from "@/lib/useCheckins";
-import { useUser } from "@/lib/useUser";
-import { useFlags } from "@/lib/useFlags";
-import { CalendarTile } from "@/components/CalendarTile";
-import { RedFlagTile } from "@/components/RedFlagTile";
-import { AnchorModal } from "@/components/AnchorModal";
-import { useAuth } from "@/lib/useAuth";
-import { cn } from "@/lib/utils";
+import React, { useState, useEffect } from "react";
+import { motion, useInView } from "motion/react";
+import { HeartCrack, Heart, MessageSquare, Flag, BookHeart, Calendar, Flame, Check, Sparkles, Shield, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
-export default function Home() {
-  const navigate = useRouter();
-  const { userName, userAnchor, hasCompletedOnboarding, isProfileSyncing } = useUser();
-  const { loading: authLoading } = useAuth();
-  const { checkins, addCheckin } = useCheckins();
-  const { addFlag } = useFlags();
+// Fake Unsent Message Typing Effect
+const TypewriterEffect = () => {
+  const [text, setText] = useState("");
+  const fullText = "I saw a dog today that looked exactly like Buster. I almost called you. I miss you... but I know I can't text you.";
   
-  // Daily check-in state
-  const [checkinText, setCheckinText] = useState("");
-  const [checkinDone, setCheckinDone] = useState(false);
-  const [showAnchor, setShowAnchor] = useState(false);
-
-  // Quick Inline Red Flag state
-  const [quickFlagText, setQuickFlagText] = useState("");
-  const [quickFlagCategory, setQuickFlagCategory] = useState("Disrespect");
-  const [flagDropped, setFlagDropped] = useState(false);
-
   useEffect(() => {
-    if (typeof window !== 'undefined' && !authLoading && !isProfileSyncing && !hasCompletedOnboarding) {
-      const isDone = localStorage.getItem('unsent_onboarding_done_clean');
-      if (isDone !== 'true') {
-        navigate.push('/onboarding');
+    let i = 0;
+    const timer = setInterval(() => {
+      if (i < fullText.length) {
+        setText(fullText.slice(0, i + 1));
+        i++;
+      } else {
+        setTimeout(() => {
+          setText("");
+          i = 0;
+        }, 3000);
       }
-    }
-  }, [authLoading, isProfileSyncing, hasCompletedOnboarding, navigate]);
+    }, 50);
+    return () => clearInterval(timer);
+  }, []);
 
-  // Get today's checkin if it exists
-  const todayCheckin = checkins.find(c => {
-    return new Date(c.createdAt).toDateString() === new Date().toDateString();
-  });
+  return (
+    <div className="bg-white border-4 border-ink p-6 rounded-lg shadow-[8px_8px_0px_0px_rgba(17,17,17,1)] relative max-w-md w-full mx-auto mt-8 rotate-1">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 rounded-full bg-brand border-2 border-ink flex items-center justify-center font-heading text-xl">
+          Ex
+        </div>
+        <div>
+          <p className="font-heading text-sm">Unsent Message</p>
+          <p className="font-mono text-xs text-ink/70">Just now</p>
+        </div>
+      </div>
+      <div className="min-h-[100px] font-mono text-sm leading-relaxed">
+        {text}
+        <span className="animate-pulse inline-block w-2 h-4 bg-accent ml-1 align-middle"></span>
+      </div>
+    </div>
+  );
+};
 
-  const handleCheckin = () => {
-    if (!checkinText.trim()) return;
-    addCheckin(checkinText);
-    setCheckinText("");
-    setCheckinDone(true);
-  };
+const RedFlagDemo = () => {
+  const [count, setCount] = useState(0);
+  const [flagText, setFlagText] = useState("");
+  const [category, setCategory] = useState("Disrespect");
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  const handleDropQuickFlag = () => {
-    if (!quickFlagText.trim()) return;
-    addFlag(quickFlagText, quickFlagCategory);
-    setQuickFlagText("");
-    setFlagDropped(true);
-    setTimeout(() => setFlagDropped(false), 4000);
+  const categories = ["Disrespect", "Manipulation", "Inconsistency", "Boundary Crossing"];
+
+  const handleDrop = () => {
+    if (!flagText.trim()) return;
+    setCount(c => c + 1);
+    setShowSuccess(true);
+    setFlagText("");
+    setTimeout(() => setShowSuccess(false), 2000);
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-150 pb-24 max-w-[1400px] mx-auto w-full px-2 sm:px-4">
-      
-      {/* Personalized Welcome Header with Dynamic Grounding Reason */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 w-full border-b-4 border-ink pb-6">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="w-2.5 h-2.5 bg-brand border border-ink block animate-pulse" />
-            <span className="font-mono text-[11px] font-bold uppercase tracking-widest bg-ink text-bg px-2 py-0.5">
-              Sanctuary Active
-            </span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-heading tracking-tighter uppercase">
-            WELCOME BACK, {userName || "TRAVELER"}
-          </h1>
-        </div>
-
-        {/* Grounding Reason Button that actually shows what the user entered */}
-        <Button 
-          variant="secondary"
-          onClick={() => setShowAnchor(true)}
-          className="bg-white hover:bg-ink hover:text-bg text-ink border-3 border-ink brutalist-shadow-sm h-auto py-2.5 px-3 sm:px-4 shrink-0 font-mono font-bold uppercase transition-all flex items-center gap-2.5 w-full sm:w-auto max-w-full sm:max-w-lg"
-          title="Click to view full grounding reminder"
+    <div className="bg-purple/10 border-4 border-ink p-6 md:p-8 rounded-2xl shadow-[8px_8px_0px_0px_rgba(17,17,17,1)] max-w-xl mx-auto -rotate-1 relative">
+      {showSuccess && (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-positive border-4 border-ink text-ink font-heading p-4 z-10 rotate-6 whitespace-nowrap shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] text-xl"
         >
-          <div className="p-1 bg-brand text-ink border border-ink shrink-0">
-            <Anchor className="w-4 h-4 animate-pulse" />
-          </div>
-          <div className="text-left overflow-hidden">
-            <div className="text-[9px] opacity-60 leading-none">Your Reason For Leaving:</div>
-            <div className="truncate text-xs sm:text-sm font-black tracking-tight">
-              "{userAnchor || 'I deserve someone who chooses me without hesitation.'}"
-            </div>
-          </div>
-        </Button>
+          FLAG DROPPED! 🚩
+        </motion.div>
+      )}
+      
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="font-heading text-xl">RED FLAG DROPPER</h3>
+        <div className="bg-accent text-bg font-mono px-3 py-1 border-2 border-ink font-bold">
+          TOTAL: {count}
+        </div>
       </div>
 
-      {/* PRODUCTIVE HERO DASHBOARD: 2-Column Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-8 items-start w-full">
-        {/* Left Column: Persistent Recovery Stats (side-by-side on mobile, stacked on desktop) */}
-        <div className="grid grid-cols-2 lg:grid-cols-1 gap-3 sm:gap-6 w-full shrink-0">
-          <CalendarTile />
-          <RedFlagTile />
-        </div>
+      <div className="flex flex-wrap gap-2 mb-4">
+        {categories.map(c => (
+          <button
+            key={c}
+            onClick={() => setCategory(c)}
+            className={`px-3 py-1 border-2 border-ink font-mono text-xs uppercase transition-colors ${
+              category === c ? 'bg-brand shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] translate-x-[-2px] translate-y-[-2px]' : 'bg-white hover:bg-bg'
+            }`}
+          >
+            {c}
+          </button>
+        ))}
+      </div>
 
-        {/* Right Column: Active Daily Recovery Hub */}
-        <div className="flex flex-col gap-6 w-full h-full">
-          
-          {/* DAILY MISSION & CHECK-IN */}
-          <Card className="flex flex-col border-4 border-ink brutalist-shadow bg-white overflow-hidden">
-            <CardHeader className="bg-ink text-bg border-b-4 border-ink p-4 sm:p-5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-brand" />
-                  <CardTitle className="text-xl tracking-tight">DAILY MISSION & CHECK-IN</CardTitle>
-                </div>
-                {todayCheckin || checkinDone ? (
-                  <Badge variant="positive" className="border-bg font-mono text-xs">Logged Today</Badge>
-                ) : (
-                  <Badge variant="accent" className="animate-pulse border-bg font-mono text-xs">Required</Badge>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent className="p-5 bg-bg">
-              {todayCheckin || checkinDone ? (
-                <div className="animate-in fade-in duration-300 space-y-3">
-                  <div className="bg-white border-3 border-ink p-5 brutalist-shadow-sm space-y-2">
-                    <div className="flex justify-between items-center border-b-2 border-ink/10 pb-2">
-                      <span className="font-mono text-[11px] text-brand bg-ink px-2 py-0.5 font-bold uppercase">
-                        Today's Reflection Logged
-                      </span>
-                      <span className="font-mono text-[11px] text-ink/60">
-                        {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    </div>
-                    <p className="font-sans text-base sm:text-lg font-medium text-ink leading-relaxed pt-1">
-                      "{todayCheckin?.content || checkinText}"
-                    </p>
-                  </div>
-                  <p className="font-mono text-xs text-ink/70 text-center italic">
-                    ✨ Your check-in is recorded in your timeline. Consistency builds recovery.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <p className="text-sm font-medium text-ink/90">
-                    How is your heart feeling today? What urge or emotion are you navigating right now?
-                  </p>
-                  <Textarea 
-                    placeholder="Drop your thoughts freely... no judgment, just clarity." 
-                    className="min-h-[110px] resize-none border-3 border-ink bg-white font-sans text-base p-4"
-                    value={checkinText}
-                    onChange={(e) => setCheckinText(e.target.value)}
-                  />
-                  <Button 
-                    className="w-full h-12 text-base bg-brand hover:bg-brand/90 text-ink border-3 border-ink brutalist-shadow-sm hover:-translate-y-0.5 transition-all font-bold uppercase" 
-                    onClick={handleCheckin} 
-                    disabled={!checkinText.trim()}
-                  >
-                    Log Today's Check-in
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+      <textarea
+        value={flagText}
+        onChange={(e) => setFlagText(e.target.value)}
+        placeholder="What did they do this time?"
+        className="w-full bg-white border-2 border-ink p-4 font-sans text-sm resize-none h-24 mb-4 focus:outline-none focus:bg-brand/10 transition-colors"
+      />
 
-          {/* INSTANT INLINE RED FLAG DROPPER */}
-          <Card className="border-4 border-ink brutalist-shadow bg-purple/10 overflow-hidden">
-            <div className="bg-ink text-bg p-4 flex items-center justify-between border-b-4 border-ink">
-              <div className="flex items-center gap-2.5">
-                <ShieldAlert className="w-5 h-5 text-purple animate-bounce" />
-                <h3 className="font-heading text-lg tracking-tight uppercase">INSTANT RED FLAG DROP</h3>
-              </div>
-              <span className="font-mono text-[10px] bg-purple text-ink px-2 py-0.5 font-bold uppercase">
-                Zero Friction
-              </span>
+      <button
+        onClick={handleDrop}
+        className="w-full bg-accent text-white hover:bg-accent/90 border-4 border-ink py-4 font-heading text-xl uppercase tracking-wider shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] hover:shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:shadow-none active:translate-x-[4px] active:translate-y-[4px] flex items-center justify-center gap-2"
+      >
+        <Flag size={24} />
+        Drop Flag 🚩
+      </button>
+    </div>
+  );
+};
+
+export default function LandingPage() {
+  return (
+    <div className="min-h-screen font-sans bg-bg overflow-x-hidden">
+      {/* Navigation */}
+      <nav className="fixed top-0 w-full bg-bg/90 backdrop-blur-sm border-b-4 border-ink z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="bg-accent w-8 h-8 flex items-center justify-center border-2 border-ink rounded-sm rotate-3">
+              <HeartCrack className="text-white w-5 h-5" />
             </div>
+            <span className="font-heading text-2xl tracking-tighter">EX-it.</span>
+          </div>
+          <Link href="/onboarding" className="bg-brand border-2 border-ink px-4 py-2 font-heading text-sm uppercase shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(17,17,17,1)] transition-all">
+            Get Started
+          </Link>
+        </div>
+      </nav>
 
-            <div className="p-5 space-y-4 bg-white">
-              <p className="font-sans text-xs sm:text-sm text-ink/80">
-                Remembered something toxic or feeling a wave of nostalgia? Drop it here to clear your head immediately without leaving your dashboard.
-              </p>
-
-              <div className="flex flex-wrap gap-2 pt-1">
-                {["Disrespect", "Manipulation", "Inconsistency", "Boundary Crossing", "Other"].map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setQuickFlagCategory(cat)}
-                    className={cn(
-                      "px-3 py-1 font-mono text-xs font-bold border-2 border-ink transition-all uppercase",
-                      quickFlagCategory === cat 
-                        ? "bg-purple text-ink brutalist-shadow-sm -translate-y-0.5" 
-                        : "bg-bg text-ink/70 hover:text-ink hover:bg-bg/80"
-                    )}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3 pt-1">
-                <Input
-                  placeholder="e.g., How they treated me around their friends..."
-                  value={quickFlagText}
-                  onChange={(e) => setQuickFlagText(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleDropQuickFlag();
-                    }
-                  }}
-                  className="h-12 border-3 border-ink font-sans text-sm flex-1 bg-bg px-4"
+      <main className="pt-24">
+        {/* HERO */}
+        <section className="px-4 py-20 lg:py-32 max-w-7xl mx-auto text-center relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h1 className="font-heading text-6xl md:text-8xl lg:text-9xl tracking-tighter uppercase leading-[0.9] mb-6 text-ink">
+              Stop Texting <br/>
+              <span className="text-accent relative inline-block">
+                Your Ex.
+                <motion.div 
+                  className="absolute -bottom-2 md:-bottom-4 left-0 w-full h-3 md:h-6 bg-brand -z-10 -rotate-2"
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ delay: 0.5, duration: 0.5 }}
+                  style={{ transformOrigin: "left" }}
                 />
-                <Button
-                  onClick={handleDropQuickFlag}
-                  disabled={!quickFlagText.trim()}
-                  className="h-12 px-6 bg-ink text-bg hover:bg-ink/90 border-3 border-ink font-mono font-bold uppercase shrink-0"
+              </span>
+            </h1>
+            <p className="font-mono text-lg md:text-xl max-w-2xl mx-auto text-ink/80 mb-10 leading-relaxed">
+              The breakup recovery app that actually gets it. Track your streak, send the unsent messages, and remember why you left. Your healing era starts now.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link href="/onboarding" className="bg-ink text-white border-4 border-ink px-8 py-4 font-heading text-xl uppercase shadow-[6px_6px_0px_0px_rgba(255,51,102,1)] hover:shadow-[4px_4px_0px_0px_rgba(255,51,102,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all w-full sm:w-auto flex items-center justify-center gap-2">
+                Start Healing <ArrowRight size={24} />
+              </Link>
+              <p className="font-mono text-xs uppercase tracking-widest text-ink/60 mt-2 sm:mt-0 sm:ml-4">
+                No credit card required.
+              </p>
+            </div>
+          </motion.div>
+
+          <motion.div 
+            className="mt-20 relative z-10"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
+            <TypewriterEffect />
+          </motion.div>
+        </section>
+
+        {/* FEATURES */}
+        <section className="py-24 bg-brand border-y-4 border-ink px-4">
+          <div className="max-w-7xl mx-auto">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="mb-16 text-center"
+            >
+              <h2 className="font-heading text-5xl md:text-7xl uppercase tracking-tighter mb-4">Everything You Need</h2>
+              <p className="font-mono text-lg max-w-xl mx-auto">To survive the worst heartbreak of your life.</p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {[
+                { icon: <Flame className="w-8 h-8"/>, title: "No-Contact Streak", desc: "Track your progress. Every day without them is a win.", color: "bg-white" },
+                { icon: <MessageSquare className="w-8 h-8"/>, title: "Talk To Them (Safely)", desc: "Send unsent messages. Get it out without breaking your streak.", color: "bg-purple text-white" },
+                { icon: <Flag className="w-8 h-8"/>, title: "Red Flag Tracker", desc: "Document toxic patterns so you never forget why it ended.", color: "bg-accent text-white" },
+                { icon: <Heart className="w-8 h-8"/>, title: "Healing Companion", desc: "A warm, 24/7 listener who remembers your story.", color: "bg-blue text-white" },
+                { icon: <BookHeart className="w-8 h-8"/>, title: "Private Diary", desc: "Journal your healing journey, completely private.", color: "bg-white" },
+                { icon: <Sparkles className="w-8 h-8"/>, title: "Timeline & Rewards", desc: "See how far you've come and earn badges along the way.", color: "bg-positive text-ink" },
+              ].map((f, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className={`border-4 border-ink p-8 shadow-[6px_6px_0px_0px_rgba(17,17,17,1)] hover:-translate-y-2 hover:shadow-[10px_10px_0px_0px_rgba(17,17,17,1)] transition-all ${f.color}`}
                 >
-                  Drop Flag 🚩
-                </Button>
-              </div>
-
-              {flagDropped && (
-                <div className="p-3 bg-positive/20 border-2 border-positive text-ink font-mono text-xs font-bold flex items-center gap-2 animate-in fade-in duration-200">
-                  <Check className="w-4 h-4 text-positive shrink-0" />
-                  <span>Flag dropped to database! Clarity counter updated automatically.</span>
-                </div>
-              )}
+                  <div className="mb-6 bg-ink text-white w-14 h-14 flex items-center justify-center border-2 border-white/20 rotate-3">
+                    {f.icon}
+                  </div>
+                  <h3 className="font-heading text-2xl uppercase mb-3">{f.title}</h3>
+                  <p className="font-sans text-sm opacity-90 leading-relaxed font-medium">{f.desc}</p>
+                </motion.div>
+              ))}
             </div>
-          </Card>
-
-        </div>
-      </div>
-
-      {/* RECOVERY HEALING SANCTUARY (Focused Deep Tools, No Redundant Nav Buttons) */}
-      <div className="space-y-6 pt-6 border-t-4 border-ink/20">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
-          <div>
-            <span className="font-mono text-xs text-brand bg-ink px-2 py-0.5 font-bold uppercase">
-              Your Healing Sanctuary
-            </span>
-            <h3 className="font-heading tracking-tighter text-2xl sm:text-3xl uppercase mt-1">
-              SAFE SPACES FOR YOUR HEART
-            </h3>
           </div>
-          <p className="font-mono text-xs text-ink/60">
-            Step into a private space whenever you need someone to listen, understand, and help you find peace.
-          </p>
-        </div>
+        </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* DEMO SECTION */}
+        <section className="py-24 px-4 bg-bg overflow-hidden relative">
+          <div className="max-w-7xl mx-auto relative z-10">
+            <div className="text-center mb-16">
+              <h2 className="font-heading text-5xl md:text-7xl uppercase tracking-tighter mb-4">See How It Feels</h2>
+              <p className="font-mono text-lg max-w-xl mx-auto text-ink/80">Try the Red Flag Dropper. Get it out of your system.</p>
+            </div>
+            
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+            >
+              <RedFlagDemo />
+            </motion.div>
+          </div>
           
-          {/* Sanctuary 1: Talk to Them */}
-          <div 
-            onClick={() => navigate.push('/closure')}
-            className="border-4 border-ink brutalist-shadow bg-white hover:bg-brand/10 transition-all cursor-pointer p-6 sm:p-8 flex flex-col justify-between group relative overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-brand/20 rounded-full blur-2xl group-hover:bg-brand/40 transition-colors pointer-events-none" />
-            <div className="space-y-4 relative z-10">
-              <div className="flex items-center justify-between">
-                <div className="p-3 bg-brand border-3 border-ink brutalist-shadow-sm group-hover:scale-110 transition-transform">
-                  <MessageSquare className="w-8 h-8 text-ink" />
-                </div>
-                <span className="font-mono text-[10px] font-bold uppercase tracking-widest bg-ink text-bg px-2.5 py-1">
-                  Private & Unsent
-                </span>
-              </div>
+          {/* Background decoration */}
+          <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/4 opacity-10 pointer-events-none">
+            <Flag className="w-96 h-96" />
+          </div>
+        </section>
 
-              <div>
-                <h4 className="font-heading text-2xl sm:text-3xl tracking-tight uppercase group-hover:text-brand transition-colors">
-                  TALK TO THEM
-                </h4>
-                <p className="font-sans text-sm sm:text-base text-ink/80 leading-relaxed mt-2">
-                  A gentle, confidential space that understands who they were to you. Say the things left unsaid, express your feelings without fear, and find the closure your heart needs—all while protecting your no-contact promise.
-                </p>
-              </div>
-            </div>
-
-            <div className="pt-6 mt-6 border-t-2 border-ink/10 flex items-center justify-between font-mono font-bold text-xs uppercase text-ink group-hover:translate-x-1 transition-transform relative z-10">
-              <span>Open Your Unsent Conversation</span>
-              <ArrowRight className="w-4 h-4 text-brand" />
+        {/* SOCIAL PROOF */}
+        <section className="py-24 bg-ink text-bg px-4 border-y-4 border-ink">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[
+                { quote: "I wanted to text him so bad last night. Instead I sent it to the unsent inbox here. Woke up so proud of myself.", author: "Sarah, 24" },
+                { quote: "The red flag tracker is brutal but necessary. Whenever I miss them, I just read my list.", author: "Marcus, 29" },
+                { quote: "It actually feels like having a friend who never gets tired of hearing you cry about the same person.", author: "Elena, 22" }
+              ].map((t, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="bg-bg text-ink border-4 border-brand p-8 shadow-[6px_6px_0px_0px_rgba(255,223,0,1)] relative"
+                >
+                  <div className="absolute -top-4 -left-4 text-4xl bg-accent text-white w-12 h-12 flex items-center justify-center border-2 border-ink font-heading rotate-12">
+                    &quot;
+                  </div>
+                  <p className="font-mono text-sm leading-relaxed mb-6 mt-4">"{t.quote}"</p>
+                  <p className="font-heading text-lg uppercase">— {t.author}</p>
+                </motion.div>
+              ))}
             </div>
           </div>
+        </section>
 
-          {/* Sanctuary 2: Healing Companion */}
-          <div 
-            onClick={() => navigate.push('/therapist')}
-            className="border-4 border-ink brutalist-shadow bg-white hover:bg-purple/10 transition-all cursor-pointer p-6 sm:p-8 flex flex-col justify-between group relative overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-purple/20 rounded-full blur-2xl group-hover:bg-purple/40 transition-colors pointer-events-none" />
-            <div className="space-y-4 relative z-10">
-              <div className="flex items-center justify-between">
-                <div className="p-3 bg-purple border-3 border-ink brutalist-shadow-sm group-hover:scale-110 transition-transform">
-                  <Zap className="w-8 h-8 text-ink" />
-                </div>
-                <span className="font-mono text-[10px] font-bold uppercase tracking-widest bg-ink text-purple px-2.5 py-1">
-                  24/7 Support
-                </span>
-              </div>
-
-              <div>
-                <h4 className="font-heading text-2xl sm:text-3xl tracking-tight uppercase group-hover:text-purple transition-colors">
-                  YOUR HEALING COMPANION
-                </h4>
-                <p className="font-sans text-sm sm:text-base text-ink/80 leading-relaxed mt-2">
-                  A warm, empathetic listener that remembers what you've been through, helps you understand your emotional triggers, and gently guides you through tough moments when the urge to reach out feels overwhelming.
-                </p>
-              </div>
+        {/* PRICING */}
+        <section className="py-24 px-4 bg-bg">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="font-heading text-5xl md:text-7xl uppercase tracking-tighter mb-4">Invest In Your Healing</h2>
+              <p className="font-mono text-lg max-w-xl mx-auto text-ink/80">Cheaper than therapy. More effective than texting your ex.</p>
             </div>
 
-            <div className="pt-6 mt-6 border-t-2 border-ink/10 flex items-center justify-between font-mono font-bold text-xs uppercase text-ink group-hover:translate-x-1 transition-transform relative z-10">
-              <span>Talk With Your Companion</span>
-              <ArrowRight className="w-4 h-4 text-purple" />
+            <div className="flex flex-col md:flex-row gap-8 justify-center items-stretch max-w-4xl mx-auto">
+              {/* Monthly */}
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="flex-1 bg-white border-4 border-ink p-8 shadow-[8px_8px_0px_0px_rgba(17,17,17,1)] flex flex-col"
+              >
+                <h3 className="font-heading text-2xl uppercase mb-2">Monthly</h3>
+                <div className="font-heading text-5xl mb-6">$10<span className="text-xl">/mo</span></div>
+                <ul className="space-y-4 mb-8 flex-1">
+                  {['Unlimited Unsent Messages', 'Red Flag Tracker', 'Healing Companion', 'Private Diary'].map(f => (
+                    <li key={f} className="flex items-center gap-3 font-mono text-sm">
+                      <Check className="w-5 h-5 text-positive shrink-0" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/onboarding" className="block w-full text-center bg-white text-ink border-4 border-ink py-4 font-heading text-xl uppercase hover:bg-bg transition-colors">
+                  Start Healing
+                </Link>
+              </motion.div>
+
+              {/* Yearly */}
+              <motion.div 
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="flex-1 bg-accent border-4 border-brand p-8 shadow-[8px_8px_0px_0px_rgba(255,223,0,1)] flex flex-col relative scale-100 md:scale-105 z-10"
+              >
+                <div className="absolute -top-4 right-4 bg-brand text-ink font-heading px-4 py-1 border-2 border-ink rotate-3 shadow-[2px_2px_0px_0px_rgba(17,17,17,1)]">
+                  BEST VALUE
+                </div>
+                <h3 className="font-heading text-2xl uppercase mb-2 text-white">Yearly</h3>
+                <div className="font-heading text-5xl mb-2 text-white">$40<span className="text-xl">/yr</span></div>
+                <p className="font-mono text-brand font-bold mb-6 text-sm">Save 67%</p>
+                <ul className="space-y-4 mb-8 flex-1 text-white">
+                  {['Everything in Monthly', 'Exclusive Themes', 'Priority Support', 'Lifetime Badges'].map(f => (
+                    <li key={f} className="flex items-center gap-3 font-mono text-sm">
+                      <Check className="w-5 h-5 text-brand shrink-0" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/onboarding" className="block w-full text-center bg-brand text-ink border-4 border-ink py-4 font-heading text-xl uppercase shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] transition-all">
+                  Get Most Popular
+                </Link>
+              </motion.div>
             </div>
           </div>
+        </section>
 
+        {/* FINAL CTA */}
+        <section className="py-32 bg-positive border-y-4 border-ink text-center px-4 relative overflow-hidden">
+          <div className="absolute inset-0 opacity-10 flex items-center justify-center pointer-events-none">
+            <HeartCrack className="w-[120vw] h-[120vh] text-ink" />
+          </div>
+          <div className="max-w-4xl mx-auto relative z-10">
+            <h2 className="font-heading text-6xl md:text-8xl uppercase tracking-tighter mb-8 text-ink">
+              YOU DESERVE<br/>TO HEAL.
+            </h2>
+            <Link href="/onboarding" className="inline-block bg-ink text-white border-4 border-ink px-12 py-6 font-heading text-2xl uppercase shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[4px] hover:translate-y-[4px] transition-all mb-4">
+              Start Your Era
+            </Link>
+            <p className="font-mono text-sm font-bold text-ink/80">No credit card required. Start free.</p>
+          </div>
+        </section>
+      </main>
+
+      {/* FOOTER */}
+      <footer className="bg-ink text-bg py-8 px-4">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="font-heading text-xl tracking-tighter">EX-it.</div>
+          <p className="font-mono text-sm opacity-70">© 2025 EX-it. All rights reserved.</p>
+          <div className="flex gap-4 font-mono text-sm">
+            <Link href="/privacy" className="hover:text-brand transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-brand transition-colors">Terms</Link>
+          </div>
         </div>
-
-        <div className="text-center pt-4">
-          <p className="font-mono text-[11px] text-ink/60 uppercase tracking-widest">
-            📌 Diary, Red Flags, Timeline, Streak, Rewards & Account are accessible anytime via the bottom navigation bar.
-          </p>
-        </div>
-      </div>
-
-      {/* Anchor Modal */}
-      {showAnchor && <AnchorModal onClose={() => setShowAnchor(false)} />}
+      </footer>
     </div>
   );
 }

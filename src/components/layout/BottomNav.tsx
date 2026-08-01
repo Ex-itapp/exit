@@ -8,7 +8,7 @@ import { useUser } from "@/lib/useUser";
 import { motion } from "motion/react";
 
 const navItems = [
-  { icon: Home, path: "/", label: "Home" },
+  { icon: Home, path: "/home", label: "Home" },
   { icon: Book, path: "/diary", label: "Diary" },
   { icon: Flag, path: "/flags", label: "Flags" },
   { icon: Clock, path: "/timeline", label: "Timeline" },

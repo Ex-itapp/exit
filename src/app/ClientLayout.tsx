@@ -18,17 +18,20 @@ export function ClientLayout({ children }: { children: ReactNode }) {
     window.location.hostname.startsWith('192.168.')
   );
 
-  const isPublicRoute = ['/auth', '/privacy', '/terms', '/landing'].includes(pathname);
+  const isPublicRoute = ['/', '/auth', '/privacy', '/terms'].includes(pathname);
 
   // Ensure hooks are called unconditionally at the top
   React.useEffect(() => {
     if (!loading && !user && !isLocalhost && !isPublicRoute) {
-      router.replace('/landing');
+      router.replace('/');
     }
-  }, [user, loading, isLocalhost, isPublicRoute, router]);
+    if (!loading && user && pathname === '/') {
+      router.replace('/home');
+    }
+  }, [user, loading, isLocalhost, isPublicRoute, pathname, router]);
 
   // Landing page has its own layout — bypass all app chrome
-  if (pathname === '/landing') {
+  if (pathname === '/') {
     return <>{children}</>;
   }
 
