@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { useAuth } from "@/lib/useAuth";
@@ -41,11 +41,22 @@ export function ClientLayout({ children }: { children: ReactNode }) {
     window.location.hostname.startsWith('192.168.')
   );
 
-  // If user is not authenticated and not currently on the compulsory auth gate or public assets, gate them (unless on localhost)
-  if (!user && !isLocalhost && pathname !== '/auth' && pathname !== '/privacy' && pathname !== '/terms') {
-    return <CompulsoryAuthGate />;
-  }
+  // If user is not authenticated and not on a public route, redirect to landing page
+  const isPublicRoute = ['/auth', '/privacy', '/terms', '/landing'].includes(pathname);
+  
+  React.useEffect(() => {
+    if (!loading && !user && !isLocalhost && !isPublicRoute) {
+      router.replace('/landing');
+    }
+  }, [user, loading, isLocalhost, isPublicRoute, router]);
 
+  if (!user && !isLocalhost && !isPublicRoute) {
+    return (
+      <div className="min-h-screen bg-bg flex items-center justify-center">
+        <p className="font-mono text-sm tracking-widest uppercase text-ink/50">Redirecting...</p>
+      </div>
+    );
+  }
   // If user is logged in, Onboarding is handled inside Onboarding page or via route redirect in main app
   if (pathname === '/onboarding') {
     return (
