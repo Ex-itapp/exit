@@ -232,18 +232,21 @@ export default function LandingPage() {
 
       <main className="pt-28">
         {/* ─── HERO ─── */}
-        <section className="px-4 py-20 lg:py-32 max-w-7xl mx-auto text-center relative">
+        <section className="px-4 py-16 lg:py-24 max-w-7xl mx-auto text-center relative">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, type: "spring", bounce: 0.4 }}
           >
-            <h1 className="font-heading text-[12vw] sm:text-8xl lg:text-[140px] tracking-tighter uppercase leading-[0.85] mb-8 text-ink drop-shadow-sm">
+            <h1 
+              className="font-heading text-6xl sm:text-8xl lg:text-9xl tracking-tighter uppercase leading-[0.9] mb-8 text-ink drop-shadow-sm"
+              style={{ WebkitTextStroke: "2px #111111" }}
+            >
               Stop Texting <br />
-              <span className="text-accent relative inline-block">
+              <span className="text-accent relative inline-block" style={{ WebkitTextStroke: "2px var(--color-accent)" }}>
                 Your Ex.
                 <motion.div
-                  className="absolute -bottom-2 md:-bottom-5 left-0 w-full h-4 md:h-8 bg-brand -z-10 -rotate-2 border-y-4 border-ink"
+                  className="absolute -bottom-2 md:-bottom-4 left-0 w-full h-3 md:h-6 bg-brand -z-10 -rotate-2 border-y-4 border-ink"
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
                   transition={{ delay: 0.5, duration: 0.5, ease: "easeOut" }}
@@ -251,12 +254,12 @@ export default function LandingPage() {
                 />
               </span>
             </h1>
-            <p className="font-mono text-xl md:text-2xl max-w-3xl mx-auto text-ink/80 mb-12 font-bold leading-relaxed border-4 border-ink bg-white p-6 shadow-[8px_8px_0px_0px_rgba(17,17,17,1)] -rotate-1">
-              The brutalist breakup recovery app that actually gets it. Track your streak, send the unsent messages, and remember why you left. <span className="text-accent underline decoration-4 underline-offset-4">Your healing era starts now.</span>
+            <p className="font-sans text-xl md:text-2xl max-w-2xl mx-auto text-ink/90 mb-12 font-medium leading-relaxed border-4 border-ink bg-white p-6 md:p-8 shadow-[8px_8px_0px_0px_rgba(17,17,17,1)] -rotate-1">
+              You broke up for a reason. Put the phone down. Track your distance, vent your unsent messages here, and <span className="text-accent underline decoration-4 underline-offset-4 font-bold">get your power back.</span>
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <Link href="/auth" className="group bg-ink text-white border-4 border-ink px-10 py-5 font-heading text-2xl md:text-3xl uppercase tracking-widest shadow-[8px_8px_0px_0px_rgba(255,51,102,1)] hover:shadow-[4px_4px_0px_0px_rgba(255,51,102,1)] hover:translate-x-[4px] hover:translate-y-[4px] transition-all w-full sm:w-auto flex items-center justify-center gap-4">
-                Start Healing <ArrowRight size={32} className="group-hover:translate-x-2 transition-transform" />
+              <Link href="/auth" className="group bg-ink text-white border-4 border-ink px-10 py-5 font-heading text-xl md:text-2xl uppercase tracking-widest shadow-[8px_8px_0px_0px_rgba(255,51,102,1)] hover:shadow-[4px_4px_0px_0px_rgba(255,51,102,1)] hover:translate-x-[4px] hover:translate-y-[4px] transition-all w-full sm:w-auto flex items-center justify-center gap-4">
+                Start Healing <ArrowRight size={28} className="group-hover:translate-x-2 transition-transform" />
               </Link>
             </div>
           </motion.div>
