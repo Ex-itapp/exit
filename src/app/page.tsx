@@ -239,33 +239,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* SOCIAL PROOF */}
-        <section className="py-24 bg-ink text-bg px-4 border-y-4 border-ink">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                { quote: "I wanted to text him so bad last night. Instead I sent it to the unsent inbox here. Woke up so proud of myself.", author: "Sarah, 24" },
-                { quote: "The red flag tracker is brutal but necessary. Whenever I miss them, I just read my list.", author: "Marcus, 29" },
-                { quote: "It actually feels like having a friend who never gets tired of hearing you cry about the same person.", author: "Elena, 22" }
-              ].map((t, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="bg-bg text-ink border-4 border-brand p-8 shadow-[6px_6px_0px_0px_rgba(255,223,0,1)] relative"
-                >
-                  <div className="absolute -top-4 -left-4 text-4xl bg-accent text-white w-12 h-12 flex items-center justify-center border-2 border-ink font-heading rotate-12">
-                    &quot;
-                  </div>
-                  <p className="font-mono text-sm leading-relaxed mb-6 mt-4">"{t.quote}"</p>
-                  <p className="font-heading text-lg uppercase">— {t.author}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
+
 
         {/* PRICING */}
         <section className="py-24 px-4 bg-bg">
