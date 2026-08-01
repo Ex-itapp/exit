@@ -11,6 +11,12 @@ export function ClientLayout({ children }: { children: ReactNode }) {
   const { user, loading, signOut } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
+
+  // Landing page has its own layout — bypass all app chrome
+  if (pathname === '/landing') {
+    return <>{children}</>;
+  }
+
   const hideBottomNav = ['/onboarding', '/therapist', '/closure', '/diary/new', '/flags/new'].includes(pathname) || 
                         pathname.startsWith('/closure') || 
                         pathname.startsWith('/therapist') || 
