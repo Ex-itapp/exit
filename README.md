@@ -1,32 +1,43 @@
-# React + TypeScript + Vite
+# EX-it. — Breakup Recovery Sanctuary
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+EX-it. is a private, AI-powered breakup recovery platform that helps you enforce **No-Contact**, process unsaid emotions, log red flags, and rebuild your self-esteem day by day.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **No-Contact Streak & Urges** — track streak days with a visual punch card and Daily Mission check-ins
+- **Red Flag Vault** — log unedited reasons why it ended to counter nostalgia relapses
+- **AI Persona / Closure Engine** — simulate unsent closure conversations without breaking No-Contact
+- **24/7 AI Healing Coach** — empathetic companion that remembers your story
+- **Glow-Up Milestones & Timeline** — recovery badges, mood trends, and milestone days
+- **Strict privacy** — journal entries, red flags, and AI conversations are encrypted
 
-## React Compiler
+## Pricing
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Monthly Freedom** — $10/mo (no trial)
+- **Annual Sanctuary Pass** — $39/yr ($3.25/mo) with a **3-Day Free Trial**
 
-## Expanding the Oxlint configuration
+Cancel anytime with 1 click.
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## Tech Stack
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+- **Next.js (App Router)** + TypeScript + React
+- **Supabase** (auth, database, migrations)
+- **Oxlint** for linting
+
+## Getting Started
+
+```bash
+npm install
+cp .env.example .env.local   # add your Supabase + provider keys
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Open [http://localhost:3000](http://localhost:3000).
+
+## Deployment
+
+Live at [ex-it-black.vercel.app](https://ex-it-black.vercel.app) (Vercel).
+
+## License
+
+Private / proprietary. All rights reserved.

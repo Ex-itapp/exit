@@ -1,18 +1,22 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useUser, type AppMode } from "@/lib/useUser";
+import { useRouter } from "next/navigation";
+import { useUser } from "@/lib/useUser";
 import { useAuth } from "@/lib/useAuth";
+import { usePro } from "@/lib/usePro";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { User, Shield, Compass, Anchor, AlertTriangle, RefreshCcw, Save, CheckCircle2, Lock, LogOut, Cloud, X } from "lucide-react";
+import { User, Compass, Anchor, AlertTriangle, RefreshCcw, Save, CheckCircle2, X, LogOut, CreditCard } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function AccountPage() {
-  const { userName, userGoal, userAnchor, breakupDate, appMode, updateProfile, setAppMode, resetAccount } = useUser();
-  const { user, signInAnonymously, signInWithEmail, signOut } = useAuth();
+  const router = useRouter();
+  const { signOut } = useAuth();
+  const { isPro, expiresAt, endedPro, loading: proLoading } = usePro();
+  const { userName, userGoal, userAnchor, breakupDate, updateProfile, resetAccount } = useUser();
 
   const [name, setName] = useState(userName || "Friend");
   const [goal, setGoal] = useState(userGoal || "Finding peace and clarity");
@@ -20,11 +24,6 @@ export default function AccountPage() {
   const [date, setDate] = useState(breakupDate ? new Date(breakupDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
   const [isSaved, setIsSaved] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
-
-  // Auth form
-  const [email, setEmail] = useState("");
-  const [authMsg, setAuthMsg] = useState("");
-  const [isAuthLoading, setIsAuthLoading] = useState(false);
 
   useEffect(() => {
     if (userName) setName(userName);
@@ -56,28 +55,14 @@ export default function AccountPage() {
     setShowResetModal(true);
   };
 
-  const handleLogin = async () => {
-    if (!email.trim()) return;
-    setIsAuthLoading(true);
-    const { error } = await signInWithEmail(email.trim());
-    setIsAuthLoading(false);
-    if (error) {
-      setAuthMsg("Error: " + error.message);
-    } else {
-      setAuthMsg("✨ Magic login link sent to your email!");
-    }
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/");
   };
 
-  const handleGuestLogin = async () => {
-    setIsAuthLoading(true);
-    const { error } = await signInAnonymously();
-    setIsAuthLoading(false);
-    if (error) {
-      setAuthMsg("Error: " + error.message);
-    } else {
-      setAuthMsg("✨ Logged in as Guest!");
-    }
-  };
+  const daysRemaining = expiresAt
+    ? Math.max(0, Math.ceil((new Date(expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+    : null;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-150 pb-24 max-w-4xl mx-auto">
@@ -92,82 +77,6 @@ export default function AccountPage() {
           <span className="font-mono text-xs font-bold uppercase tracking-widest">{userName}</span>
         </div>
       </header>
-
-      {/* Cloud Authentication Section */}
-      <Card className="border-[4px] border-ink bg-purple/10">
-        <CardHeader className="border-b-[4px] border-ink bg-purple text-ink p-4">
-          <CardTitle className="text-xl flex items-center gap-2 uppercase">
-            <Cloud className="w-5 h-5" />
-            Cloud Sync & Security
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 space-y-4">
-          {user ? (
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 border-3 border-ink">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-positive" />
-                  <span className="font-heading text-lg uppercase">Synced to Cloud Database</span>
-                </div>
-                <p className="font-mono text-xs text-ink/70">
-                  User ID: <code className="bg-bg px-1.5 py-0.5 border border-ink/30 font-bold">{user.id.substring(0, 18)}...</code>
-                </p>
-                <p className="font-mono text-[11px] text-ink/60">
-                  Your profiles, memories, diary entries, and red flags are continuously encrypted and safely backed up to your private cloud storage.
-                </p>
-              </div>
-
-              <Button
-                variant="secondary"
-                className="h-11 px-5 border-2 border-ink bg-white hover:bg-danger/10 text-danger text-xs font-mono font-bold uppercase shrink-0"
-                onClick={signOut}
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-4 bg-white p-5 border-3 border-ink">
-              <div className="space-y-1">
-                <h4 className="font-heading text-lg uppercase flex items-center gap-2">
-                  <Lock className="w-4 h-4 text-purple" /> Connect Your Account
-                </h4>
-                <p className="font-sans text-sm text-ink/80">
-                  By default, your healing data lives in local browser storage. Log in with your email (magic link) or as a guest to sync across mobile and desktop devices.
-                </p>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <Input
-                  placeholder="your.email@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="h-12 border-2 border-ink font-mono text-sm max-w-sm"
-                />
-                <Button
-                  className="h-12 px-6 bg-ink text-bg font-bold uppercase text-xs shrink-0"
-                  onClick={handleLogin}
-                  disabled={isAuthLoading || !email.trim()}
-                >
-                  {isAuthLoading ? "Sending..." : "Send Magic Link"}
-                </Button>
-                <Button
-                  variant="secondary"
-                  className="h-12 px-5 text-xs uppercase shrink-0"
-                  onClick={handleGuestLogin}
-                  disabled={isAuthLoading}
-                >
-                  Guest Sync
-                </Button>
-              </div>
-
-              {authMsg && (
-                <p className="font-mono text-xs text-ink font-bold pt-1">{authMsg}</p>
-              )}
-            </div>
-          )}
-        </CardContent>
-      </Card>
 
       {/* Profile Preferences */}
       <Card className="border-[4px] border-ink">
@@ -264,6 +173,87 @@ export default function AccountPage() {
           <Button variant="danger" className="w-full h-14 text-base" onClick={handleReset}>
             <RefreshCcw className="w-5 h-5 mr-2" />
             Reset Account & Restart Setup
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Plan / Subscription */}
+      <Card className="border-[4px] border-ink bg-white">
+        <CardHeader className="border-b-4 border-ink bg-bg p-4">
+          <CardTitle className="text-xl flex items-center gap-2">
+            <CreditCard className="w-5 h-5" />
+            PLAN
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-6 space-y-4">
+          {proLoading ? (
+            <div className="flex items-center gap-4 p-4 border-2 border-ink/20 animate-pulse">
+              <div className="w-8 h-8 bg-ink/10 border-2 border-ink/20 rounded-none" />
+              <div className="space-y-2 flex-1">
+                <div className="h-5 bg-ink/10 w-40 border-2 border-ink/20" />
+                <div className="h-3 bg-ink/10 w-60 border-2 border-ink/20" />
+              </div>
+            </div>
+          ) : isPro ? (
+            <div className="flex items-center gap-4 p-4 bg-positive/10 border-2 border-positive">
+              <CheckCircle2 className="w-8 h-8 text-positive shrink-0" />
+              <div>
+                <span className="font-heading text-lg uppercase tracking-tight">Pro Plan Active</span>
+                {daysRemaining !== null && (
+                  <p className="font-mono text-sm text-ink/70 mt-1">
+                    {daysRemaining} day{daysRemaining !== 1 ? 's' : ''} remaining in billing period
+                  </p>
+                )}
+                <p className="font-mono text-[10px] text-ink/50 mt-0.5">
+                  No refunds on current billing period. To cancel, contact your bank.
+                </p>
+              </div>
+            </div>
+          ) : endedPro ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-4 p-4 bg-accent/10 border-2 border-accent">
+                <AlertTriangle className="w-8 h-8 text-accent shrink-0" />
+                <div>
+                  <span className="font-heading text-lg uppercase tracking-tight">Pro Plan Ended</span>
+                  <p className="font-mono text-sm text-ink/70 mt-1">
+                    Your subscription was cancelled. Resubscribe to get Pro access again.
+                  </p>
+                </div>
+              </div>
+              <Button
+                onClick={() => router.push('/pricing')}
+                className="w-full h-14 text-base bg-brand border-3 border-ink brutalist-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
+              >
+                Resubscribe to Pro →
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3 p-4 border-2 border-ink/30">
+              <span className="font-heading text-lg uppercase tracking-tight">Free Plan</span>
+              <span className="ml-auto font-mono text-xs text-ink/50">upgrade anytime</span>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Sign Out */}
+      <Card className="border-[4px] border-ink bg-white">
+        <CardHeader className="border-b-4 border-ink bg-bg p-4">
+          <CardTitle className="text-xl flex items-center gap-2">
+            <LogOut className="w-5 h-5" />
+            SESSION
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-6 space-y-4">
+          <p className="font-sans text-sm md:text-base text-ink/80">
+            Sign out of your account and return to the landing page.
+          </p>
+          <Button
+            onClick={handleSignOut}
+            className="w-full h-14 text-base border-3 border-ink bg-ink text-bg hover:bg-ink/90"
+          >
+            <LogOut className="w-5 h-5 mr-2" />
+            Sign Out
           </Button>
         </CardContent>
       </Card>

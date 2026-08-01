@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Textarea } from "@/components/ui/Textarea";
 import { Input } from "@/components/ui/Input";
-import { Flag, Zap, MessageSquare, Anchor, Sparkles, ShieldAlert, Check, ArrowRight } from "lucide-react";
+import { Zap, MessageSquare, Anchor, Sparkles, ShieldAlert, Check, ArrowRight } from "lucide-react";
 import { useCheckins } from "@/lib/useCheckins";
 import { useUser } from "@/lib/useUser";
 import { useFlags } from "@/lib/useFlags";
@@ -17,7 +17,7 @@ import { AnchorModal } from "@/components/AnchorModal";
 import { useAuth } from "@/lib/useAuth";
 import { cn } from "@/lib/utils";
 
-export default function Home() {
+export default function DashboardPage() {
   const navigate = useRouter();
   const { userName, userAnchor, hasCompletedOnboarding, isProfileSyncing } = useUser();
   const { loading: authLoading } = useAuth();
@@ -182,7 +182,7 @@ export default function Home() {
 
             <div className="p-5 space-y-4 bg-white">
               <p className="font-sans text-xs sm:text-sm text-ink/80">
-                Remembered something toxic or feeling a wave of nostalgia? Drop it here to clear your head immediately without leaving your dashboard.
+                Remembered something toxic or feeling a wave of nostalgia? Drop it here to clear your head immediately without leaving your sanctuary.
               </p>
 
               <div className="flex flex-wrap gap-2 pt-1">
@@ -227,7 +227,7 @@ export default function Home() {
               {flagDropped && (
                 <div className="p-3 bg-positive/20 border-2 border-positive text-ink font-mono text-xs font-bold flex items-center gap-2 animate-in fade-in duration-200">
                   <Check className="w-4 h-4 text-positive shrink-0" />
-                  <span>Flag dropped to database! Clarity counter updated automatically.</span>
+                  <span>Red flag logged! Clarity counter updated automatically.</span>
                 </div>
               )}
             </div>

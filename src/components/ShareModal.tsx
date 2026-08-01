@@ -55,10 +55,10 @@ export function ShareModal({ entry, onClose }: ShareModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-md bg-bg border-[4px] border-ink brutalist-shadow flex flex-col max-h-[90vh] relative">
+      <div className="w-full max-w-md bg-bg border-4 border-ink brutalist-shadow flex flex-col max-h-[90vh] relative">
         <button 
           onClick={onClose} 
-          className="absolute -top-4 -right-4 w-10 h-10 bg-accent text-bg border-2 border-ink flex items-center justify-center rounded-full hover:scale-110 transition-transform z-10"
+          className="absolute -top-4 -right-4 w-10 h-10 bg-accent text-bg border-2 border-ink flex items-center justify-center hover:scale-110 transition-transform z-10"
         >
           <X className="w-5 h-5" />
         </button>
@@ -69,10 +69,10 @@ export function ShareModal({ entry, onClose }: ShareModalProps) {
             ref={exportRef}
             className={`w-[320px] h-[320px] md:w-[360px] md:h-[360px] shrink-0 p-6 flex flex-col relative overflow-hidden ${
               entry.type === 'flag' 
-                ? 'bg-white border-[4px] border-accent shadow-[8px_8px_0_#FF3366]' 
+                ? 'bg-white border-4 border-accent shadow-[8px_8px_0_#FF3366]' 
                 : entry.isUnsent 
-                  ? 'bg-ink text-bg border-[4px] border-ink' 
-                  : 'bg-[#f4f1ea] border-[4px] border-ink shadow-[8px_8px_0_#111111]'
+                  ? 'bg-ink text-bg border-4 border-ink' 
+                  : 'bg-bg border-4 border-ink shadow-[8px_8px_0_#111111]'
             }`}
           >
             {/* Background Pattern for standard diary entries */}
@@ -119,7 +119,7 @@ export function ShareModal({ entry, onClose }: ShareModalProps) {
           </div>
         </div>
 
-        <div className="p-4 border-t-[4px] border-ink bg-white">
+        <div className="p-4 border-t-4 border-ink bg-white">
           <Button 
             className="w-full h-12 text-lg brutalist-shadow-sm group bg-brand hover:bg-brand/90 text-ink border-ink"
             onClick={handleDownload}

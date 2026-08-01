@@ -1,20 +1,21 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/Button";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/Card";
+import { Card } from "@/components/ui/Card";
 import { Textarea } from "@/components/ui/Textarea";
 import { Input } from "@/components/ui/Input";
-import { Badge } from "@/components/ui/Badge";
 import { 
   MessageSquare, AlertTriangle, Send, Sparkles, BrainCircuit, 
-  Database, ShieldAlert, CheckCircle2, RefreshCw, Trash2, 
-  HelpCircle, Lock, ArrowRight, X, User, Heart, Shield, Plus,
-  FileText, Upload, Sliders, Check, ArrowLeft, Settings, Zap, ChevronRight, Clock
+  CheckCircle2, RefreshCw, Trash2, 
+  Lock, ArrowRight, X, Heart, Plus,
+  FileText, Upload, Sliders, ArrowLeft, Settings, ChevronRight, Clock
 } from "lucide-react";
 import { useClosure, type MemoryBankEntry, type VoiceProfile, type TraitProfile } from "@/lib/useClosure";
 import { useDiary } from "@/lib/useDiary";
 import { useAuth } from "@/lib/useAuth";
+import { usePro } from "@/lib/usePro";
+import { ProGateModal } from "@/components/ProGateModal";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
 import { useRouter } from "next/navigation";
@@ -22,10 +23,10 @@ import { useRouter } from "next/navigation";
 export default function ClosurePage() {
   const router = useRouter();
   const {
-    profile, memories, sessions, messages, sessionsUsedCount, maxSessionsAllowed,
-    saveProfile, updateVoiceProfile, updateTraitProfile, tuneVoiceProfileFromCorrection,
+    profile, memories, sessions, messages, sessionsUsedCount,
+    saveProfile, updateVoiceProfile,
     addMemory, deleteMemory, getActiveSession, createSession, addMessage, endSession,
-    getSessionMessages, retrieveRelevantMemories, resetAllClosureData
+    retrieveRelevantMemories
   } = useClosure();
 
   const { addEntry } = useDiary();
@@ -36,7 +37,7 @@ export default function ClosurePage() {
   const [inChatView, setInChatView] = useState(false);
   const [isCreatingPersona, setIsCreatingPersona] = useState(false);
 
-  // Person Engine Interactive Onboarding Step: 1 to 4
+  // Persona Interactive Onboarding Step: 1 to 4
   const [engineStep, setEngineStep] = useState<number>(1);
 
   // Chat State
@@ -54,10 +55,10 @@ export default function ClosurePage() {
   const [isTuning, setIsTuning] = useState(false);
   const [tuneToast, setTuneToast] = useState<string | null>(null);
 
-  // Person Engine Intake Form State
+  // Persona Intake Form State
   const [sampleText, setSampleText] = useState("");
   const [isAnalyzingVoice, setIsAnalyzingVoice] = useState(false);
-  const [personLabel, setPersonLabel] = useState(profile?.label || "Them");
+  const [personLabel, setPersonLabel] = useState(profile?.label || "My Ex");
   const [voiceForm, setVoiceForm] = useState<VoiceProfile>(profile?.voice_profile || {
     capitalization: "",
     punctuation_habits: "",
@@ -84,13 +85,16 @@ export default function ClosurePage() {
   const [newMemTags, setNewMemTags] = useState("");
   const [newMemWeight, setNewMemWeight] = useState<MemoryBankEntry['emotional_weight']>('hurt');
 
+  const { isPro } = usePro();
+  const [showProGate, setShowProGate] = useState<string | null>(null);
+
   // Auth Email state
   const [authEmail, setAuthEmail] = useState("");
   const [authSent, setAuthSent] = useState(false);
 
   useEffect(() => {
     if (profile) {
-      setPersonLabel(profile.label || "Them");
+      setPersonLabel(profile.label || "My Ex");
       setVoiceForm(profile.voice_profile);
       setTraitForm(profile.trait_profile);
     }
@@ -117,6 +121,7 @@ export default function ClosurePage() {
 
   const handleSendMessage = async () => {
     if (!inputMsg.trim() || isLoading) return;
+    if (!isPro) { setShowProGate("AI Closure"); return; }
 
     let currentSessId = activeSession?.id;
     if (!currentSessId) {
@@ -171,8 +176,8 @@ export default function ClosurePage() {
     if (!activeSession) return;
     if (reflectionText.trim()) {
       await addEntry(
-        `[Talk to Them — Closure Reflection]\n\n${reflectionText.trim()}`,
-        ["Closure Session", "Reflection", "Talk to Them"],
+        `[Closure Reflection]\n\n${reflectionText.trim()}`,
+        ["Closure Session", "Reflection", "Persona"],
         true
       );
     }
@@ -292,7 +297,7 @@ export default function ClosurePage() {
     }
   };
 
-  const sessionsRemaining = Math.max(0, maxSessionsAllowed - sessionsUsedCount);
+
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-200 pb-24 max-w-5xl mx-auto px-4 sm:px-6">
@@ -435,7 +440,7 @@ export default function ClosurePage() {
                     className="h-11 px-4 text-xs font-bold uppercase bg-bg border-2 border-ink hover:bg-ink hover:text-white transition-all flex items-center gap-2"
                     onClick={() => setActiveTab('memories')}
                   >
-                    <Database className="w-4 h-4 text-brand" />
+                    <BrainCircuit className="w-4 h-4 text-brand" />
                     <span>Memory Bank ({memories.length})</span>
                   </Button>
 
@@ -726,7 +731,7 @@ export default function ClosurePage() {
                       </div>
 
                       <Textarea
-                        placeholder="Write your reflection here... We will automatically save this into your Full Diary and cloud database."
+                        placeholder="Write your reflection here... We will automatically save this into your Diary and recovery space."
                         value={reflectionText}
                         onChange={(e) => setReflectionText(e.target.value)}
                         className="min-h-[120px] border-3 border-ink text-base p-4 bg-white"
@@ -760,7 +765,7 @@ export default function ClosurePage() {
               onClick={() => setActiveTab('sessions')}
               className="font-mono font-bold text-xs uppercase bg-white border-2 border-ink h-10 px-4 hover:bg-ink hover:text-white"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" /> Back to Talk to Them Hub
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back to Persona
             </Button>
           )}
 
@@ -1037,7 +1042,7 @@ export default function ClosurePage() {
               {engineStep === 4 && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
                   <div className="flex items-center gap-2 font-heading text-xl sm:text-2xl uppercase border-b-2 border-ink/10 pb-2">
-                    <Database className="w-6 h-6 text-positive" />
+                    <BrainCircuit className="w-6 h-6 text-positive" />
                     <span>Step 4: Add A Key Memory</span>
                   </div>
                   <p className="font-sans text-sm sm:text-base text-ink/80 leading-relaxed">
@@ -1114,7 +1119,7 @@ export default function ClosurePage() {
               onClick={() => setActiveTab('sessions')}
               className="font-mono font-bold text-xs uppercase bg-white border-2 border-ink h-10 px-4 hover:bg-ink hover:text-white"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" /> Back to Talk to Them Hub
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back to Persona
             </Button>
           )}
           <div className="bg-white border-4 border-ink brutalist-shadow p-6 sm:p-10 space-y-8">
@@ -1254,6 +1259,8 @@ export default function ClosurePage() {
           </div>
         </div>
       )}
+
+      {showProGate && <ProGateModal feature={showProGate} onClose={() => setShowProGate(null)} />}
 
     </div>
   );

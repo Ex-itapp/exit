@@ -97,7 +97,7 @@ export function CompulsoryAuthGate() {
           </span>
           <h1 className="text-3xl font-heading uppercase tracking-tight mt-1">AUTHENTICATION REQUIRED</h1>
           <p className="font-sans text-xs sm:text-sm text-ink/80 leading-relaxed">
-            To protect your private diary entries, Person Engine profiles, and healing metrics, authentication is compulsory to enter EX-it.
+            To protect your private diary entries, Persona profiles, and healing metrics, authentication is compulsory to enter EX-it.
           </p>
         </div>
 

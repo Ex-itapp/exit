@@ -277,7 +277,7 @@ export function useClosure() {
     if (active) return { session: active };
 
     if (!profile) {
-      return { error: "Please set up your Person Engine profile before initiating a session." };
+      return { error: "Please set up your Persona profile before initiating a session." };
     }
 
     const sessId = "sess-" + Date.now();

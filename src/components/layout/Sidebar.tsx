@@ -7,7 +7,7 @@ import { Book, Flag, Target, Award, Home, Clock, Zap, User } from "lucide-react"
 import { useUser } from "@/lib/useUser";
 
 const navItems = [
-  { icon: Home, label: "Today", path: "/" },
+  { icon: Home, label: "Today", path: "/dashboard" },
   { icon: Book, label: "Diary", path: "/diary" },
   { icon: Clock, label: "Timeline", path: "/timeline" },
   { icon: Flag, label: "Red Flags", path: "/flags" },

@@ -26,7 +26,7 @@ export function AnchorModal({ onClose }: AnchorModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 bg-ink/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-      <div className="bg-bg border-[6px] border-ink brutalist-shadow max-w-lg w-full p-6 md:p-8 relative animate-in zoom-in-95 duration-200 space-y-6">
+      <div className="bg-bg border-4 border-ink brutalist-shadow max-w-lg w-full p-6 md:p-8 relative animate-in zoom-in-95 duration-200 space-y-6">
         
         {/* Close Button */}
         <button
@@ -42,7 +42,7 @@ export function AnchorModal({ onClose }: AnchorModalProps) {
             <Anchor className="w-8 h-8 animate-pulse" />
           </div>
           <div>
-            <span className="font-mono text-xs uppercase font-bold tracking-widest bg-white px-2 py-0.5 border border-ink">
+            <span className="font-mono text-xs uppercase font-bold tracking-widest bg-white px-2 py-0.5 border-2 border-ink">
               Daily Grounding Reminder
             </span>
             <h2 className="text-3xl font-heading uppercase tracking-tight leading-none mt-1">

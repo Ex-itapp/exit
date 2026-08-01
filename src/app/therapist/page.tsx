@@ -7,6 +7,8 @@ import { Textarea } from "@/components/ui/Textarea";
 import { useDiary } from "@/lib/useDiary";
 import { useFlags } from "@/lib/useFlags";
 import { useCheckins } from "@/lib/useCheckins";
+import { usePro } from "@/lib/usePro";
+import { ProGateModal } from "@/components/ProGateModal";
 import { ArrowLeft, Sparkles, MessageSquare, Send, BookOpen, Flag, Zap } from "lucide-react";
 
 interface Message {
@@ -16,6 +18,8 @@ interface Message {
 
 export default function TherapistPage() {
   const navigate = useRouter();
+  const { isPro } = usePro();
+  const [showProGate, setShowProGate] = useState<string | null>(null);
   const { entries } = useDiary();
   const { flags } = useFlags();
   const { checkins } = useCheckins();
@@ -109,6 +113,7 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
 
   const sendMessage = async () => {
     if (!inputText.trim() || isLoading || isCrisis) return;
+    if (!isPro) { setShowProGate("AI Therapist"); return; }
     
     const userMessage: Message = { role: 'user', parts: [{ text: inputText }] };
     const updatedMessages = [...messages, userMessage];
@@ -285,6 +290,7 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
           )}
         </div>
       )}
+      {showProGate && <ProGateModal feature={showProGate} onClose={() => setShowProGate(null)} />}
     </div>
   );
 }

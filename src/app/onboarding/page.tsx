@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
-import { useUser, type AppMode } from "@/lib/useUser";
-import { Sparkles, Heart, Shield, Compass, ArrowRight, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { useUser } from "@/lib/useUser";
+import { Sparkles, Heart, Shield, Compass, ArrowRight, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -16,7 +16,7 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     if (typeof window !== 'undefined' && !isProfileSyncing && (hasCompletedOnboarding || localStorage.getItem('unsent_onboarding_done_clean') === 'true')) {
-      navigate.push('/');
+      navigate.push('/dashboard');
     }
   }, [isProfileSyncing, hasCompletedOnboarding, navigate]);
 
@@ -24,7 +24,6 @@ export default function OnboardingPage() {
   const [name, setName] = useState("");
   const [goal, setGoal] = useState("Finding peace and clarity");
   const [anchor, setAnchor] = useState("");
-  const [mode, setMode] = useState<AppMode>("no_contact");
   const [breakupDate, setBreakupDate] = useState(new Date().toISOString().split('T')[0]);
 
   const goals = [
@@ -39,10 +38,10 @@ export default function OnboardingPage() {
       name.trim() || "Friend",
       goal || "Finding peace and clarity",
       anchor.trim() || "I deserve someone who chooses me every single day.",
-      mode,
+      "no_contact",
       new Date(breakupDate).toISOString()
     );
-    navigate.push("/");
+    navigate.push("/dashboard");
   };
 
   return (

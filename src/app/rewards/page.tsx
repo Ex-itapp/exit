@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRewards, type RewardBadge } from "@/lib/useRewards";
-import { BadgeTile } from "@/components/ui/BadgeTile";
+import { BadgeTile } from "@/components/BadgeTile";
 import { Button } from "@/components/ui/Button";
 import { Award, Lock, Sparkles, X } from "lucide-react";
 import { cn } from "@/lib/utils";

@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 import { callAIRouter } from '@/lib/ai/router';
+import { requirePro } from '@/lib/requirePro';
 
 export async function POST(req: Request) {
   try {
+    const proCheck = await requirePro();
+    if (proCheck.error) return proCheck.error;
     const { userMessage, history, voiceProfile, traitProfile, retrievedMemories } = await req.json();
 
     if (!userMessage || typeof userMessage !== 'string') {
@@ -40,7 +43,7 @@ User text: "${userMessage}"`;
       });
     }
 
-    // 2. Assemble the 4-Layer Person Engine System Prompt
+    // 2. Assemble the 4-Layer Persona System Prompt
     const vp = voiceProfile || {};
     const tp = traitProfile || {};
     const mems = (retrievedMemories || []).map((m: any, idx: number) => `[Memory ${idx + 1} (${m.emotional_weight || 'neutral'})]: ${m.content}`).join('\n');

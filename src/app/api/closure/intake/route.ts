@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 import { callAIRouter } from '@/lib/ai/router';
+import { requirePro } from '@/lib/requirePro';
 
 export async function POST(req: Request) {
   try {
+    const proCheck = await requirePro();
+    if (proCheck.error) return proCheck.error;
     const { rawText } = await req.json();
 
     if (!rawText || typeof rawText !== 'string' || rawText.trim().length < 10) {

@@ -117,7 +117,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen font-sans bg-bg overflow-x-hidden">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-bg/90 backdrop-blur-sm border-b-4 border-ink z-50">
+      <nav className="fixed top-0 w-full bg-bg/90 backdrop-blur-sm z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="bg-accent w-8 h-8 flex items-center justify-center border-2 border-ink rounded-sm rotate-3">
@@ -125,9 +125,14 @@ export default function LandingPage() {
             </div>
             <span className="font-heading text-2xl tracking-tighter">EX-it.</span>
           </div>
-          <Link href="/onboarding" className="bg-brand border-2 border-ink px-4 py-2 font-heading text-sm uppercase shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(17,17,17,1)] transition-all">
-            Get Started
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link href="/auth" className="font-mono text-sm font-bold uppercase hover:opacity-70 transition-opacity">
+              Log In
+            </Link>
+            <Link href="/auth" className="bg-brand border-2 border-ink px-4 py-2 font-heading text-sm uppercase shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(17,17,17,1)] transition-all">
+              Start Healing
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -156,7 +161,7 @@ export default function LandingPage() {
               The breakup recovery app that actually gets it. Track your streak, send the unsent messages, and remember why you left. Your healing era starts now.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/onboarding" className="bg-ink text-white border-4 border-ink px-8 py-4 font-heading text-xl uppercase shadow-[6px_6px_0px_0px_rgba(255,51,102,1)] hover:shadow-[4px_4px_0px_0px_rgba(255,51,102,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all w-full sm:w-auto flex items-center justify-center gap-2">
+              <Link href="/auth" className="bg-ink text-white border-4 border-ink px-8 py-4 font-heading text-xl uppercase shadow-[6px_6px_0px_0px_rgba(255,51,102,1)] hover:shadow-[4px_4px_0px_0px_rgba(255,51,102,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all w-full sm:w-auto flex items-center justify-center gap-2">
                 Start Healing <ArrowRight size={24} />
               </Link>
               <p className="font-mono text-xs uppercase tracking-widest text-ink/60 mt-2 sm:mt-0 sm:ml-4">
@@ -267,7 +272,7 @@ export default function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/onboarding" className="block w-full text-center bg-white text-ink border-4 border-ink py-4 font-heading text-xl uppercase hover:bg-bg transition-colors">
+                <Link href="/auth" className="block w-full text-center bg-white text-ink border-4 border-ink py-4 font-heading text-xl uppercase hover:bg-bg transition-colors">
                   Start Healing
                 </Link>
               </motion.div>
@@ -293,7 +298,7 @@ export default function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/onboarding" className="block w-full text-center bg-brand text-ink border-4 border-ink py-4 font-heading text-xl uppercase shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] transition-all">
+                <Link href="/auth" className="block w-full text-center bg-brand text-ink border-4 border-ink py-4 font-heading text-xl uppercase shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] transition-all">
                   Get Most Popular
                 </Link>
               </motion.div>
@@ -310,7 +315,7 @@ export default function LandingPage() {
             <h2 className="font-heading text-6xl md:text-8xl uppercase tracking-tighter mb-8 text-ink">
               YOU DESERVE<br/>TO HEAL.
             </h2>
-            <Link href="/onboarding" className="inline-block bg-ink text-white border-4 border-ink px-12 py-6 font-heading text-2xl uppercase shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[4px] hover:translate-y-[4px] transition-all mb-4">
+            <Link href="/auth" className="inline-block bg-ink text-white border-4 border-ink px-12 py-6 font-heading text-2xl uppercase shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[4px] hover:translate-y-[4px] transition-all mb-4">
               Start Your Era
             </Link>
             <p className="font-mono text-sm font-bold text-ink/80">No credit card required. Start free.</p>
