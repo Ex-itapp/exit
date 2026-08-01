@@ -350,8 +350,8 @@ export default function LandingPage() {
           <div className="font-heading text-xl tracking-tighter">EX-it.</div>
           <p className="font-mono text-sm opacity-70">© 2025 EX-it. All rights reserved.</p>
           <div className="flex gap-4 font-mono text-sm">
-            <a href="#" className="hover:text-brand transition-colors">Privacy</a>
-            <a href="#" className="hover:text-brand transition-colors">Terms</a>
+            <Link href="/privacy" className="hover:text-brand transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-brand transition-colors">Terms</Link>
           </div>
         </div>
       </footer>

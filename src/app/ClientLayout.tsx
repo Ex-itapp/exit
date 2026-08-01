@@ -17,7 +17,7 @@ export function ClientLayout({ children }: { children: ReactNode }) {
     return <>{children}</>;
   }
 
-  const hideBottomNav = ['/onboarding', '/therapist', '/closure', '/diary/new', '/flags/new'].includes(pathname) || 
+  const hideBottomNav = ['/onboarding', '/therapist', '/closure', '/diary/new', '/flags/new', '/privacy', '/terms'].includes(pathname) || 
                         pathname.startsWith('/closure') || 
                         pathname.startsWith('/therapist') || 
                         pathname.startsWith('/onboarding') ||
@@ -42,7 +42,7 @@ export function ClientLayout({ children }: { children: ReactNode }) {
   );
 
   // If user is not authenticated and not currently on the compulsory auth gate or public assets, gate them (unless on localhost)
-  if (!user && !isLocalhost && pathname !== '/auth') {
+  if (!user && !isLocalhost && pathname !== '/auth' && pathname !== '/privacy' && pathname !== '/terms') {
     return <CompulsoryAuthGate />;
   }
 
