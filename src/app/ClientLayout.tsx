@@ -12,6 +12,21 @@ export function ClientLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
+  const isLocalhost = typeof window !== 'undefined' && (
+    window.location.hostname === 'localhost' || 
+    window.location.hostname === '127.0.0.1' || 
+    window.location.hostname.startsWith('192.168.')
+  );
+
+  const isPublicRoute = ['/auth', '/privacy', '/terms', '/landing'].includes(pathname);
+
+  // Ensure hooks are called unconditionally at the top
+  React.useEffect(() => {
+    if (!loading && !user && !isLocalhost && !isPublicRoute) {
+      router.replace('/landing');
+    }
+  }, [user, loading, isLocalhost, isPublicRoute, router]);
+
   // Landing page has its own layout — bypass all app chrome
   if (pathname === '/landing') {
     return <>{children}</>;
@@ -34,21 +49,6 @@ export function ClientLayout({ children }: { children: ReactNode }) {
       </div>
     );
   }
-
-  const isLocalhost = typeof window !== 'undefined' && (
-    window.location.hostname === 'localhost' || 
-    window.location.hostname === '127.0.0.1' || 
-    window.location.hostname.startsWith('192.168.')
-  );
-
-  // If user is not authenticated and not on a public route, redirect to landing page
-  const isPublicRoute = ['/auth', '/privacy', '/terms', '/landing'].includes(pathname);
-  
-  React.useEffect(() => {
-    if (!loading && !user && !isLocalhost && !isPublicRoute) {
-      router.replace('/landing');
-    }
-  }, [user, loading, isLocalhost, isPublicRoute, router]);
 
   if (!user && !isLocalhost && !isPublicRoute) {
     return (
