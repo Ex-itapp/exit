@@ -167,28 +167,35 @@ const features = [
 
 const FeatureRow = ({ f, i }: { f: typeof features[0]; i: number }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.85", "start 0.3"] });
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.9", "start 0.35"] });
   const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
-  const y = useTransform(scrollYProgress, [0, 1], [40, 0]);
+  const y = useTransform(scrollYProgress, [0, 1], [50, 0]);
   const even = i % 2 === 0;
 
   return (
     <motion.div ref={ref} style={{ opacity, y }}
-      className={`flex flex-col ${even ? "sm:flex-row" : "sm:flex-row-reverse"} gap-8 sm:gap-16 items-center py-16 sm:py-24 border-b-4 border-ink/10 last:border-0`}>
+      className={`flex flex-col ${even ? "sm:flex-row" : "sm:flex-row-reverse"} gap-6 sm:gap-12 items-stretch mb-8`}>
       {/* Icon block */}
-      <div className="shrink-0">
+      <div className="shrink-0 flex items-center justify-center">
         <motion.div
           whileHover={{ rotate: even ? 8 : -8, scale: 1.05 }}
-          className={`${f.color} w-28 h-28 sm:w-40 sm:h-40 border-4 border-ink flex items-center justify-center text-white shadow-[8px_8px_0px_0px_rgba(17,17,17,1)]`}>
+          className={`${f.color} w-28 h-28 sm:w-36 sm:h-36 border-4 border-ink flex items-center justify-center text-white shadow-[6px_6px_0px_0px_rgba(17,17,17,1)] rotate-${even ? "2" : "-1"}`}
+          style={{ rotate: even ? 2 : -1 }}
+        >
           {f.icon}
         </motion.div>
       </div>
 
-      {/* Text */}
-      <div className="flex-1 text-center sm:text-left">
-        <span className="font-mono text-xs font-bold uppercase tracking-[0.3em] text-ink/30 block mb-3">{f.label}</span>
-        <h3 className="font-heading text-3xl sm:text-5xl tracking-tighter mb-4">{f.title}</h3>
-        <p className="font-sans text-base sm:text-lg text-ink/70 leading-relaxed max-w-md">{f.body}</p>
+      {/* Card */}
+      <div className="flex-1 border-4 border-ink bg-white shadow-[6px_6px_0px_0px_rgba(17,17,17,1)] p-6 sm:p-8 relative overflow-hidden">
+        {/* Colored accent bar on the left */}
+        <div className={`absolute top-0 left-0 w-2 h-full ${f.color}`} />
+
+        <div className="pl-4">
+          <span className={`font-mono text-xs font-bold uppercase tracking-[0.25em] ${f.accent} block mb-2`}>{f.label}</span>
+          <h3 className="font-heading text-2xl sm:text-4xl tracking-tighter mb-3 leading-tight">{f.title}</h3>
+          <p className="font-sans text-base sm:text-lg text-ink/60 leading-relaxed max-w-lg">{f.body}</p>
+        </div>
       </div>
     </motion.div>
   );
