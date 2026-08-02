@@ -46,7 +46,7 @@ const TypewriterEffect = () => {
           <p className="font-mono text-xs text-ink/50 font-bold">Just now</p>
         </div>
       </div>
-      <div className="min-h-[72px] font-mono text-sm leading-relaxed text-ink/90 font-bold">
+      <div className="min-h-[72px] font-sans text-base leading-relaxed text-ink/80 italic">
         {text}
         <motion.span animate={{ opacity: [1, 0] }} transition={{ repeat: Infinity, duration: 0.7 }}
           className="inline-block w-2 h-4 bg-accent ml-1 align-middle" />
@@ -305,11 +305,30 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="text-center pt-8 pb-4 sm:pt-16 sm:pb-8"
+            className="text-center pt-12 pb-4 sm:pt-20 sm:pb-8"
           >
-            {/* Removed uppercase */}
-            <h2 className="font-heading text-4xl sm:text-6xl tracking-tighter mb-4">Built to break free.</h2>
-            <p className="font-sans text-base sm:text-lg text-ink/60 max-w-xl mx-auto">Every tool you need. Nothing you don&apos;t.</p>
+            <h2 className="font-heading text-4xl sm:text-6xl md:text-7xl tracking-tighter mb-5 leading-[0.95]">
+              Built to{" "}
+              <span className="relative inline-block">
+                <span className="relative z-10">break</span>
+                <span className="absolute left-0 right-0 top-1/2 h-[4px] bg-accent z-20" />
+              </span>{" "}
+              <span className="relative inline-block">
+                free
+                <motion.span
+                  className="absolute -bottom-1 left-0 w-full h-[6px] bg-brand -z-10"
+                  initial={{ scaleX: 0 }}
+                  whileInView={{ scaleX: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.4, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ transformOrigin: "left" }}
+                />
+              </span>.
+            </h2>
+            <p className="font-sans text-base sm:text-lg text-ink/50 max-w-md mx-auto leading-relaxed">
+              Four tools. Zero fluff.{" "}
+              <span className="text-ink/80 font-semibold">Everything you need to stop going back.</span>
+            </p>
           </motion.div>
 
           <div>
