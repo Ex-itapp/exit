@@ -36,17 +36,17 @@ const TypewriterEffect = () => {
 
   return (
     <motion.div
-      className="bg-white border-4 border-ink p-5 sm:p-6 shadow-[6px_6px_0px_0px_rgba(17,17,17,1)] w-full max-w-lg mx-auto rotate-1"
+      className="bg-white border-3 sm:border-4 border-ink p-4 sm:p-6 shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] sm:shadow-[6px_6px_0px_0px_rgba(17,17,17,1)] w-full max-w-lg mx-auto sm:rotate-1"
       whileHover={{ rotate: 0, transition: { duration: 0.2 } }}
     >
-      <div className="flex items-center gap-3 mb-3">
-        <div className="w-9 h-9 rounded-full bg-brand border-4 border-ink flex items-center justify-center font-heading text-xs shrink-0">EX</div>
+      <div className="flex items-center gap-2 sm:gap-3 mb-2">
+        <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-brand border-3 sm:border-4 border-ink flex items-center justify-center font-heading text-[10px] sm:text-xs shrink-0">EX</div>
         <div>
-          <p className="font-heading text-sm uppercase tracking-wide">Unsent Message</p>
-          <p className="font-mono text-xs text-ink/50 font-bold">Just now</p>
+          <p className="font-heading text-xs sm:text-sm uppercase tracking-wide">Unsent Message</p>
+          <p className="font-mono text-[10px] sm:text-xs text-ink/50 font-bold">Just now</p>
         </div>
       </div>
-      <div className="min-h-[72px] font-sans text-base leading-relaxed text-ink/80 italic">
+      <div className="min-h-[56px] sm:min-h-[72px] font-sans text-sm sm:text-base leading-relaxed text-ink/80 italic">
         {text}
         <motion.span animate={{ opacity: [1, 0] }} transition={{ repeat: Infinity, duration: 0.7 }}
           className="inline-block w-2 h-4 bg-accent ml-1 align-middle" />
@@ -75,48 +75,47 @@ const RedFlagDemo = () => {
   };
 
   return (
-    // Changed bg-purple/20 to bg-bg to provide strong contrast against the black section background
-    <div className="bg-bg border-4 border-ink p-5 sm:p-8 shadow-[8px_8px_0px_0px_rgba(17,17,17,1)] w-full max-w-xl mx-auto -rotate-1 relative">
+    <div className="bg-bg border-3 sm:border-4 border-ink p-4 sm:p-8 shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] sm:shadow-[8px_8px_0px_0px_rgba(17,17,17,1)] w-full max-w-xl mx-auto sm:-rotate-1 relative">
       <AnimatePresence>
         {boom && (
           <motion.div initial={{ opacity: 0, scale: 0.6, rotate: -8 }} animate={{ opacity: 1, scale: 1, rotate: 5 }}
             exit={{ opacity: 0, scale: 0.6 }}
-            className="absolute inset-0 m-auto w-fit h-fit bg-positive border-4 border-ink text-ink font-heading px-6 py-4 z-10 shadow-[6px_6px_0px_0px_rgba(17,17,17,1)] text-2xl uppercase tracking-widest">
+            className="absolute inset-0 m-auto w-fit h-fit bg-positive border-3 sm:border-4 border-ink text-ink font-heading px-4 py-3 sm:px-6 sm:py-4 z-10 shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] text-lg sm:text-2xl uppercase tracking-widest">
             FLAG DROPPED! 🚩
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="flex justify-between items-center mb-5">
-        <h3 className="font-heading text-xl sm:text-2xl tracking-tighter">Red flag dropper</h3>
-        <div className="bg-accent text-white font-mono px-3 py-1 border-4 border-ink font-bold text-sm shadow-[2px_2px_0px_0px_rgba(17,17,17,1)]">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="font-heading text-lg sm:text-2xl tracking-tighter">Red flag dropper</h3>
+        <div className="bg-accent text-white font-mono px-2.5 py-1 border-3 sm:border-4 border-ink font-bold text-xs sm:text-sm shadow-[2px_2px_0px_0px_rgba(17,17,17,1)]">
           {count} 🚩
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3">
         {cats.map(c => (
           <button key={c} onClick={() => setCat(c)}
-            className={`px-3 py-1.5 border-3 border-ink font-mono text-xs font-bold uppercase transition-all ${cat === c ? "bg-brand shadow-[3px_3px_0px_0px_rgba(17,17,17,1)] -translate-x-[1px] -translate-y-[1px]" : "bg-white hover:bg-white/80"}`}>
+            className={`px-2 py-1 sm:px-3 sm:py-1.5 border-2 sm:border-3 border-ink font-mono text-[10px] sm:text-xs font-bold uppercase transition-all ${cat === c ? "bg-brand shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] -translate-x-[1px] -translate-y-[1px]" : "bg-white"}`}>
             {c}
           </button>
         ))}
       </div>
 
       <textarea value={flagText} onChange={e => setFlagText(e.target.value)}
-        placeholder="What did they do this time? Don't hold back."
-        className="w-full bg-white border-4 border-ink p-4 font-mono text-sm font-bold resize-none h-24 mb-4 focus:outline-none focus:bg-brand/10 transition-colors placeholder:text-ink/40" />
+        placeholder="What did they do this time?"
+        className="w-full bg-white border-3 sm:border-4 border-ink p-3 sm:p-4 font-mono text-xs sm:text-sm font-bold resize-none h-20 sm:h-24 mb-3 focus:outline-none focus:bg-brand/10 transition-colors placeholder:text-ink/30" />
 
       <button onClick={drop} disabled={!flagText.trim()}
-        className="w-full bg-accent text-white disabled:opacity-40 border-4 border-ink py-4 font-heading text-xl shadow-[5px_5px_0px_0px_rgba(17,17,17,1)] hover:shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] hover:translate-x-[3px] hover:translate-y-[3px] transition-all active:shadow-none flex items-center justify-center gap-2">
-        <Flag size={20} /> Drop flag
+        className="w-full bg-accent text-white disabled:opacity-40 border-3 sm:border-4 border-ink py-3 sm:py-4 font-heading text-base sm:text-xl shadow-[3px_3px_0px_0px_rgba(17,17,17,1)] sm:shadow-[5px_5px_0px_0px_rgba(17,17,17,1)] hover:shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] hover:translate-x-[1px] hover:translate-y-[1px] transition-all active:shadow-none flex items-center justify-center gap-2">
+        <Flag size={16} /> Drop flag
       </button>
 
       {recent.length > 0 && (
-        <div className="mt-4 pt-4 border-t-4 border-ink/10 space-y-2">
+        <div className="mt-3 pt-3 border-t-3 border-ink/10 space-y-1.5">
           {recent.map((f, i) => (
             <motion.div key={`${f}-${i}`} initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
-              className="flex gap-2 font-mono text-xs font-bold text-ink/70 bg-white border-4 border-ink p-2.5 shadow-[3px_3px_0px_0px_rgba(17,17,17,1)]">
+              className="flex gap-2 font-mono text-[10px] sm:text-xs font-bold text-ink/70 bg-white border-2 sm:border-4 border-ink p-2 shadow-[2px_2px_0px_0px_rgba(17,17,17,1)]">
               <span className="shrink-0">🚩</span>
               <span className="line-clamp-1">{f}</span>
             </motion.div>
@@ -128,11 +127,11 @@ const RedFlagDemo = () => {
 };
 
 /* ─────────────────────────────────────────────
-   Scroll-driven Feature Reveal (Apple-style)
+   Features data
 ───────────────────────────────────────────── */
 const features = [
   {
-    icon: <Flame className="w-10 h-10" />,
+    icon: <Flame className="w-5 h-5 sm:w-10 sm:h-10" />,
     color: "bg-accent",
     label: "01",
     title: "No-contact streak.",
@@ -140,7 +139,7 @@ const features = [
     accent: "text-accent",
   },
   {
-    icon: <MessageSquare className="w-10 h-10" />,
+    icon: <MessageSquare className="w-5 h-5 sm:w-10 sm:h-10" />,
     color: "bg-purple",
     label: "02",
     title: "Say it here.",
@@ -148,7 +147,7 @@ const features = [
     accent: "text-purple",
   },
   {
-    icon: <Flag className="w-10 h-10" />,
+    icon: <Flag className="w-5 h-5 sm:w-10 sm:h-10" />,
     color: "bg-brand",
     label: "03",
     title: "Red flag tracker.",
@@ -156,7 +155,7 @@ const features = [
     accent: "text-ink",
   },
   {
-    icon: <Heart className="w-10 h-10" />,
+    icon: <Heart className="w-5 h-5 sm:w-10 sm:h-10" />,
     color: "bg-blue",
     label: "04",
     title: "Healing companion.",
@@ -165,6 +164,7 @@ const features = [
   },
 ];
 
+/* Desktop: alternating scroll-reveal rows */
 const FeatureRow = ({ f, i }: { f: typeof features[0]; i: number }) => {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.9", "start 0.35"] });
@@ -174,12 +174,12 @@ const FeatureRow = ({ f, i }: { f: typeof features[0]; i: number }) => {
 
   return (
     <motion.div ref={ref} style={{ opacity, y }}
-      className={`flex flex-col ${even ? "sm:flex-row" : "sm:flex-row-reverse"} gap-6 sm:gap-12 items-stretch mb-8`}>
-      {/* Icon block */}
-      <div className="shrink-0 flex items-center justify-center">
+      className={`flex ${even ? "sm:flex-row" : "sm:flex-row-reverse"} gap-6 sm:gap-12 items-stretch mb-8`}>
+      {/* Icon block — hidden on mobile, shown on sm+ */}
+      <div className="shrink-0 hidden sm:flex items-center justify-center">
         <motion.div
           whileHover={{ rotate: even ? 8 : -8, scale: 1.05 }}
-          className={`${f.color} w-28 h-28 sm:w-36 sm:h-36 border-4 border-ink flex items-center justify-center text-white shadow-[6px_6px_0px_0px_rgba(17,17,17,1)] rotate-${even ? "2" : "-1"}`}
+          className={`${f.color} w-36 h-36 border-4 border-ink flex items-center justify-center text-white shadow-[6px_6px_0px_0px_rgba(17,17,17,1)]`}
           style={{ rotate: even ? 2 : -1 }}
         >
           {f.icon}
@@ -188,13 +188,11 @@ const FeatureRow = ({ f, i }: { f: typeof features[0]; i: number }) => {
 
       {/* Card */}
       <div className="flex-1 border-4 border-ink bg-white shadow-[6px_6px_0px_0px_rgba(17,17,17,1)] p-6 sm:p-8 relative overflow-hidden">
-        {/* Colored accent bar on the left */}
         <div className={`absolute top-0 left-0 w-2 h-full ${f.color}`} />
-
         <div className="pl-4">
           <span className={`font-mono text-xs font-bold uppercase tracking-[0.25em] ${f.accent} block mb-2`}>{f.label}</span>
           <h3 className="font-heading text-2xl sm:text-4xl tracking-tighter mb-3 leading-tight">{f.title}</h3>
-          <p className="font-sans text-base sm:text-lg text-ink/60 leading-relaxed max-w-lg">{f.body}</p>
+          <p className="font-sans text-sm sm:text-lg text-ink/60 leading-relaxed max-w-lg">{f.body}</p>
         </div>
       </div>
     </motion.div>
@@ -215,14 +213,13 @@ export default function LandingPage() {
 
       {/* ── NAV ── */}
       <nav className="fixed top-0 w-full z-50 bg-bg/80 backdrop-blur-xl border-b-4 border-ink">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
             <motion.div whileHover={{ rotate: -8, scale: 1.1 }}
-              className="bg-accent w-8 h-8 border-4 border-ink rotate-3 flex items-center justify-center shadow-[3px_3px_0px_0px_rgba(17,17,17,1)]">
-              <HeartCrack className="text-white w-4 h-4" />
+              className="bg-accent w-7 h-7 sm:w-8 sm:h-8 border-3 sm:border-4 border-ink rotate-3 flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(17,17,17,1)]">
+              <HeartCrack className="text-white w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </motion.div>
-            {/* Removed uppercase for cleaner look */}
-            <span className="font-heading text-xl tracking-tighter">EX-it.</span>
+            <span className="font-heading text-lg sm:text-xl tracking-tighter">EX-it.</span>
           </Link>
 
           <div className="flex items-center gap-3 sm:gap-5">
@@ -230,7 +227,7 @@ export default function LandingPage() {
               Log in
             </Link>
             <Link href="/auth"
-              className="bg-brand border-4 border-ink px-4 py-2 font-heading text-sm shadow-[3px_3px_0px_0px_rgba(17,17,17,1)] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] transition-all whitespace-nowrap">
+              className="bg-brand border-3 sm:border-4 border-ink px-3 py-1.5 sm:px-4 sm:py-2 font-heading text-xs sm:text-sm shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] sm:shadow-[3px_3px_0px_0px_rgba(17,17,17,1)] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] transition-all whitespace-nowrap">
               Start healing
             </Link>
           </div>
@@ -239,26 +236,24 @@ export default function LandingPage() {
 
       <main>
 
-        {/* ── HERO — full-viewport, one idea ── */}
-        <section ref={heroRef} className="min-h-screen flex flex-col items-center justify-center px-4 pt-16 pb-8 text-center relative overflow-hidden">
-          {/* Subtle dot grid — Apple-like depth layer */}
+        {/* ── HERO ── */}
+        <section ref={heroRef} className="min-h-[85vh] sm:min-h-screen flex flex-col items-center justify-center px-4 pt-14 sm:pt-16 pb-6 text-center relative overflow-hidden">
           <div className="absolute inset-0 pointer-events-none opacity-[0.04]"
             style={{ backgroundImage: "radial-gradient(circle, #111 1.5px, transparent 1.5px)", backgroundSize: "28px 28px" }} />
 
           <motion.div style={{ y: heroY, opacity: heroOpacity }} className="relative z-10 flex flex-col items-center">
-            {/* Removed uppercase from heading */}
             <motion.h1
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="font-heading text-[13vw] sm:text-7xl lg:text-[110px] tracking-tighter leading-[0.88] text-ink mb-6"
+              className="font-heading text-[11vw] sm:text-7xl lg:text-[110px] tracking-tighter leading-[0.88] text-ink mb-4 sm:mb-6"
               style={{ WebkitTextStroke: "1.5px #111" }}
             >
               Stop texting<br />
               <span className="text-accent relative inline-block" style={{ WebkitTextStroke: "1.5px var(--color-accent)" }}>
                 your ex.
                 <motion.div
-                  className="absolute -bottom-1 sm:-bottom-2 left-0 w-full h-2 sm:h-4 bg-brand -z-10 -rotate-1"
+                  className="absolute -bottom-0.5 sm:-bottom-2 left-0 w-full h-1.5 sm:h-4 bg-brand -z-10 -rotate-1"
                   initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
                   transition={{ delay: 0.6, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                   style={{ transformOrigin: "left" }}
@@ -270,7 +265,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="font-sans text-base sm:text-xl text-ink/65 max-w-lg leading-relaxed mb-10 font-medium"
+              className="font-sans text-sm sm:text-xl text-ink/65 max-w-lg leading-relaxed mb-6 sm:mb-10 font-medium px-2"
             >
               You broke up for a reason. Put the phone down. Vent here, track your distance, and{" "}
               <span className="text-ink font-bold underline decoration-accent decoration-2 underline-offset-2">get your power back.</span>
@@ -280,50 +275,50 @@ export default function LandingPage() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.5, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto"
+              className="flex gap-3 w-full sm:w-auto"
             >
-              {/* Removed uppercase from buttons */}
+              {/* Mobile: side-by-side compact buttons. Desktop: larger */}
               <Link href="/auth"
-                className="group flex items-center justify-center gap-3 bg-ink text-white border-4 border-ink px-8 py-4 font-heading text-lg shadow-[6px_6px_0px_0px_rgba(255,51,102,1)] hover:shadow-[3px_3px_0px_0px_rgba(255,51,102,1)] hover:translate-x-[3px] hover:translate-y-[3px] transition-all">
-                Start healing <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                className="group flex-1 sm:flex-none flex items-center justify-center gap-2 bg-ink text-white border-3 sm:border-4 border-ink px-5 py-3 sm:px-8 sm:py-4 font-heading text-sm sm:text-lg shadow-[4px_4px_0px_0px_rgba(255,51,102,1)] sm:shadow-[6px_6px_0px_0px_rgba(255,51,102,1)] hover:shadow-[3px_3px_0px_0px_rgba(255,51,102,1)] hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
+                Start healing <ArrowRight size={16} className="sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link href="/auth"
-                className="flex items-center justify-center gap-2 border-4 border-ink px-8 py-4 font-heading text-lg bg-white hover:bg-bg shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] hover:shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+                className="flex-1 sm:flex-none flex items-center justify-center border-3 sm:border-4 border-ink px-5 py-3 sm:px-8 sm:py-4 font-heading text-sm sm:text-lg bg-white shadow-[3px_3px_0px_0px_rgba(17,17,17,1)] sm:shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] hover:shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
                 Log in
               </Link>
             </motion.div>
           </motion.div>
 
-          {/* Typewriter card — drifts in from below */}
+          {/* Typewriter — compact on mobile */}
           <motion.div
-            initial={{ opacity: 0, y: 60 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="relative z-10 w-full mt-14 sm:mt-20"
+            className="relative z-10 w-full mt-8 sm:mt-20"
           >
             <TypewriterEffect />
           </motion.div>
         </section>
 
-        {/* ── FEATURES — Apple-style alternating scroll reveals ── */}
-        <section className="px-4 sm:px-8 py-8 max-w-5xl mx-auto">
+        {/* ── FEATURES ── */}
+        <section className="px-4 sm:px-8 py-6 sm:py-8 max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="text-center pt-12 pb-4 sm:pt-20 sm:pb-8"
+            className="text-center pt-6 pb-4 sm:pt-20 sm:pb-8"
           >
-            <h2 className="font-heading text-4xl sm:text-6xl md:text-7xl tracking-tighter mb-5 leading-[0.95]">
+            <h2 className="font-heading text-3xl sm:text-6xl md:text-7xl tracking-tighter mb-3 sm:mb-5 leading-[0.95]">
               Built to{" "}
               <span className="relative inline-block">
                 <span className="relative z-10">break</span>
-                <span className="absolute left-0 right-0 top-1/2 h-[4px] bg-accent z-20" />
+                <span className="absolute left-0 right-0 top-1/2 h-[3px] sm:h-[4px] bg-accent z-20" />
               </span>{" "}
               <span className="relative inline-block">
                 free
                 <motion.span
-                  className="absolute -bottom-1 left-0 w-full h-[6px] bg-brand -z-10"
+                  className="absolute -bottom-0.5 sm:-bottom-1 left-0 w-full h-[4px] sm:h-[6px] bg-brand -z-10"
                   initial={{ scaleX: 0 }}
                   whileInView={{ scaleX: 1 }}
                   viewport={{ once: true }}
@@ -332,19 +327,43 @@ export default function LandingPage() {
                 />
               </span>.
             </h2>
-            <p className="font-sans text-base sm:text-lg text-ink/50 max-w-md mx-auto leading-relaxed">
+            <p className="font-sans text-sm sm:text-lg text-ink/50 max-w-md mx-auto leading-relaxed">
               Four tools. Zero fluff.{" "}
               <span className="text-ink/80 font-semibold">Everything you need to stop going back.</span>
             </p>
           </motion.div>
 
-          <div>
+          {/* Mobile: compact 2-col grid. Desktop: alternating rows */}
+          <div className="hidden sm:block">
             {features.map((f, i) => <FeatureRow key={i} f={f} i={i} />)}
+          </div>
+
+          {/* Mobile grid */}
+          <div className="grid grid-cols-2 gap-3 sm:hidden">
+            {features.map((f, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+                className="border-3 border-ink bg-white shadow-[3px_3px_0px_0px_rgba(17,17,17,1)] p-3.5 relative overflow-hidden"
+              >
+                <div className={`absolute top-0 left-0 w-1.5 h-full ${f.color}`} />
+                <div className="pl-2">
+                  <div className={`${f.color} w-8 h-8 border-2 border-ink flex items-center justify-center text-white mb-2 shadow-[2px_2px_0px_0px_rgba(17,17,17,1)]`}>
+                    {f.icon}
+                  </div>
+                  <h3 className="font-heading text-sm tracking-tight mb-1 leading-snug">{f.title}</h3>
+                  <p className="font-sans text-[11px] text-ink/55 leading-snug">{f.body}</p>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </section>
 
-        {/* ── DEMO — full-bleed dark, one focal point ── */}
-        <section className="py-16 sm:py-28 px-4 bg-ink relative overflow-hidden">
+        {/* ── DEMO ── */}
+        <section className="py-10 sm:py-28 px-4 bg-ink relative overflow-hidden">
           <div className="absolute inset-0 pointer-events-none opacity-[0.06]"
             style={{ backgroundImage: "repeating-linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%), repeating-linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%)", backgroundPosition: "0 0, 20px 20px", backgroundSize: "40px 40px" }} />
 
@@ -354,18 +373,18 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="text-center mb-12 sm:mb-16"
+              className="text-center mb-6 sm:mb-16"
             >
-              <h2 className="font-heading text-4xl sm:text-6xl tracking-tighter text-white mb-4 drop-shadow-[5px_5px_0px_rgba(255,51,102,1)]">
+              <h2 className="font-heading text-2xl sm:text-6xl tracking-tighter text-white mb-2 sm:mb-4 drop-shadow-[3px_3px_0px_rgba(255,51,102,1)] sm:drop-shadow-[5px_5px_0px_rgba(255,51,102,1)]">
                 Try it right now.
               </h2>
-              <p className="font-sans text-base sm:text-lg text-white/50 max-w-md mx-auto">
+              <p className="font-sans text-xs sm:text-lg text-white/50 max-w-md mx-auto">
                 Drop a red flag. It&apos;s more satisfying than you think.
               </p>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -375,45 +394,52 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── PRICING — breathe, let the numbers speak ── */}
-        <section className="py-16 sm:py-28 px-4">
+        {/* ── PRICING ── */}
+        <section className="py-10 sm:py-28 px-4">
           <div className="max-w-4xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="text-center mb-12 sm:mb-20"
+              className="text-center mb-8 sm:mb-20"
             >
-              <h2 className="font-heading text-4xl sm:text-6xl tracking-tighter mb-4">Simple pricing.</h2>
-              <p className="font-sans text-base sm:text-lg text-ink/60 max-w-md mx-auto">
+              <h2 className="font-heading text-3xl sm:text-6xl tracking-tighter mb-2 sm:mb-4">Simple pricing.</h2>
+              <p className="font-sans text-sm sm:text-lg text-ink/60 max-w-md mx-auto">
                 Cheaper than therapy. More honest than your friends.
               </p>
             </motion.div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 max-w-3xl mx-auto">
+            {/* Mobile: horizontal scroll pair. Desktop: grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 max-w-3xl mx-auto">
               {/* Monthly */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 whileHover={{ y: -6 }}
-                className="bg-white border-4 border-ink p-7 sm:p-8 shadow-[6px_6px_0px_0px_rgba(17,17,17,1)] flex flex-col"
+                className="bg-white border-3 sm:border-4 border-ink p-5 sm:p-8 shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] sm:shadow-[6px_6px_0px_0px_rgba(17,17,17,1)] flex flex-col"
               >
-                <p className="font-mono text-xs font-bold uppercase tracking-widest text-ink/40 mb-3">Monthly</p>
-                <div className="font-heading text-5xl sm:text-6xl mb-1">$10<span className="text-xl text-ink/35">/mo</span></div>
-                <p className="font-mono text-xs text-ink/35 mb-6 pb-4 border-b-4 border-ink/10">Cancel anytime</p>
-                <ul className="space-y-3 mb-8 flex-1">
-                  {["Unlimited unsent messages", "Red flag tracker", "Healing companion", "Private diary"].map(item => (
-                    <li key={item} className="flex items-center gap-3 font-sans text-sm font-medium text-ink/80">
-                      <Check className="w-5 h-5 text-positive shrink-0" strokeWidth={3} />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <Link href="/auth" className="block text-center border-4 border-ink py-3.5 font-heading text-base shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] hover:bg-ink hover:text-white hover:shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
-                  Start healing
-                </Link>
+                <div className="flex items-baseline justify-between sm:block">
+                  <div>
+                    <p className="font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest text-ink/40 mb-1 sm:mb-3">Monthly</p>
+                    <div className="font-heading text-4xl sm:text-6xl mb-0.5 sm:mb-1">$10<span className="text-base sm:text-xl text-ink/35">/mo</span></div>
+                  </div>
+                  <p className="font-mono text-[10px] sm:text-xs text-ink/35 sm:mb-6 sm:pb-4 sm:border-b-4 sm:border-ink/10">Cancel anytime</p>
+                </div>
+                <div className="border-t-3 sm:border-t-0 border-ink/10 mt-3 pt-3 sm:mt-0 sm:pt-0">
+                  <ul className="space-y-2 sm:space-y-3 mb-4 sm:mb-8 flex-1">
+                    {["Unlimited unsent messages", "Red flag tracker", "Healing companion", "Private diary"].map(item => (
+                      <li key={item} className="flex items-center gap-2 sm:gap-3 font-sans text-xs sm:text-sm font-medium text-ink/80">
+                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-positive shrink-0" strokeWidth={3} />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link href="/auth" className="block text-center border-3 sm:border-4 border-ink py-2.5 sm:py-3.5 font-heading text-sm sm:text-base shadow-[3px_3px_0px_0px_rgba(17,17,17,1)] sm:shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] hover:bg-ink hover:text-white hover:shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
+                    Start healing
+                  </Link>
+                </div>
               </motion.div>
 
               {/* Yearly */}
@@ -423,36 +449,42 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 transition={{ delay: 0.08 }}
                 whileHover={{ y: -6 }}
-                className="bg-ink text-white border-4 border-ink p-7 sm:p-8 shadow-[6px_6px_0px_0px_rgba(255,51,102,1)] flex flex-col relative"
+                className="bg-ink text-white border-3 sm:border-4 border-ink p-5 sm:p-8 shadow-[4px_4px_0px_0px_rgba(255,51,102,1)] sm:shadow-[6px_6px_0px_0px_rgba(255,51,102,1)] flex flex-col relative"
               >
                 <motion.div
                   animate={{ rotate: [3, -2, 3] }}
                   transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-                  className="absolute -top-4 right-4 bg-brand text-ink font-heading text-xs px-4 py-1.5 border-4 border-ink shadow-[3px_3px_0px_0px_rgba(255,51,102,1)]"
+                  className="absolute -top-3 sm:-top-4 right-3 sm:right-4 bg-brand text-ink font-heading text-[10px] sm:text-xs px-3 py-1 sm:px-4 sm:py-1.5 border-3 sm:border-4 border-ink shadow-[2px_2px_0px_0px_rgba(255,51,102,1)]"
                 >
                   BEST VALUE
                 </motion.div>
-                <p className="font-mono text-xs font-bold uppercase tracking-widest text-white/40 mb-3">Yearly</p>
-                <div className="font-heading text-5xl sm:text-6xl mb-1">$40<span className="text-xl text-white/35">/yr</span></div>
-                <p className="font-mono text-xs text-brand mb-6 pb-4 border-b-4 border-white/10">Save 67% — $3.33/month</p>
-                <ul className="space-y-3 mb-8 flex-1">
-                  {["Everything in Monthly", "Exclusive themes", "Priority support", "Lifetime badges"].map(item => (
-                    <li key={item} className="flex items-center gap-3 font-sans text-sm font-medium text-white/80">
-                      <Check className="w-5 h-5 text-brand shrink-0" strokeWidth={3} />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <Link href="/auth" className="block text-center bg-brand text-ink border-4 border-ink py-3.5 font-heading text-base shadow-[4px_4px_0px_0px_rgba(255,51,102,1)] hover:shadow-[2px_2px_0px_0px_rgba(255,51,102,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
-                  Most popular
-                </Link>
+                <div className="flex items-baseline justify-between sm:block">
+                  <div>
+                    <p className="font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest text-white/40 mb-1 sm:mb-3">Yearly</p>
+                    <div className="font-heading text-4xl sm:text-6xl mb-0.5 sm:mb-1">$40<span className="text-base sm:text-xl text-white/35">/yr</span></div>
+                  </div>
+                  <p className="font-mono text-[10px] sm:text-xs text-brand sm:mb-6 sm:pb-4 sm:border-b-4 sm:border-white/10">Save 67%</p>
+                </div>
+                <div className="border-t-3 sm:border-t-0 border-white/10 mt-3 pt-3 sm:mt-0 sm:pt-0">
+                  <ul className="space-y-2 sm:space-y-3 mb-4 sm:mb-8 flex-1">
+                    {["Everything in Monthly", "Exclusive themes", "Priority support", "Lifetime badges"].map(item => (
+                      <li key={item} className="flex items-center gap-2 sm:gap-3 font-sans text-xs sm:text-sm font-medium text-white/80">
+                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-brand shrink-0" strokeWidth={3} />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link href="/auth" className="block text-center bg-brand text-ink border-3 sm:border-4 border-ink py-2.5 sm:py-3.5 font-heading text-sm sm:text-base shadow-[3px_3px_0px_0px_rgba(255,51,102,1)] sm:shadow-[4px_4px_0px_0px_rgba(255,51,102,1)] hover:shadow-[2px_2px_0px_0px_rgba(255,51,102,1)] hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
+                    Most popular
+                  </Link>
+                </div>
               </motion.div>
             </div>
           </div>
         </section>
 
-        {/* ── FINAL CTA — Apple-style single-focus close ── */}
-        <section className="py-24 sm:py-40 px-4 bg-positive relative overflow-hidden">
+        {/* ── FINAL CTA ── */}
+        <section className="py-16 sm:py-40 px-4 bg-positive relative overflow-hidden">
           <div className="absolute inset-0 opacity-[0.07] flex items-center justify-center pointer-events-none">
             <motion.div
               animate={{ rotate: 360 }}
@@ -469,15 +501,15 @@ export default function LandingPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             >
-              <h2 className="font-heading text-[11vw] sm:text-7xl md:text-8xl tracking-tighter text-ink leading-[0.88] mb-8">
+              <h2 className="font-heading text-[10vw] sm:text-7xl md:text-8xl tracking-tighter text-ink leading-[0.88] mb-6 sm:mb-8">
                 You deserve<br />to heal.
               </h2>
               <Link href="/auth"
-                className="group inline-flex items-center gap-3 bg-ink text-white border-4 border-ink px-10 py-5 font-heading text-xl shadow-[8px_8px_0px_0px_rgba(255,255,255,0.5)] hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.5)] hover:translate-x-[4px] hover:translate-y-[4px] transition-all">
+                className="group inline-flex items-center gap-2 sm:gap-3 bg-ink text-white border-3 sm:border-4 border-ink px-6 py-3.5 sm:px-10 sm:py-5 font-heading text-base sm:text-xl shadow-[5px_5px_0px_0px_rgba(255,255,255,0.5)] sm:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.5)] hover:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
                 Start your era
-                <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" />
+                <ArrowRight size={18} className="sm:w-[22px] sm:h-[22px] group-hover:translate-x-1 transition-transform" />
               </Link>
-              <p className="font-mono text-xs font-bold text-ink/50 uppercase tracking-widest mt-6">
+              <p className="font-mono text-[10px] sm:text-xs font-bold text-ink/50 uppercase tracking-widest mt-4 sm:mt-6">
                 Free to start · No credit card required
               </p>
             </motion.div>
@@ -487,11 +519,11 @@ export default function LandingPage() {
       </main>
 
       {/* ── FOOTER ── */}
-      <footer className="bg-ink text-white py-8 px-4">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-          <span className="font-heading text-xl tracking-tighter">EX-it.</span>
-          <p className="font-mono text-xs text-white/40">© {new Date().getFullYear()} EX-it. All rights reserved.</p>
-          <div className="flex gap-6 font-mono text-xs font-bold uppercase tracking-widest text-white/50">
+      <footer className="bg-ink text-white py-6 sm:py-8 px-4">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
+          <span className="font-heading text-lg sm:text-xl tracking-tighter">EX-it.</span>
+          <p className="font-mono text-[10px] sm:text-xs text-white/40">© {new Date().getFullYear()} EX-it. All rights reserved.</p>
+          <div className="flex gap-4 sm:gap-6 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest text-white/50">
             <Link href="/privacy" className="hover:text-brand transition-colors">Privacy</Link>
             <Link href="/tos" className="hover:text-brand transition-colors">Terms</Link>
             <Link href="/support" className="hover:text-brand transition-colors">Support</Link>
