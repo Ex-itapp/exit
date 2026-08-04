@@ -17,7 +17,7 @@ export function RedFlagTile() {
 
   return (
     <div 
-      className="relative w-full aspect-square max-w-[280px] mx-auto cursor-pointer group hover:-translate-y-1 hover:translate-x-1 transition-transform"
+      className="relative w-full aspect-square max-w-[200px] mx-auto cursor-pointer group hover:-translate-y-1 hover:translate-x-1 transition-transform"
       onClick={() => router.push('/flags')}
     >
       {/* Shadow */}

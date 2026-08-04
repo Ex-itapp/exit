@@ -48,7 +48,7 @@ export function CalendarTile() {
   );
 
   return (
-    <div className="relative w-full aspect-square max-w-[280px] mx-auto cursor-pointer group" onClick={handleTear}>
+    <div className="relative w-full aspect-square max-w-[200px] mx-auto cursor-pointer group" onClick={handleTear}>
       {/* Bottom Layer */}
       <div className="absolute inset-0">
         {renderTileContent(false, isPunchedToday)}

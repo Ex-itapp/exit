@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
 import { useTimeline } from "@/lib/useTimeline";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+const DAY_LABELS_SHORT = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+const DAY_LABELS_FULL = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
 export default function CalendarTimeline() {
   const router = useRouter();
@@ -74,9 +76,10 @@ export default function CalendarTimeline() {
         <CardContent className="p-0">
           {/* Days of week header */}
           <div className="grid grid-cols-7 border-b-4 border-ink bg-ink text-bg">
-            {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map(day => (
-              <div key={day} className="py-3 text-center font-mono font-bold text-[10px] sm:text-xs uppercase tracking-widest border-r-2 border-ink/20 last:border-r-0">
-                {day}
+            {DAY_LABELS_FULL.map((day, i) => (
+              <div key={day} className="py-2 sm:py-3 text-center font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest border-r border-ink/20 last:border-r-0">
+                <span className="sm:hidden">{DAY_LABELS_SHORT[i]}</span>
+                <span className="hidden sm:inline">{day}</span>
               </div>
             ))}
           </div>
@@ -84,7 +87,7 @@ export default function CalendarTimeline() {
           {/* Calendar Grid */}
           <div className="grid grid-cols-7 auto-rows-fr">
             {blanks.map(b => (
-              <div key={`blank-${b}`} className="min-h-[80px] sm:min-h-[120px] bg-bg/50 border-r-2 border-b-2 border-ink/10" />
+              <div key={`blank-${b}`} className="min-h-[60px] sm:min-h-[100px] lg:min-h-[120px] bg-bg/50 border-r border-b border-ink/10" />
             ))}
             
             {days.map(day => {
@@ -102,27 +105,27 @@ export default function CalendarTimeline() {
                   key={day}
                   onClick={() => handleDateClick(day)}
                   className={cn(
-                    "min-h-[80px] sm:min-h-[120px] p-2 sm:p-3 relative border-r-2 border-b-2 border-ink/10 cursor-pointer transition-all hover:bg-brand/10 group",
-                    isToday(day) ? "bg-brand/5 border-2 border-brand z-10" : "bg-white"
+                    "min-h-[60px] sm:min-h-[100px] lg:min-h-[120px] p-1.5 sm:p-2.5 relative border-r border-b border-ink/10 cursor-pointer transition-all hover:bg-brand/10 active:bg-brand/20 group",
+                    isToday(day) ? "bg-brand/5 ring-2 ring-brand ring-inset z-10" : "bg-white"
                   )}
                 >
                   <span className={cn(
-                    "font-heading text-lg sm:text-xl",
-                    isToday(day) ? "text-brand drop-shadow-md" : "text-ink"
+                    "font-heading text-base sm:text-lg lg:text-xl",
+                    isToday(day) ? "text-brand" : "text-ink"
                   )}>
                     {day}
                   </span>
 
                   {/* Event Indicators */}
-                  <div className="absolute top-2 right-2 flex gap-1">
-                    {hasFlag && <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-purple" title="Red Flag" />}
-                    {hasDiary && <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue" title="Diary" />}
-                    {hasCheckin && <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-positive" title="Check-in" />}
+                  <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 flex gap-0.5 sm:gap-1">
+                    {hasFlag && <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-purple" />}
+                    {hasDiary && <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue" />}
+                    {hasCheckin && <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-positive" />}
                   </div>
 
                   {/* Mood Emoji */}
                   {moodEmoji && (
-                    <div className="absolute bottom-1 right-1 sm:bottom-2 sm:right-2 text-xl sm:text-2xl group-hover:scale-110 transition-transform">
+                    <div className="absolute bottom-0.5 right-0.5 sm:bottom-2 sm:right-2 text-sm sm:text-xl lg:text-2xl group-hover:scale-110 transition-transform">
                       {moodEmoji}
                     </div>
                   )}

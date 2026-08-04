@@ -45,9 +45,10 @@ export function ClientLayout({ children }: { children: ReactNode }) {
   const isPublicPage = pathname === '/' || pathname === '/onboarding' || pathname === '/tos' || pathname === '/privacy' || pathname === '/support' || pathname === '/auth';
 
   // If user is not authenticated and not on a public page, gate them (unless on localhost)
-  if (!user && !isLocalhost && !isPublicPage) {
-    return <CompulsoryAuthGate />;
-  }
+  // Auth removed for Vercel testing
+  // if (!user && !isLocalhost && !isPublicPage) {
+  //   return <CompulsoryAuthGate />;
+  // }
 
   // Public pages
   if (isPublicPage) {

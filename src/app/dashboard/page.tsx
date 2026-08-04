@@ -3,37 +3,52 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Textarea } from "@/components/ui/Textarea";
 import { Input } from "@/components/ui/Input";
-import { Zap, MessageSquare, Anchor, Sparkles, ShieldAlert, Check, ArrowRight } from "lucide-react";
+import { Zap, MessageSquare, Anchor, Sparkles, ShieldAlert, Check, ArrowRight, Send, Flame, Calendar } from "lucide-react";
 import { useCheckins } from "@/lib/useCheckins";
 import { useUser } from "@/lib/useUser";
 import { useFlags } from "@/lib/useFlags";
-import { CalendarTile } from "@/components/CalendarTile";
-import { RedFlagTile } from "@/components/RedFlagTile";
-import { MoodTile } from "@/components/MoodTile";
+import { useMoods } from "@/lib/useMoods";
 import { AnchorModal } from "@/components/AnchorModal";
 import { useAuth } from "@/lib/useAuth";
 import { cn } from "@/lib/utils";
 
+const MOODS = [
+  { emoji: "😭", label: "Rough" },
+  { emoji: "😔", label: "Low" },
+  { emoji: "😐", label: "Okay" },
+  { emoji: "🙂", label: "Good" },
+  { emoji: "🤩", label: "Great" },
+];
+
 export default function DashboardPage() {
   const navigate = useRouter();
-  const { userName, userAnchor, hasCompletedOnboarding, isProfileSyncing } = useUser();
+  const { userName, userAnchor, streakDays, hasCompletedOnboarding, isProfileSyncing } = useUser();
   const { loading: authLoading } = useAuth();
   const { checkins, addCheckin } = useCheckins();
-  const { addFlag } = useFlags();
+  const { flags, addFlag } = useFlags();
+  const { logMood, getMoodForDate } = useMoods();
   
-  // Daily check-in state
   const [checkinText, setCheckinText] = useState("");
   const [checkinDone, setCheckinDone] = useState(false);
   const [showAnchor, setShowAnchor] = useState(false);
-
-  // Quick Inline Red Flag state
   const [quickFlagText, setQuickFlagText] = useState("");
   const [quickFlagCategory, setQuickFlagCategory] = useState("Disrespect");
   const [flagDropped, setFlagDropped] = useState(false);
+  const [moodNote, setMoodNote] = useState("");
+  const [moodJustLogged, setMoodJustLogged] = useState(false);
+
+  const todayMood = getMoodForDate(new Date());
+  const todayDate = new Date();
+  const dayNum = todayDate.getDate();
+  const monthShort = todayDate.toLocaleString('default', { month: 'short' }).toUpperCase();
+
+  // Flag count last 30 days
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const recentFlagCount = flags.filter(f => new Date(f.createdAt) >= thirtyDaysAgo).length;
 
   useEffect(() => {
     if (typeof window !== 'undefined' && !authLoading && !isProfileSyncing && !hasCompletedOnboarding) {
@@ -44,10 +59,7 @@ export default function DashboardPage() {
     }
   }, [authLoading, isProfileSyncing, hasCompletedOnboarding, navigate]);
 
-  // Get today's checkin if it exists
-  const todayCheckin = checkins.find(c => {
-    return new Date(c.createdAt).toDateString() === new Date().toDateString();
-  });
+  const todayCheckin = checkins.find(c => new Date(c.createdAt).toDateString() === new Date().toDateString());
 
   const handleCheckin = () => {
     if (!checkinText.trim()) return;
@@ -64,272 +76,309 @@ export default function DashboardPage() {
     setTimeout(() => setFlagDropped(false), 4000);
   };
 
+  const handleMoodSelect = (emoji: string) => {
+    logMood(emoji, moodNote);
+    setMoodJustLogged(true);
+    setMoodNote("");
+    setTimeout(() => setMoodJustLogged(false), 3000);
+  };
+
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-150 pb-24 max-w-[1400px] mx-auto w-full px-2 sm:px-4">
+    <div className="space-y-4 sm:space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-150 pb-24 max-w-[1200px] mx-auto w-full px-2 sm:px-4">
       
-      {/* Personalized Welcome Header with Dynamic Grounding Reason */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 w-full border-b-4 border-ink pb-6">
+      {/* ── HEADER ── */}
+      <div className="flex items-center justify-between gap-3 pt-2 w-full">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="w-2.5 h-2.5 bg-brand border border-ink block animate-pulse" />
-            <span className="font-mono text-[11px] font-bold uppercase tracking-widest bg-ink text-bg px-2 py-0.5">
+          <div className="flex items-center gap-2 mb-0.5">
+            <span className="w-2 h-2 bg-brand border border-ink block animate-pulse" />
+            <span className="font-mono text-[10px] font-bold uppercase tracking-widest bg-ink text-bg px-1.5 py-0.5">
               Sanctuary Active
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-heading tracking-tighter uppercase">
-            WELCOME BACK, {userName || "TRAVELER"}
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-heading tracking-tighter uppercase">
+            {userName || "TRAVELER"}
           </h1>
         </div>
-
-        {/* Grounding Reason Button that actually shows what the user entered */}
-        <Button 
-          variant="secondary"
+        <button
           onClick={() => setShowAnchor(true)}
-          className="bg-white hover:bg-ink hover:text-bg text-ink border-3 border-ink brutalist-shadow-sm h-auto py-2.5 px-3 sm:px-4 shrink-0 font-mono font-bold uppercase transition-all flex items-center gap-2.5 w-full sm:w-auto max-w-full sm:max-w-lg"
-          title="Click to view full grounding reminder"
+          className="bg-white hover:bg-ink hover:text-bg text-ink border-3 border-ink brutalist-shadow-sm py-2 px-3 font-mono font-bold uppercase transition-all flex items-center gap-2 shrink-0 max-w-[280px]"
         >
           <div className="p-1 bg-brand text-ink border border-ink shrink-0">
-            <Anchor className="w-4 h-4 animate-pulse" />
+            <Anchor className="w-3.5 h-3.5" />
           </div>
-          <div className="text-left overflow-hidden">
-            <div className="text-[9px] opacity-60 leading-none">Your Reason For Leaving:</div>
-            <div className="truncate text-xs sm:text-sm font-black tracking-tight">
-              "{userAnchor || 'I deserve someone who chooses me without hesitation.'}"
+          <div className="text-left overflow-hidden hidden sm:block">
+            <div className="text-[8px] opacity-60 leading-none">Why you left:</div>
+            <div className="truncate text-[11px] font-black tracking-tight">
+              {userAnchor || 'I deserve better.'}
             </div>
           </div>
-        </Button>
+        </button>
       </div>
 
-      {/* PRODUCTIVE HERO DASHBOARD: 2-Column Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-8 items-start w-full">
-        {/* Left Column: Persistent Recovery Stats (side-by-side on mobile, stacked on desktop) */}
-        <div className="grid grid-cols-2 lg:grid-cols-1 gap-3 sm:gap-6 w-full shrink-0">
-          <CalendarTile />
-          <RedFlagTile />
-          <MoodTile />
+      {/* ── STATS STRIP — 4 compact stat blocks in a row ── */}
+      <div className="grid grid-cols-4 gap-0 border-4 border-ink brutalist-shadow overflow-hidden">
+        {/* Streak */}
+        <div 
+          onClick={() => navigate.push('/streak')}
+          className="bg-brand p-3 sm:p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-brand/80 transition-colors border-r-3 border-ink"
+        >
+          <Flame className="w-4 h-4 sm:w-5 sm:h-5 text-ink mb-1" />
+          <span className="font-heading text-2xl sm:text-3xl md:text-4xl tracking-tighter leading-none text-ink">
+            {streakDays}
+          </span>
+          <span className="font-mono text-[8px] sm:text-[10px] font-bold uppercase mt-0.5 text-ink/70">
+            Streak
+          </span>
         </div>
 
-        {/* Right Column: Active Daily Recovery Hub */}
-        <div className="flex flex-col gap-6 w-full h-full">
-          
-          {/* DAILY MISSION & CHECK-IN */}
-          <Card className="flex flex-col border-4 border-ink brutalist-shadow bg-white overflow-hidden">
-            <CardHeader className="bg-ink text-bg border-b-4 border-ink p-4 sm:p-5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-brand" />
-                  <CardTitle className="text-xl tracking-tight">DAILY MISSION & CHECK-IN</CardTitle>
-                </div>
-                {todayCheckin || checkinDone ? (
-                  <Badge variant="positive" className="border-bg font-mono text-xs">Logged Today</Badge>
-                ) : (
-                  <Badge variant="accent" className="animate-pulse border-bg font-mono text-xs">Required</Badge>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent className="p-5 bg-bg">
-              {todayCheckin || checkinDone ? (
-                <div className="animate-in fade-in duration-300 space-y-3">
-                  <div className="bg-white border-3 border-ink p-5 brutalist-shadow-sm space-y-2">
-                    <div className="flex justify-between items-center border-b-2 border-ink/10 pb-2">
-                      <span className="font-mono text-[11px] text-brand bg-ink px-2 py-0.5 font-bold uppercase">
-                        Today's Reflection Logged
-                      </span>
-                      <span className="font-mono text-[11px] text-ink/60">
-                        {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    </div>
-                    <p className="font-sans text-base sm:text-lg font-medium text-ink leading-relaxed pt-1">
-                      "{todayCheckin?.content || checkinText}"
-                    </p>
-                  </div>
-                  <p className="font-mono text-xs text-ink/70 text-center italic">
-                    ✨ Your check-in is recorded in your timeline. Consistency builds recovery.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <p className="text-sm font-medium text-ink/90">
-                    How is your heart feeling today? What urge or emotion are you navigating right now?
-                  </p>
-                  <Textarea 
-                    placeholder="Drop your thoughts freely... no judgment, just clarity." 
-                    className="min-h-[110px] resize-none border-3 border-ink bg-white font-sans text-base p-4"
-                    value={checkinText}
-                    onChange={(e) => setCheckinText(e.target.value)}
-                  />
-                  <Button 
-                    className="w-full h-12 text-base bg-brand hover:bg-brand/90 text-ink border-3 border-ink brutalist-shadow-sm hover:-translate-y-0.5 transition-all font-bold uppercase" 
-                    onClick={handleCheckin} 
-                    disabled={!checkinText.trim()}
-                  >
-                    Log Today's Check-in
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+        {/* Today */}
+        <div 
+          onClick={() => navigate.push('/timeline')}
+          className="bg-white p-3 sm:p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-bg transition-colors border-r-3 border-ink"
+        >
+          <span className="font-mono text-[8px] sm:text-[10px] font-bold uppercase text-ink/50">{monthShort}</span>
+          <span className="font-heading text-2xl sm:text-3xl md:text-4xl tracking-tighter leading-none text-ink">
+            {dayNum}
+          </span>
+          <span className="font-mono text-[8px] sm:text-[10px] font-bold uppercase mt-0.5 text-ink/70">
+            Today
+          </span>
+        </div>
 
-          {/* INSTANT INLINE RED FLAG DROPPER */}
-          <Card className="border-4 border-ink brutalist-shadow bg-purple/10 overflow-hidden">
-            <div className="bg-ink text-bg p-4 flex items-center justify-between border-b-4 border-ink">
-              <div className="flex items-center gap-2.5">
-                <ShieldAlert className="w-5 h-5 text-purple animate-bounce" />
-                <h3 className="font-heading text-lg tracking-tight uppercase">INSTANT RED FLAG DROP</h3>
-              </div>
-              <span className="font-mono text-[10px] bg-purple text-ink px-2 py-0.5 font-bold uppercase">
-                Zero Friction
+        {/* Flags */}
+        <div 
+          onClick={() => navigate.push('/flags')}
+          className="bg-purple/15 p-3 sm:p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-purple/25 transition-colors border-r-3 border-ink"
+        >
+          <ShieldAlert className="w-4 h-4 sm:w-5 sm:h-5 text-purple mb-1" />
+          <span className="font-heading text-2xl sm:text-3xl md:text-4xl tracking-tighter leading-none text-ink">
+            {recentFlagCount}
+          </span>
+          <span className="font-mono text-[8px] sm:text-[10px] font-bold uppercase mt-0.5 text-ink/70">
+            Flags
+          </span>
+        </div>
+
+        {/* Mood */}
+        <div className="bg-white p-3 sm:p-4 flex flex-col items-center justify-center">
+          {todayMood ? (
+            <>
+              <span className="text-xl sm:text-2xl md:text-3xl leading-none">{todayMood.emoji}</span>
+              <span className="font-mono text-[8px] sm:text-[10px] font-bold uppercase mt-1 text-ink/70">
+                {MOODS.find(m => m.emoji === todayMood.emoji)?.label || "Mood"}
               </span>
-            </div>
+            </>
+          ) : (
+            <>
+              <span className="text-xl sm:text-2xl opacity-30">☁️</span>
+              <span className="font-mono text-[8px] sm:text-[10px] font-bold uppercase mt-1 text-ink/40">
+                No Mood
+              </span>
+            </>
+          )}
+        </div>
+      </div>
 
-            <div className="p-5 space-y-4 bg-white">
-              <p className="font-sans text-xs sm:text-sm text-ink/80">
-                Remembered something toxic or feeling a wave of nostalgia? Drop it here to clear your head immediately without leaving your sanctuary.
-              </p>
-
-              <div className="flex flex-wrap gap-2 pt-1">
-                {["Disrespect", "Manipulation", "Inconsistency", "Boundary Crossing", "Other"].map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setQuickFlagCategory(cat)}
-                    className={cn(
-                      "px-3 py-1 font-mono text-xs font-bold border-2 border-ink transition-all uppercase",
-                      quickFlagCategory === cat 
-                        ? "bg-purple text-ink brutalist-shadow-sm -translate-y-0.5" 
-                        : "bg-bg text-ink/70 hover:text-ink hover:bg-bg/80"
-                    )}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3 pt-1">
-                <Input
-                  placeholder="e.g., How they treated me around their friends..."
-                  value={quickFlagText}
-                  onChange={(e) => setQuickFlagText(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleDropQuickFlag();
-                    }
-                  }}
-                  className="h-12 border-3 border-ink font-sans text-sm flex-1 bg-bg px-4"
-                />
-                <Button
-                  onClick={handleDropQuickFlag}
-                  disabled={!quickFlagText.trim()}
-                  className="h-12 px-6 bg-ink text-bg hover:bg-ink/90 border-3 border-ink font-mono font-bold uppercase shrink-0"
+      {/* ── MOOD PICKER — slim bar ── */}
+      <div className="border-4 border-ink bg-white overflow-hidden">
+        <div className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3">
+          <span className="font-mono text-[9px] sm:text-[10px] font-bold uppercase text-ink/40 shrink-0 hidden sm:block">Vibe:</span>
+          <div className="flex items-center gap-1 sm:gap-1.5 flex-1">
+            {MOODS.map(m => {
+              const isActive = todayMood?.emoji === m.emoji;
+              return (
+                <button
+                  key={m.emoji}
+                  onClick={() => handleMoodSelect(m.emoji)}
+                  className={cn(
+                    "flex-1 py-1.5 sm:py-2 text-center border-2 border-ink transition-all text-base sm:text-lg",
+                    isActive
+                      ? "bg-brand shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] -translate-y-0.5 scale-105"
+                      : todayMood
+                        ? "bg-bg/50 opacity-30 grayscale hover:opacity-60 hover:grayscale-0"
+                        : "bg-bg hover:bg-brand/20 hover:-translate-y-0.5"
+                  )}
                 >
-                  Drop Flag 🚩
+                  {m.emoji}
+                </button>
+              );
+            })}
+          </div>
+          {moodJustLogged && (
+            <Check className="w-4 h-4 text-positive shrink-0 animate-in fade-in" />
+          )}
+        </div>
+        <div className="border-t-2 border-ink/10 flex items-center gap-2 px-3 py-1.5 bg-bg/30">
+          <input
+            placeholder="Add a note..."
+            value={moodNote}
+            onChange={e => setMoodNote(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' && moodNote.trim() && todayMood) {
+                handleMoodSelect(todayMood.emoji);
+              }
+            }}
+            className="flex-1 bg-transparent font-sans text-xs focus:outline-none placeholder:text-ink/25 text-ink/70"
+          />
+          {moodNote.trim() && todayMood && (
+            <button
+              onClick={() => handleMoodSelect(todayMood.emoji)}
+              className="p-1 bg-brand border-2 border-ink hover:shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] transition-all"
+            >
+              <Send className="w-3 h-3 text-ink" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* ── TWO-COLUMN: CHECK-IN + RED FLAG DROPPER ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        {/* Check-in */}
+        <div className="border-4 border-ink brutalist-shadow bg-white overflow-hidden flex flex-col">
+          <div className="bg-ink text-bg px-4 py-2.5 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-brand" />
+              <span className="font-heading text-sm tracking-tight uppercase">Daily Check-in</span>
+            </div>
+            {todayCheckin || checkinDone ? (
+              <Badge variant="positive" className="border-bg font-mono text-[9px]">Done</Badge>
+            ) : (
+              <Badge variant="accent" className="animate-pulse border-bg font-mono text-[9px]">Required</Badge>
+            )}
+          </div>
+          <div className="p-4 bg-bg flex-1">
+            {todayCheckin || checkinDone ? (
+              <div className="space-y-2">
+                <p className="font-sans text-sm font-medium text-ink leading-relaxed">
+                  &ldquo;{todayCheckin?.content || checkinText}&rdquo;
+                </p>
+                <p className="font-mono text-[10px] text-ink/50 italic">✨ Recorded in your timeline</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <Textarea 
+                  placeholder="How is your heart today? What are you feeling?" 
+                  className="min-h-[90px] resize-none border-3 border-ink bg-white font-sans text-sm p-3"
+                  value={checkinText}
+                  onChange={(e) => setCheckinText(e.target.value)}
+                />
+                <Button 
+                  className="w-full h-10 text-sm bg-brand hover:bg-brand/90 text-ink border-3 border-ink brutalist-shadow-sm hover:-translate-y-0.5 transition-all font-bold uppercase" 
+                  onClick={handleCheckin} 
+                  disabled={!checkinText.trim()}
+                >
+                  Log Check-in
                 </Button>
               </div>
-
-              {flagDropped && (
-                <div className="p-3 bg-positive/20 border-2 border-positive text-ink font-mono text-xs font-bold flex items-center gap-2 animate-in fade-in duration-200">
-                  <Check className="w-4 h-4 text-positive shrink-0" />
-                  <span>Red flag logged! Clarity counter updated automatically.</span>
-                </div>
-              )}
-            </div>
-          </Card>
-
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* RECOVERY HEALING SANCTUARY (Focused Deep Tools, No Redundant Nav Buttons) */}
-      <div className="space-y-6 pt-6 border-t-4 border-ink/20">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
-          <div>
-            <span className="font-mono text-xs text-brand bg-ink px-2 py-0.5 font-bold uppercase">
-              Your Healing Sanctuary
+        {/* Red Flag Dropper */}
+        <div className="border-4 border-ink brutalist-shadow bg-white overflow-hidden flex flex-col">
+          <div className="bg-ink text-bg px-4 py-2.5 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ShieldAlert className="w-4 h-4 text-purple" />
+              <span className="font-heading text-sm tracking-tight uppercase">Quick Flag Drop</span>
+            </div>
+            <span className="font-mono text-[9px] bg-purple text-ink px-1.5 py-0.5 font-bold uppercase">
+              Zero Friction
             </span>
-            <h3 className="font-heading tracking-tighter text-2xl sm:text-3xl uppercase mt-1">
-              SAFE SPACES FOR YOUR HEART
-            </h3>
           </div>
-          <p className="font-mono text-xs text-ink/60">
-            Step into a private space whenever you need someone to listen, understand, and help you find peace.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          {/* Sanctuary 1: Talk to Them */}
-          <div 
-            onClick={() => navigate.push('/closure')}
-            className="border-4 border-ink brutalist-shadow bg-white hover:bg-brand/10 transition-all cursor-pointer p-6 sm:p-8 flex flex-col justify-between group relative overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-brand/20 rounded-full blur-2xl group-hover:bg-brand/40 transition-colors pointer-events-none" />
-            <div className="space-y-4 relative z-10">
-              <div className="flex items-center justify-between">
-                <div className="p-3 bg-brand border-3 border-ink brutalist-shadow-sm group-hover:scale-110 transition-transform">
-                  <MessageSquare className="w-8 h-8 text-ink" />
-                </div>
-                <span className="font-mono text-[10px] font-bold uppercase tracking-widest bg-ink text-bg px-2.5 py-1">
-                  Private & Unsent
-                </span>
-              </div>
-
-              <div>
-                <h4 className="font-heading text-2xl sm:text-3xl tracking-tight uppercase group-hover:text-brand transition-colors">
-                  TALK TO THEM
-                </h4>
-                <p className="font-sans text-sm sm:text-base text-ink/80 leading-relaxed mt-2">
-                  A gentle, confidential space that understands who they were to you. Say the things left unsaid, express your feelings without fear, and find the closure your heart needs—all while protecting your no-contact promise.
-                </p>
-              </div>
+          <div className="p-4 bg-bg flex-1 space-y-3">
+            <div className="flex flex-wrap gap-1.5">
+              {["Disrespect", "Manipulation", "Inconsistency", "Boundary Crossing"].map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setQuickFlagCategory(cat)}
+                  className={cn(
+                    "px-2.5 py-1 font-mono text-[10px] font-bold border-2 border-ink transition-all uppercase",
+                    quickFlagCategory === cat 
+                      ? "bg-purple text-ink brutalist-shadow-sm -translate-y-0.5" 
+                      : "bg-white text-ink/50 hover:text-ink"
+                  )}
+                >
+                  {cat}
+                </button>
+              ))}
             </div>
-
-            <div className="pt-6 mt-6 border-t-2 border-ink/10 flex items-center justify-between font-mono font-bold text-xs uppercase text-ink group-hover:translate-x-1 transition-transform relative z-10">
-              <span>Open Your Unsent Conversation</span>
-              <ArrowRight className="w-4 h-4 text-brand" />
+            <div className="flex gap-2">
+              <Input
+                placeholder="What did they do..."
+                value={quickFlagText}
+                onChange={(e) => setQuickFlagText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleDropQuickFlag();
+                  }
+                }}
+                className="h-10 border-3 border-ink font-sans text-xs flex-1 bg-white px-3"
+              />
+              <Button
+                onClick={handleDropQuickFlag}
+                disabled={!quickFlagText.trim()}
+                className="h-10 px-4 bg-ink text-bg hover:bg-ink/90 border-3 border-ink font-mono font-bold uppercase shrink-0 text-xs"
+              >
+                Drop 🚩
+              </Button>
             </div>
+            {flagDropped && (
+              <div className="p-2 bg-positive/20 border-2 border-positive text-ink font-mono text-[10px] font-bold flex items-center gap-2 animate-in fade-in duration-200">
+                <Check className="w-3 h-3 text-positive shrink-0" />
+                <span>Red flag logged!</span>
+              </div>
+            )}
           </div>
-
-          {/* Sanctuary 2: Healing Companion */}
-          <div 
-            onClick={() => navigate.push('/therapist')}
-            className="border-4 border-ink brutalist-shadow bg-white hover:bg-purple/10 transition-all cursor-pointer p-6 sm:p-8 flex flex-col justify-between group relative overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-purple/20 rounded-full blur-2xl group-hover:bg-purple/40 transition-colors pointer-events-none" />
-            <div className="space-y-4 relative z-10">
-              <div className="flex items-center justify-between">
-                <div className="p-3 bg-purple border-3 border-ink brutalist-shadow-sm group-hover:scale-110 transition-transform">
-                  <Zap className="w-8 h-8 text-ink" />
-                </div>
-                <span className="font-mono text-[10px] font-bold uppercase tracking-widest bg-ink text-purple px-2.5 py-1">
-                  24/7 Support
-                </span>
-              </div>
-
-              <div>
-                <h4 className="font-heading text-2xl sm:text-3xl tracking-tight uppercase group-hover:text-purple transition-colors">
-                  YOUR HEALING COMPANION
-                </h4>
-                <p className="font-sans text-sm sm:text-base text-ink/80 leading-relaxed mt-2">
-                  A warm, empathetic listener that remembers what you've been through, helps you understand your emotional triggers, and gently guides you through tough moments when the urge to reach out feels overwhelming.
-                </p>
-              </div>
-            </div>
-
-            <div className="pt-6 mt-6 border-t-2 border-ink/10 flex items-center justify-between font-mono font-bold text-xs uppercase text-ink group-hover:translate-x-1 transition-transform relative z-10">
-              <span>Talk With Your Companion</span>
-              <ArrowRight className="w-4 h-4 text-purple" />
-            </div>
-          </div>
-
-        </div>
-
-        <div className="text-center pt-4">
-          <p className="font-mono text-[11px] text-ink/60 uppercase tracking-widest">
-            📌 Diary, Red Flags, Timeline, Streak, Rewards & Account are accessible anytime via the bottom navigation bar.
-          </p>
         </div>
       </div>
 
-      {/* Anchor Modal */}
+      {/* ── SANCTUARY CARDS — compact horizontal ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div 
+          onClick={() => navigate.push('/closure')}
+          className="border-4 border-ink brutalist-shadow bg-white hover:bg-brand/10 transition-all cursor-pointer p-4 sm:p-5 flex items-center gap-4 group overflow-hidden"
+        >
+          <div className="p-2.5 bg-brand border-3 border-ink brutalist-shadow-sm group-hover:scale-110 transition-transform shrink-0">
+            <MessageSquare className="w-5 h-5 text-ink" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h4 className="font-heading text-lg sm:text-xl tracking-tight uppercase group-hover:text-brand transition-colors">
+              Talk to them
+            </h4>
+            <p className="font-sans text-[11px] sm:text-xs text-ink/60 leading-snug mt-0.5 line-clamp-1">
+              Say the things left unsaid. Find closure privately.
+            </p>
+          </div>
+          <ArrowRight className="w-4 h-4 text-brand shrink-0 group-hover:translate-x-1 transition-transform" />
+        </div>
+
+        <div 
+          onClick={() => navigate.push('/therapist')}
+          className="border-4 border-ink brutalist-shadow bg-white hover:bg-purple/10 transition-all cursor-pointer p-4 sm:p-5 flex items-center gap-4 group overflow-hidden"
+        >
+          <div className="p-2.5 bg-purple border-3 border-ink brutalist-shadow-sm group-hover:scale-110 transition-transform shrink-0">
+            <Zap className="w-5 h-5 text-ink" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h4 className="font-heading text-lg sm:text-xl tracking-tight uppercase group-hover:text-purple transition-colors">
+              Healing Companion
+            </h4>
+            <p className="font-sans text-[11px] sm:text-xs text-ink/60 leading-snug mt-0.5 line-clamp-1">
+              A warm listener, available 24/7 when the urge hits.
+            </p>
+          </div>
+          <ArrowRight className="w-4 h-4 text-purple shrink-0 group-hover:translate-x-1 transition-transform" />
+        </div>
+      </div>
+
+      <div className="text-center">
+        <p className="font-mono text-[10px] text-ink/40 uppercase tracking-widest">
+          📌 Diary, Red Flags, Timeline, Streak, Rewards & Account via the bottom nav bar.
+        </p>
+      </div>
+
       {showAnchor && <AnchorModal onClose={() => setShowAnchor(false)} />}
     </div>
   );
