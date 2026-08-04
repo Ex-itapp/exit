@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Textarea } from "@/components/ui/Textarea";
 import { Input } from "@/components/ui/Input";
-import { Zap, MessageSquare, Anchor, Sparkles, ShieldAlert, Check, ArrowRight, Send, Flame, Calendar } from "lucide-react";
+import { Zap, MessageSquare, Anchor, Sparkles, ShieldAlert, Check, ArrowRight, Send, Flame, Award } from "lucide-react";
 import { useCheckins } from "@/lib/useCheckins";
 import { useUser } from "@/lib/useUser";
 import { useFlags } from "@/lib/useFlags";
@@ -99,20 +99,29 @@ export default function DashboardPage() {
             {userName || "TRAVELER"}
           </h1>
         </div>
-        <button
-          onClick={() => setShowAnchor(true)}
-          className="bg-white hover:bg-ink hover:text-bg text-ink border-3 border-ink brutalist-shadow-sm py-2 px-3 font-mono font-bold uppercase transition-all flex items-center gap-2 shrink-0 max-w-[280px]"
-        >
-          <div className="p-1 bg-brand text-ink border border-ink shrink-0">
-            <Anchor className="w-3.5 h-3.5" />
-          </div>
-          <div className="text-left overflow-hidden hidden sm:block">
-            <div className="text-[8px] opacity-60 leading-none">Why you left:</div>
-            <div className="truncate text-[11px] font-black tracking-tight">
-              {userAnchor || 'I deserve better.'}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <button
+            onClick={() => setShowAnchor(true)}
+            className="bg-white hover:bg-ink hover:text-bg text-ink border-3 border-ink brutalist-shadow-sm py-2 px-3 font-mono font-bold uppercase transition-all flex items-center gap-2 max-w-[200px] sm:max-w-[280px]"
+          >
+            <div className="p-1 bg-brand text-ink border border-ink shrink-0">
+              <Anchor className="w-3.5 h-3.5" />
             </div>
-          </div>
-        </button>
+            <div className="text-left overflow-hidden hidden sm:block">
+              <div className="text-[8px] opacity-60 leading-none">Why you left:</div>
+              <div className="truncate text-[11px] font-black tracking-tight">
+                {userAnchor || 'I deserve better.'}
+              </div>
+            </div>
+          </button>
+          <button
+            onClick={() => navigate.push('/rewards')}
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-3 border-ink brutalist-shadow-sm flex items-center justify-center bg-brand hover:bg-brand/80 transition-all group shrink-0"
+            title="Achievements & Rewards"
+          >
+            <Award className="w-5 h-5 sm:w-6 sm:h-6 text-ink group-hover:scale-110 transition-transform" />
+          </button>
+        </div>
       </div>
 
       {/* ── STATS STRIP — 4 compact stat blocks in a row ── */}
