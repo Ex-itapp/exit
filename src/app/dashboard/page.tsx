@@ -13,6 +13,7 @@ import { useUser } from "@/lib/useUser";
 import { useFlags } from "@/lib/useFlags";
 import { CalendarTile } from "@/components/CalendarTile";
 import { RedFlagTile } from "@/components/RedFlagTile";
+import { MoodTile } from "@/components/MoodTile";
 import { AnchorModal } from "@/components/AnchorModal";
 import { useAuth } from "@/lib/useAuth";
 import { cn } from "@/lib/utils";
@@ -105,6 +106,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 lg:grid-cols-1 gap-3 sm:gap-6 w-full shrink-0">
           <CalendarTile />
           <RedFlagTile />
+          <MoodTile />
         </div>
 
         {/* Right Column: Active Daily Recovery Hub */}

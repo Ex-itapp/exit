@@ -2,10 +2,11 @@ import { useMemo } from 'react';
 import { useDiary } from './useDiary';
 import { useCheckins } from './useCheckins';
 import { useFlags } from './useFlags';
+import { useMoods } from './useMoods';
 
 export type TimelineEvent = {
   id: string;
-  type: 'diary' | 'checkin' | 'flag';
+  type: 'diary' | 'checkin' | 'flag' | 'mood';
   timestamp: Date;
   data: any;
 };
@@ -14,6 +15,7 @@ export function useTimeline() {
   const { entries: diaryEntries } = useDiary();
   const { checkins } = useCheckins();
   const { flags } = useFlags();
+  const { moodLogs } = useMoods();
 
   const events: TimelineEvent[] = useMemo(() => {
     const allEvents: TimelineEvent[] = [];
@@ -45,8 +47,17 @@ export function useTimeline() {
       });
     });
 
+    moodLogs.forEach(mood => {
+      allEvents.push({
+        id: `mood-${mood.id}`,
+        type: 'mood',
+        timestamp: new Date(mood.createdAt),
+        data: mood
+      });
+    });
+
     return allEvents.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-  }, [diaryEntries, checkins, flags]);
+  }, [diaryEntries, checkins, flags, moodLogs]);
 
   return { events };
 }
