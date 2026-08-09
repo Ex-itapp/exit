@@ -155,14 +155,6 @@ export default function AuthPage() {
             >
               Guest / Demo Sanctuary Access 👤
             </Button>
-
-            <Button
-              variant="ghost"
-              onClick={handleLaunchApp}
-              className="w-full h-10 border-2 border-ink font-mono text-[11px] uppercase"
-            >
-              Launch App Directly →
-            </Button>
           </div>
 
           {authMsg && (
