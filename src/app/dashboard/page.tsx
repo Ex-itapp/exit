@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Textarea } from "@/components/ui/Textarea";
-import { Zap, MessageSquare, Anchor, Sparkles, ShieldAlert, Send, Flame, Award, Flag } from "lucide-react";
+import { Zap, MessageSquare, Anchor, Sparkles, ShieldAlert, Send, Flame, Award, Flag, Book } from "lucide-react";
 import { useCheckins } from "@/lib/useCheckins";
 import { useUser } from "@/lib/useUser";
 import { useFlags } from "@/lib/useFlags";
@@ -241,7 +241,7 @@ export default function DashboardPage() {
           Quick Healing Tools
         </span>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           <button
             onClick={() => navigate.push('/flags/new')}
             className="bg-white hover:bg-accent/10 border-2 sm:border-3 border-ink brutalist-shadow-sm p-3.5 text-left transition-all flex items-center gap-3 group"
@@ -251,9 +251,24 @@ export default function DashboardPage() {
             </div>
             <div className="min-w-0 flex-1">
               <span className="font-heading text-xs uppercase font-black block group-hover:text-accent transition-colors truncate">
-                Log Red Flag 🚩
+                Log Red Flag
               </span>
               <span className="font-mono text-[9px] text-ink/50 block truncate">Log toxic incident</span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => navigate.push('/diary/new')}
+            className="bg-white hover:bg-emerald-50 border-2 sm:border-3 border-ink brutalist-shadow-sm p-3.5 text-left transition-all flex items-center gap-3 group"
+          >
+            <div className="w-9 h-9 bg-emerald-400 text-white border-2 border-ink flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <Book className="w-4 h-4" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <span className="font-heading text-xs uppercase font-black block group-hover:text-emerald-600 transition-colors truncate">
+                New Diary
+              </span>
+              <span className="font-mono text-[9px] text-ink/50 block truncate">Write how you feel</span>
             </div>
           </button>
 
