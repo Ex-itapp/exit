@@ -61,14 +61,14 @@ export function ClientLayout({ children }: { children: ReactNode }) {
   // Public pages
   if (isPublicPage) {
     return (
-      <div className="min-h-screen bg-bg text-ink font-sans antialiased selection:bg-brand selection:text-ink">
+      <div suppressHydrationWarning className="min-h-screen bg-bg text-ink font-sans antialiased selection:bg-brand selection:text-ink">
         {children}
       </div>
     );
   }
 
   return (
-      <div className="w-full min-h-screen flex flex-col bg-bg relative">
+      <div suppressHydrationWarning className="w-full min-h-screen flex flex-col bg-bg relative">
         
         {/* Clean, Minimal Floating Logo Header */}
         <header className="px-3 sm:px-4 md:px-8 pt-3 sm:pt-6 pb-2 flex items-center justify-between sticky top-0 z-40 bg-transparent pointer-events-none">
