@@ -130,20 +130,20 @@ const RedFlagDemo = () => {
 ───────────────────────────────────────────── */
 const features = [
   {
+    icon: <MessageSquare className="w-5 h-5 sm:w-10 sm:h-10" />,
+    color: "bg-purple",
+    label: "01",
+    title: "AI Ex Simulator.",
+    body: "Text an AI that responds exactly like your ex. Say whatever you need to say to get closure, with zero real-life consequences.",
+    accent: "text-purple",
+  },
+  {
     icon: <Flame className="w-5 h-5 sm:w-10 sm:h-10" />,
     color: "bg-accent",
-    label: "01",
+    label: "02",
     title: "No-contact streak.",
     body: "Every day you don't text them is a point on the board. Watch your streak grow. Feel yourself getting stronger.",
     accent: "text-accent",
-  },
-  {
-    icon: <MessageSquare className="w-5 h-5 sm:w-10 sm:h-10" />,
-    color: "bg-purple",
-    label: "02",
-    title: "Say it here.",
-    body: "Send every unsent text to the void instead of to them. All the catharsis, zero consequences.",
-    accent: "text-purple",
   },
   {
     icon: <Flag className="w-5 h-5 sm:w-10 sm:h-10" />,

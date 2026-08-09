@@ -5,31 +5,16 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { useAuth } from "@/lib/useAuth";
 import { useUser } from "@/lib/useUser";
 
 export default function AuthPage() {
   const router = useRouter();
-  const { signInWithEmail, signInWithGoogle, user } = useAuth();
+  const { signInWithGoogle, user } = useAuth();
   const { hasCompletedOnboarding } = useUser();
 
-  const [email, setEmail] = useState("");
   const [authMsg, setAuthMsg] = useState("");
   const [isAuthLoading, setIsAuthLoading] = useState(false);
-
-  const handleMagicLinkLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim()) return;
-    setIsAuthLoading(true);
-    const { error } = await signInWithEmail(email.trim());
-    setIsAuthLoading(false);
-    if (error) {
-      setAuthMsg("Error: " + error.message);
-    } else {
-      setAuthMsg("✨ Magic login link sent to your email!");
-    }
-  };
 
   useEffect(() => {
     if (user) {
@@ -90,35 +75,7 @@ export default function AuthPage() {
             Continue with Google
           </Button>
 
-          <div className="relative flex items-center justify-center border-t-2 border-ink/20 pt-4">
-            <span className="font-mono text-[11px] text-ink/60 uppercase bg-white px-2 absolute -top-3">
-              Or Login With Email
-            </span>
-          </div>
 
-          <form onSubmit={handleMagicLinkLogin} className="space-y-4">
-            <div className="space-y-2">
-              <label className="font-mono text-xs font-bold uppercase tracking-wider block">
-                Your Email Address
-              </label>
-              <Input
-                type="email"
-                placeholder="name@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="h-12 border-3 border-ink font-mono text-sm bg-bg px-4"
-                required
-              />
-            </div>
-
-            <Button
-              type="submit"
-              disabled={isAuthLoading || !email.trim()}
-              className="w-full h-12 bg-ink text-bg hover:bg-ink/90 font-mono font-bold uppercase text-xs border-3 border-ink"
-            >
-              {isAuthLoading ? "Sending Magic Link..." : "Send Magic Login Link ✉️"}
-            </Button>
-          </form>
 
 
 
