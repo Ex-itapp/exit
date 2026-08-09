@@ -74,255 +74,222 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 animate-in fade-in slide-in-from-bottom-3 duration-200 pb-28 max-w-3xl mx-auto w-full px-3 sm:px-4">
+    <div className="space-y-5 sm:space-y-6 animate-in fade-in slide-in-from-bottom-3 duration-200 pb-28 max-w-2xl mx-auto w-full px-3 sm:px-4">
       
-      {/* ── HEADER ── */}
-      <div className="flex items-center justify-between gap-3 pt-1 w-full">
+      {/* ── TOP BAR / USER GREETING ── */}
+      <div className="flex items-center justify-between gap-3 pt-1">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="w-2 h-2 bg-brand border border-ink block" />
-            <span className="font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-widest bg-ink text-bg px-2 py-0.5">
-              Sanctuary Active
+          <div className="flex items-center gap-2 mb-0.5">
+            <span className="w-2 h-2 bg-brand border border-ink block animate-pulse" />
+            <span className="font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-ink/60">
+              Sanctuary • Day {streakDays}
             </span>
           </div>
-          <h1 className="text-2xl sm:text-4xl font-heading tracking-tighter uppercase font-black">
-            {userName || "TRAVELER"}
+          <h1 className="text-2xl sm:text-3xl font-heading tracking-tighter uppercase font-black">
+            Welcome, {userName || "Traveler"}
           </h1>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => setShowAnchor(true)}
-            className="bg-white hover:bg-ink hover:text-bg text-ink border-3 border-ink brutalist-shadow-sm py-1.5 px-2.5 font-mono font-bold uppercase transition-all flex items-center gap-2 max-w-[200px] sm:max-w-[260px]"
+            className="bg-white hover:bg-ink hover:text-bg text-ink border-2 sm:border-3 border-ink brutalist-shadow-sm py-1.5 px-3 font-mono font-bold uppercase transition-all flex items-center gap-2"
             title="Your Anchor Reason"
           >
-            <div className="p-1 bg-brand text-ink border border-ink shrink-0">
-              <Anchor className="w-3.5 h-3.5" />
-            </div>
-            <div className="text-left overflow-hidden hidden sm:block">
-              <div className="text-[8px] opacity-60 leading-none">Why you left:</div>
-              <div className="truncate text-[11px] font-black tracking-tight">
-                {userAnchor || 'I deserve better.'}
-              </div>
-            </div>
+            <Anchor className="w-3.5 h-3.5 text-accent shrink-0" />
+            <span className="text-[10px] sm:text-xs font-bold hidden sm:inline truncate max-w-[140px]">
+              {userAnchor || 'Why You Left'}
+            </span>
           </button>
 
           <button
             onClick={() => navigate.push('/rewards')}
-            className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border-3 border-ink brutalist-shadow-sm flex items-center justify-center bg-brand hover:bg-brand/80 transition-all group shrink-0"
-            title="Achievements & Rewards"
+            className="w-9 h-9 sm:w-10 sm:h-10 border-2 sm:border-3 border-ink brutalist-shadow-sm flex items-center justify-center bg-brand hover:scale-105 transition-transform shrink-0"
+            title="Rewards & Badges"
           >
-            <Award className="w-4 h-4 sm:w-5 sm:h-5 text-ink group-hover:scale-110 transition-transform" />
+            <Award className="w-4 h-4 text-ink" />
           </button>
         </div>
       </div>
 
-      {/* ── STATS STRIP ── */}
-      <div className="grid grid-cols-4 gap-0 border-3 sm:border-4 border-ink brutalist-shadow bg-white overflow-hidden">
+      {/* ── COMPACT RECOVERY SNAPSHOT ── */}
+      <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
         {/* Streak */}
         <div 
           onClick={() => navigate.push('/streak')}
-          className="bg-brand p-2.5 sm:p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-brand/80 transition-colors border-r-3 border-ink"
+          className="bg-brand border-2 sm:border-3 border-ink brutalist-shadow-sm p-3 sm:p-4 flex flex-col justify-between cursor-pointer hover:translate-y-[-2px] transition-transform"
         >
-          <Flame className="w-4 h-4 text-ink mb-0.5" />
-          <span className="font-heading text-xl sm:text-3xl tracking-tighter leading-none text-ink">
-            {streakDays}
-          </span>
-          <span className="font-mono text-[8px] sm:text-[10px] font-bold uppercase mt-1 text-ink/70">
-            Streak
-          </span>
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[9px] sm:text-[10px] font-bold uppercase text-ink/70">Streak</span>
+            <Flame className="w-4 h-4 text-ink" />
+          </div>
+          <div className="mt-2">
+            <span className="font-heading text-2xl sm:text-4xl font-black tracking-tighter leading-none text-ink block">
+              {streakDays}d
+            </span>
+            <span className="font-mono text-[8px] sm:text-[9px] text-ink/60 uppercase block mt-1">No Contact</span>
+          </div>
         </div>
 
-        {/* Today */}
-        <div 
-          onClick={() => navigate.push('/timeline')}
-          className="bg-white p-2.5 sm:p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-bg transition-colors border-r-3 border-ink"
-        >
-          <span className="font-mono text-[8px] sm:text-[9px] font-bold uppercase text-ink/50">{monthShort}</span>
-          <span className="font-heading text-xl sm:text-3xl tracking-tighter leading-none text-ink">
-            {dayNum}
-          </span>
-          <span className="font-mono text-[8px] sm:text-[10px] font-bold uppercase mt-1 text-ink/70">
-            Timeline
-          </span>
-        </div>
-
-        {/* Flags */}
+        {/* Red Flags */}
         <div 
           onClick={() => navigate.push('/flags')}
-          className="bg-purple/15 p-2.5 sm:p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-purple/25 transition-colors border-r-3 border-ink"
+          className="bg-purple/15 border-2 sm:border-3 border-ink brutalist-shadow-sm p-3 sm:p-4 flex flex-col justify-between cursor-pointer hover:translate-y-[-2px] transition-transform"
         >
-          <ShieldAlert className="w-4 h-4 text-purple mb-0.5" />
-          <span className="font-heading text-xl sm:text-3xl tracking-tighter leading-none text-ink">
-            {recentFlagCount}
-          </span>
-          <span className="font-mono text-[8px] sm:text-[10px] font-bold uppercase mt-1 text-ink/70">
-            Flags
-          </span>
-        </div>
-
-        {/* Mood */}
-        <div 
-          onClick={() => navigate.push('/diary')}
-          className="bg-white p-2.5 sm:p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-bg transition-colors"
-        >
-          {todayMood ? (
-            <>
-              <span className="text-lg sm:text-2xl leading-none">{todayMood.emoji}</span>
-              <span className="font-mono text-[8px] sm:text-[10px] font-bold uppercase mt-1 text-ink/70">
-                {MOODS.find(m => m.emoji === todayMood.emoji)?.label || "Mood"}
-              </span>
-            </>
-          ) : (
-            <>
-              <span className="text-lg sm:text-2xl opacity-30">☁️</span>
-              <span className="font-mono text-[8px] sm:text-[10px] font-bold uppercase mt-1 text-ink/40">
-                No Mood
-              </span>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* ── MOOD LOG ── */}
-      <div className="border-3 sm:border-4 border-ink bg-white brutalist-shadow overflow-hidden">
-        <div className="flex items-center gap-2 p-2 sm:p-3">
-          <span className="font-mono text-[10px] font-bold uppercase text-ink/40 shrink-0 px-1 hidden sm:block">Vibe Check:</span>
-          <div className="flex items-center gap-1.5 flex-1">
-            {MOODS.map(m => {
-              const isActive = todayMood?.emoji === m.emoji;
-              return (
-                <button
-                  key={m.emoji}
-                  onClick={() => handleMoodSelect(m.emoji)}
-                  className={cn(
-                    "flex-1 py-1.5 text-center border-2 border-ink transition-all text-base sm:text-xl",
-                    isActive
-                      ? "bg-brand shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] -translate-y-0.5 scale-105"
-                      : todayMood
-                        ? "bg-bg/40 opacity-30 grayscale hover:opacity-70 hover:grayscale-0"
-                        : "bg-bg hover:bg-brand/20 hover:-translate-y-0.5"
-                  )}
-                >
-                  {m.emoji}
-                </button>
-              );
-            })}
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[9px] sm:text-[10px] font-bold uppercase text-purple font-bold">Flags</span>
+            <ShieldAlert className="w-4 h-4 text-purple" />
           </div>
-          {moodJustLogged && (
-            <Check className="w-4 h-4 text-positive shrink-0 animate-in fade-in" />
-          )}
+          <div className="mt-2">
+            <span className="font-heading text-2xl sm:text-4xl font-black tracking-tighter leading-none text-ink block">
+              {recentFlagCount}
+            </span>
+            <span className="font-mono text-[8px] sm:text-[9px] text-ink/60 uppercase block mt-1">Last 30 Days</span>
+          </div>
         </div>
-        <div className="border-t-2 border-ink/10 flex items-center gap-2 px-3 py-1.5 bg-bg/30">
-          <input
-            placeholder="Add a quick note about how you feel..."
-            value={moodNote}
-            onChange={e => setMoodNote(e.target.value)}
-            onKeyDown={e => {
-              if (e.key === 'Enter' && moodNote.trim() && todayMood) {
-                handleMoodSelect(todayMood.emoji);
-              }
-            }}
-            className="flex-1 bg-transparent font-sans text-xs focus:outline-none placeholder:text-ink/30 text-ink"
-          />
-          {moodNote.trim() && todayMood && (
-            <button
-              onClick={() => handleMoodSelect(todayMood.emoji)}
-              className="p-1 bg-brand border-2 border-ink hover:shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] transition-all"
-            >
-              <Send className="w-3 h-3 text-ink" />
-            </button>
-          )}
+
+        {/* Today's Date / Timeline */}
+        <div 
+          onClick={() => navigate.push('/timeline')}
+          className="bg-white border-2 sm:border-3 border-ink brutalist-shadow-sm p-3 sm:p-4 flex flex-col justify-between cursor-pointer hover:translate-y-[-2px] transition-transform"
+        >
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[9px] sm:text-[10px] font-bold uppercase text-ink/50">{monthShort}</span>
+            <span className="font-mono text-[9px] text-ink/40">📅</span>
+          </div>
+          <div className="mt-2">
+            <span className="font-heading text-2xl sm:text-4xl font-black tracking-tighter leading-none text-ink block">
+              {dayNum}
+            </span>
+            <span className="font-mono text-[8px] sm:text-[9px] text-ink/60 uppercase block mt-1">View Log</span>
+          </div>
         </div>
       </div>
 
-      {/* ── DAILY CHECK-IN ── */}
-      <div className="border-3 sm:border-4 border-ink brutalist-shadow bg-white overflow-hidden flex flex-col">
-        <div className="bg-ink text-bg px-4 py-2.5 flex items-center justify-between">
+      {/* ── HERO FOCUS CARD: DAILY CHECK-IN ── */}
+      <div className="border-3 sm:border-4 border-ink brutalist-shadow bg-white overflow-hidden">
+        <div className="bg-ink text-bg px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-brand" />
-            <span className="font-heading text-sm sm:text-base tracking-tight uppercase font-black">Daily Check-in</span>
+            <span className="font-heading text-sm sm:text-base tracking-tight uppercase font-black">Daily Check-In</span>
           </div>
           {todayCheckin || checkinDone ? (
-            <Badge variant="positive" className="border-bg font-mono text-[9px]">Logged</Badge>
+            <Badge variant="positive" className="border-bg font-mono text-[9px] uppercase px-2 py-0.5">✓ Completed</Badge>
           ) : (
-            <Badge variant="accent" className="animate-pulse border-bg font-mono text-[9px]">Required</Badge>
+            <Badge variant="accent" className="animate-pulse border-bg font-mono text-[9px] uppercase px-2 py-0.5">Required Today</Badge>
           )}
         </div>
-        <div className="p-4 bg-bg flex-1">
+
+        <div className="p-4 sm:p-5 bg-bg space-y-4">
+          {/* Mood Selector directly inside Check-In */}
+          <div className="space-y-2">
+            <label className="font-mono text-[10px] font-bold uppercase tracking-wider text-ink/60 block">
+              How are you feeling right now?
+            </label>
+            <div className="flex items-center gap-1.5">
+              {MOODS.map(m => {
+                const isActive = todayMood?.emoji === m.emoji;
+                return (
+                  <button
+                    key={m.emoji}
+                    onClick={() => handleMoodSelect(m.emoji)}
+                    className={cn(
+                      "flex-1 py-2 sm:py-2.5 text-center border-2 border-ink transition-all text-lg sm:text-2xl bg-white",
+                      isActive
+                        ? "bg-brand border-ink brutalist-shadow-sm -translate-y-0.5 scale-105"
+                        : todayMood
+                          ? "opacity-40 grayscale hover:opacity-100 hover:grayscale-0"
+                          : "hover:bg-brand/20 hover:-translate-y-0.5"
+                    )}
+                    title={m.label}
+                  >
+                    {m.emoji}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Checkin Content */}
           {todayCheckin || checkinDone ? (
-            <div className="space-y-2">
-              <p className="font-sans text-sm font-medium text-ink leading-relaxed">
+            <div className="p-3.5 bg-white border-2 border-ink space-y-1.5">
+              <p className="font-sans text-xs sm:text-sm font-medium text-ink leading-relaxed italic">
                 &ldquo;{todayCheckin?.content || checkinText}&rdquo;
               </p>
-              <p className="font-mono text-[10px] text-ink/50 italic">✨ Saved in your recovery timeline</p>
+              <p className="font-mono text-[10px] text-ink/40 uppercase font-bold">✨ Safely stored in recovery history</p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-3 pt-1">
               <Textarea 
-                placeholder="How is your heart today? Write what you need to let out..." 
-                className="min-h-[85px] resize-none border-2 sm:border-3 border-ink bg-white font-sans text-xs sm:text-sm p-3"
+                placeholder="What is weighing on your mind today? Write it out..." 
+                className="min-h-[90px] resize-none border-2 border-ink bg-white font-sans text-xs sm:text-sm p-3 focus-visible:ring-0"
                 value={checkinText}
                 onChange={(e) => setCheckinText(e.target.value)}
               />
               <Button 
-                className="w-full h-10 text-xs sm:text-sm bg-brand hover:bg-brand/90 text-ink border-2 sm:border-3 border-ink brutalist-shadow-sm font-mono font-bold uppercase tracking-wider" 
+                className="w-full h-11 text-xs sm:text-sm bg-brand hover:bg-brand/90 text-ink border-2 sm:border-3 border-ink brutalist-shadow-sm font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2" 
                 onClick={handleCheckin} 
                 disabled={!checkinText.trim()}
               >
-                Log Today's Check-in
+                Log Today's Entry <Send className="w-3.5 h-3.5" />
               </Button>
             </div>
           )}
         </div>
       </div>
 
-      {/* ── QUICK ACTIONS ── */}
-      <div className="grid grid-cols-3 gap-2 sm:gap-3">
-        <button
-          onClick={() => navigate.push('/flags/new')}
-          className="border-3 border-ink brutalist-shadow-sm bg-white hover:bg-accent/15 p-2.5 sm:p-3.5 text-left transition-all flex items-center gap-2.5 group"
-        >
-          <div className="p-1.5 sm:p-2 bg-accent text-white border-2 border-ink shrink-0 group-hover:scale-105 transition-transform">
-            <Flag className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <span className="font-heading text-[11px] sm:text-xs uppercase font-black block group-hover:text-accent transition-colors truncate">
-              Log Flag 🚩
-            </span>
-            <span className="font-mono text-[8px] sm:text-[9px] text-ink/50 block truncate">Drop incident</span>
-          </div>
-        </button>
+      {/* ── CORE HEALING TOOLS GRID ── */}
+      <div className="space-y-2">
+        <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-ink/50 block px-1">
+          Quick Healing Tools
+        </span>
 
-        <button
-          onClick={() => navigate.push('/therapist')}
-          className="border-3 border-ink brutalist-shadow-sm bg-white hover:bg-purple/15 p-2.5 sm:p-3.5 text-left transition-all flex items-center gap-2.5 group"
-        >
-          <div className="p-1.5 sm:p-2 bg-purple border-2 border-ink shrink-0 group-hover:scale-105 transition-transform">
-            <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-ink" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <span className="font-heading text-[11px] sm:text-xs uppercase font-black block group-hover:text-purple transition-colors truncate">
-              Healing AI
-            </span>
-            <span className="font-mono text-[8px] sm:text-[9px] text-ink/50 block truncate">24/7 Companion</span>
-          </div>
-        </button>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <button
+            onClick={() => navigate.push('/flags/new')}
+            className="bg-white hover:bg-accent/10 border-2 sm:border-3 border-ink brutalist-shadow-sm p-3.5 text-left transition-all flex items-center gap-3 group"
+          >
+            <div className="w-9 h-9 bg-accent text-white border-2 border-ink flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <Flag className="w-4 h-4" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <span className="font-heading text-xs uppercase font-black block group-hover:text-accent transition-colors truncate">
+                Log Red Flag 🚩
+              </span>
+              <span className="font-mono text-[9px] text-ink/50 block truncate">Log toxic incident</span>
+            </div>
+          </button>
 
-        <button
-          onClick={() => navigate.push('/closure')}
-          className="border-3 border-ink brutalist-shadow-sm bg-white hover:bg-brand/15 p-2.5 sm:p-3.5 text-left transition-all flex items-center gap-2.5 group"
-        >
-          <div className="p-1.5 sm:p-2 bg-brand border-2 border-ink shrink-0 group-hover:scale-105 transition-transform">
-            <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-ink" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <span className="font-heading text-[11px] sm:text-xs uppercase font-black block group-hover:text-ink transition-colors truncate">
-              Closure
-            </span>
-            <span className="font-mono text-[8px] sm:text-[9px] text-ink/50 block truncate">Unsent Words</span>
-          </div>
-        </button>
+          <button
+            onClick={() => navigate.push('/therapist')}
+            className="bg-white hover:bg-purple/10 border-2 sm:border-3 border-ink brutalist-shadow-sm p-3.5 text-left transition-all flex items-center gap-3 group"
+          >
+            <div className="w-9 h-9 bg-purple text-ink border-2 border-ink flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <Zap className="w-4 h-4" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <span className="font-heading text-xs uppercase font-black block group-hover:text-purple transition-colors truncate">
+                Healing Companion
+              </span>
+              <span className="font-mono text-[9px] text-ink/50 block truncate">24/7 AI listener</span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => navigate.push('/closure')}
+            className="bg-white hover:bg-brand/10 border-2 sm:border-3 border-ink brutalist-shadow-sm p-3.5 text-left transition-all flex items-center gap-3 group"
+          >
+            <div className="w-9 h-9 bg-brand text-ink border-2 border-ink flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <MessageSquare className="w-4 h-4" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <span className="font-heading text-xs uppercase font-black block group-hover:text-ink transition-colors truncate">
+                Unsent Letter
+              </span>
+              <span className="font-mono text-[9px] text-ink/50 block truncate">Say it here, not to them</span>
+            </div>
+          </button>
+        </div>
       </div>
 
       {showAnchor && <AnchorModal onClose={() => setShowAnchor(false)} />}
