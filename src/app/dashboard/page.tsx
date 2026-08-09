@@ -67,9 +67,7 @@ export default function DashboardPage() {
 
   const handleMoodSelect = (emoji: string) => {
     logMood(emoji, moodNote);
-    setMoodJustLogged(true);
     setMoodNote("");
-    setTimeout(() => setMoodJustLogged(false), 3000);
   };
 
   return (
