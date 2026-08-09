@@ -5,8 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Textarea } from "@/components/ui/Textarea";
-import { Input } from "@/components/ui/Input";
-import { Zap, MessageSquare, Anchor, Sparkles, ShieldAlert, Check, ArrowRight, Send, Flame, Award } from "lucide-react";
+import { Zap, MessageSquare, Anchor, Sparkles, ShieldAlert, Check, Send, Flame, Award } from "lucide-react";
 import { useCheckins } from "@/lib/useCheckins";
 import { useUser } from "@/lib/useUser";
 import { useFlags } from "@/lib/useFlags";
@@ -28,15 +27,12 @@ export default function DashboardPage() {
   const { userName, userAnchor, streakDays, hasCompletedOnboarding, isProfileSyncing } = useUser();
   const { loading: authLoading } = useAuth();
   const { checkins, addCheckin } = useCheckins();
-  const { flags, addFlag } = useFlags();
+  const { flags } = useFlags();
   const { logMood, getMoodForDate } = useMoods();
   
   const [checkinText, setCheckinText] = useState("");
   const [checkinDone, setCheckinDone] = useState(false);
   const [showAnchor, setShowAnchor] = useState(false);
-  const [quickFlagText, setQuickFlagText] = useState("");
-  const [quickFlagCategory, setQuickFlagCategory] = useState("Disrespect");
-  const [flagDropped, setFlagDropped] = useState(false);
   const [moodNote, setMoodNote] = useState("");
   const [moodJustLogged, setMoodJustLogged] = useState(false);
 
@@ -84,25 +80,27 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-150 pb-24 max-w-[1200px] mx-auto w-full px-2 sm:px-4">
+    <div className="space-y-4 sm:space-y-6 animate-in fade-in slide-in-from-bottom-3 duration-200 pb-28 max-w-3xl mx-auto w-full px-3 sm:px-4">
       
       {/* ── HEADER ── */}
-      <div className="flex items-center justify-between gap-3 pt-2 w-full">
+      <div className="flex items-center justify-between gap-3 pt-1 w-full">
         <div>
-          <div className="flex items-center gap-2 mb-0.5">
-            <span className="w-2 h-2 bg-brand border border-ink block animate-pulse" />
-            <span className="font-mono text-[10px] font-bold uppercase tracking-widest bg-ink text-bg px-1.5 py-0.5">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="w-2 h-2 bg-brand border border-ink block" />
+            <span className="font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-widest bg-ink text-bg px-2 py-0.5">
               Sanctuary Active
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-heading tracking-tighter uppercase">
+          <h1 className="text-2xl sm:text-4xl font-heading tracking-tighter uppercase font-black">
             {userName || "TRAVELER"}
           </h1>
         </div>
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+
+        <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => setShowAnchor(true)}
-            className="bg-white hover:bg-ink hover:text-bg text-ink border-3 border-ink brutalist-shadow-sm py-2 px-3 font-mono font-bold uppercase transition-all flex items-center gap-2 max-w-[200px] sm:max-w-[280px]"
+            className="bg-white hover:bg-ink hover:text-bg text-ink border-3 border-ink brutalist-shadow-sm py-1.5 px-2.5 font-mono font-bold uppercase transition-all flex items-center gap-2 max-w-[200px] sm:max-w-[260px]"
+            title="Your Anchor Reason"
           >
             <div className="p-1 bg-brand text-ink border border-ink shrink-0">
               <Anchor className="w-3.5 h-3.5" />
@@ -114,28 +112,29 @@ export default function DashboardPage() {
               </div>
             </div>
           </button>
+
           <button
             onClick={() => navigate.push('/rewards')}
-            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-3 border-ink brutalist-shadow-sm flex items-center justify-center bg-brand hover:bg-brand/80 transition-all group shrink-0"
+            className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border-3 border-ink brutalist-shadow-sm flex items-center justify-center bg-brand hover:bg-brand/80 transition-all group shrink-0"
             title="Achievements & Rewards"
           >
-            <Award className="w-5 h-5 sm:w-6 sm:h-6 text-ink group-hover:scale-110 transition-transform" />
+            <Award className="w-4 h-4 sm:w-5 sm:h-5 text-ink group-hover:scale-110 transition-transform" />
           </button>
         </div>
       </div>
 
-      {/* ── STATS STRIP — 4 compact stat blocks in a row ── */}
-      <div className="grid grid-cols-4 gap-0 border-4 border-ink brutalist-shadow overflow-hidden">
+      {/* ── STATS STRIP ── */}
+      <div className="grid grid-cols-4 gap-0 border-3 sm:border-4 border-ink brutalist-shadow bg-white overflow-hidden">
         {/* Streak */}
         <div 
           onClick={() => navigate.push('/streak')}
-          className="bg-brand p-3 sm:p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-brand/80 transition-colors border-r-3 border-ink"
+          className="bg-brand p-2.5 sm:p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-brand/80 transition-colors border-r-3 border-ink"
         >
-          <Flame className="w-4 h-4 sm:w-5 sm:h-5 text-ink mb-1" />
-          <span className="font-heading text-2xl sm:text-3xl md:text-4xl tracking-tighter leading-none text-ink">
+          <Flame className="w-4 h-4 text-ink mb-0.5" />
+          <span className="font-heading text-xl sm:text-3xl tracking-tighter leading-none text-ink">
             {streakDays}
           </span>
-          <span className="font-mono text-[8px] sm:text-[10px] font-bold uppercase mt-0.5 text-ink/70">
+          <span className="font-mono text-[8px] sm:text-[10px] font-bold uppercase mt-1 text-ink/70">
             Streak
           </span>
         </div>
@@ -143,43 +142,46 @@ export default function DashboardPage() {
         {/* Today */}
         <div 
           onClick={() => navigate.push('/timeline')}
-          className="bg-white p-3 sm:p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-bg transition-colors border-r-3 border-ink"
+          className="bg-white p-2.5 sm:p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-bg transition-colors border-r-3 border-ink"
         >
-          <span className="font-mono text-[8px] sm:text-[10px] font-bold uppercase text-ink/50">{monthShort}</span>
-          <span className="font-heading text-2xl sm:text-3xl md:text-4xl tracking-tighter leading-none text-ink">
+          <span className="font-mono text-[8px] sm:text-[9px] font-bold uppercase text-ink/50">{monthShort}</span>
+          <span className="font-heading text-xl sm:text-3xl tracking-tighter leading-none text-ink">
             {dayNum}
           </span>
-          <span className="font-mono text-[8px] sm:text-[10px] font-bold uppercase mt-0.5 text-ink/70">
-            Today
+          <span className="font-mono text-[8px] sm:text-[10px] font-bold uppercase mt-1 text-ink/70">
+            Timeline
           </span>
         </div>
 
         {/* Flags */}
         <div 
           onClick={() => navigate.push('/flags')}
-          className="bg-purple/15 p-3 sm:p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-purple/25 transition-colors border-r-3 border-ink"
+          className="bg-purple/15 p-2.5 sm:p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-purple/25 transition-colors border-r-3 border-ink"
         >
-          <ShieldAlert className="w-4 h-4 sm:w-5 sm:h-5 text-purple mb-1" />
-          <span className="font-heading text-2xl sm:text-3xl md:text-4xl tracking-tighter leading-none text-ink">
+          <ShieldAlert className="w-4 h-4 text-purple mb-0.5" />
+          <span className="font-heading text-xl sm:text-3xl tracking-tighter leading-none text-ink">
             {recentFlagCount}
           </span>
-          <span className="font-mono text-[8px] sm:text-[10px] font-bold uppercase mt-0.5 text-ink/70">
+          <span className="font-mono text-[8px] sm:text-[10px] font-bold uppercase mt-1 text-ink/70">
             Flags
           </span>
         </div>
 
         {/* Mood */}
-        <div className="bg-white p-3 sm:p-4 flex flex-col items-center justify-center">
+        <div 
+          onClick={() => navigate.push('/diary')}
+          className="bg-white p-2.5 sm:p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-bg transition-colors"
+        >
           {todayMood ? (
             <>
-              <span className="text-xl sm:text-2xl md:text-3xl leading-none">{todayMood.emoji}</span>
+              <span className="text-lg sm:text-2xl leading-none">{todayMood.emoji}</span>
               <span className="font-mono text-[8px] sm:text-[10px] font-bold uppercase mt-1 text-ink/70">
                 {MOODS.find(m => m.emoji === todayMood.emoji)?.label || "Mood"}
               </span>
             </>
           ) : (
             <>
-              <span className="text-xl sm:text-2xl opacity-30">☁️</span>
+              <span className="text-lg sm:text-2xl opacity-30">☁️</span>
               <span className="font-mono text-[8px] sm:text-[10px] font-bold uppercase mt-1 text-ink/40">
                 No Mood
               </span>
@@ -188,11 +190,11 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ── MOOD PICKER — slim bar ── */}
-      <div className="border-4 border-ink bg-white overflow-hidden">
-        <div className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3">
-          <span className="font-mono text-[9px] sm:text-[10px] font-bold uppercase text-ink/40 shrink-0 hidden sm:block">Vibe:</span>
-          <div className="flex items-center gap-1 sm:gap-1.5 flex-1">
+      {/* ── MOOD LOG ── */}
+      <div className="border-3 sm:border-4 border-ink bg-white brutalist-shadow overflow-hidden">
+        <div className="flex items-center gap-2 p-2 sm:p-3">
+          <span className="font-mono text-[10px] font-bold uppercase text-ink/40 shrink-0 px-1 hidden sm:block">Vibe Check:</span>
+          <div className="flex items-center gap-1.5 flex-1">
             {MOODS.map(m => {
               const isActive = todayMood?.emoji === m.emoji;
               return (
@@ -200,11 +202,11 @@ export default function DashboardPage() {
                   key={m.emoji}
                   onClick={() => handleMoodSelect(m.emoji)}
                   className={cn(
-                    "flex-1 py-1.5 sm:py-2 text-center border-2 border-ink transition-all text-base sm:text-lg",
+                    "flex-1 py-1.5 text-center border-2 border-ink transition-all text-base sm:text-xl",
                     isActive
                       ? "bg-brand shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] -translate-y-0.5 scale-105"
                       : todayMood
-                        ? "bg-bg/50 opacity-30 grayscale hover:opacity-60 hover:grayscale-0"
+                        ? "bg-bg/40 opacity-30 grayscale hover:opacity-70 hover:grayscale-0"
                         : "bg-bg hover:bg-brand/20 hover:-translate-y-0.5"
                   )}
                 >
@@ -219,7 +221,7 @@ export default function DashboardPage() {
         </div>
         <div className="border-t-2 border-ink/10 flex items-center gap-2 px-3 py-1.5 bg-bg/30">
           <input
-            placeholder="Add a note..."
+            placeholder="Add a quick note about how you feel..."
             value={moodNote}
             onChange={e => setMoodNote(e.target.value)}
             onKeyDown={e => {
@@ -227,7 +229,7 @@ export default function DashboardPage() {
                 handleMoodSelect(todayMood.emoji);
               }
             }}
-            className="flex-1 bg-transparent font-sans text-xs focus:outline-none placeholder:text-ink/25 text-ink/70"
+            className="flex-1 bg-transparent font-sans text-xs focus:outline-none placeholder:text-ink/30 text-ink"
           />
           {moodNote.trim() && todayMood && (
             <button
@@ -240,152 +242,78 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ── TWO-COLUMN: CHECK-IN + RED FLAG DROPPER ── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        
-        {/* Check-in */}
-        <div className="border-4 border-ink brutalist-shadow bg-white overflow-hidden flex flex-col">
-          <div className="bg-ink text-bg px-4 py-2.5 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-brand" />
-              <span className="font-heading text-sm tracking-tight uppercase">Daily Check-in</span>
-            </div>
-            {todayCheckin || checkinDone ? (
-              <Badge variant="positive" className="border-bg font-mono text-[9px]">Done</Badge>
-            ) : (
-              <Badge variant="accent" className="animate-pulse border-bg font-mono text-[9px]">Required</Badge>
-            )}
+      {/* ── DAILY CHECK-IN ── */}
+      <div className="border-3 sm:border-4 border-ink brutalist-shadow bg-white overflow-hidden flex flex-col">
+        <div className="bg-ink text-bg px-4 py-2.5 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-brand" />
+            <span className="font-heading text-sm sm:text-base tracking-tight uppercase font-black">Daily Check-in</span>
           </div>
-          <div className="p-4 bg-bg flex-1">
-            {todayCheckin || checkinDone ? (
-              <div className="space-y-2">
-                <p className="font-sans text-sm font-medium text-ink leading-relaxed">
-                  &ldquo;{todayCheckin?.content || checkinText}&rdquo;
-                </p>
-                <p className="font-mono text-[10px] text-ink/50 italic">✨ Recorded in your timeline</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <Textarea 
-                  placeholder="How is your heart today? What are you feeling?" 
-                  className="min-h-[90px] resize-none border-3 border-ink bg-white font-sans text-sm p-3"
-                  value={checkinText}
-                  onChange={(e) => setCheckinText(e.target.value)}
-                />
-                <Button 
-                  className="w-full h-10 text-sm bg-brand hover:bg-brand/90 text-ink border-3 border-ink brutalist-shadow-sm hover:-translate-y-0.5 transition-all font-bold uppercase" 
-                  onClick={handleCheckin} 
-                  disabled={!checkinText.trim()}
-                >
-                  Log Check-in
-                </Button>
-              </div>
-            )}
-          </div>
+          {todayCheckin || checkinDone ? (
+            <Badge variant="positive" className="border-bg font-mono text-[9px]">Logged</Badge>
+          ) : (
+            <Badge variant="accent" className="animate-pulse border-bg font-mono text-[9px]">Required</Badge>
+          )}
         </div>
-
-        {/* Red Flag Dropper */}
-        <div className="border-4 border-ink brutalist-shadow bg-white overflow-hidden flex flex-col">
-          <div className="bg-ink text-bg px-4 py-2.5 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <ShieldAlert className="w-4 h-4 text-purple" />
-              <span className="font-heading text-sm tracking-tight uppercase">Quick Flag Drop</span>
+        <div className="p-4 bg-bg flex-1">
+          {todayCheckin || checkinDone ? (
+            <div className="space-y-2">
+              <p className="font-sans text-sm font-medium text-ink leading-relaxed">
+                &ldquo;{todayCheckin?.content || checkinText}&rdquo;
+              </p>
+              <p className="font-mono text-[10px] text-ink/50 italic">✨ Saved in your recovery timeline</p>
             </div>
-            <span className="font-mono text-[9px] bg-purple text-ink px-1.5 py-0.5 font-bold uppercase">
-              Zero Friction
-            </span>
-          </div>
-          <div className="p-4 bg-bg flex-1 space-y-3">
-            <div className="flex flex-wrap gap-1.5">
-              {["Disrespect", "Manipulation", "Inconsistency", "Boundary Crossing"].map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setQuickFlagCategory(cat)}
-                  className={cn(
-                    "px-2.5 py-1 font-mono text-[10px] font-bold border-2 border-ink transition-all uppercase",
-                    quickFlagCategory === cat 
-                      ? "bg-purple text-ink brutalist-shadow-sm -translate-y-0.5" 
-                      : "bg-white text-ink/50 hover:text-ink"
-                  )}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <Input
-                placeholder="What did they do..."
-                value={quickFlagText}
-                onChange={(e) => setQuickFlagText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleDropQuickFlag();
-                  }
-                }}
-                className="h-10 border-3 border-ink font-sans text-xs flex-1 bg-white px-3"
+          ) : (
+            <div className="space-y-3">
+              <Textarea 
+                placeholder="How is your heart today? Write what you need to let out..." 
+                className="min-h-[85px] resize-none border-2 sm:border-3 border-ink bg-white font-sans text-xs sm:text-sm p-3"
+                value={checkinText}
+                onChange={(e) => setCheckinText(e.target.value)}
               />
-              <Button
-                onClick={handleDropQuickFlag}
-                disabled={!quickFlagText.trim()}
-                className="h-10 px-4 bg-ink text-bg hover:bg-ink/90 border-3 border-ink font-mono font-bold uppercase shrink-0 text-xs"
+              <Button 
+                className="w-full h-10 text-xs sm:text-sm bg-brand hover:bg-brand/90 text-ink border-2 sm:border-3 border-ink brutalist-shadow-sm font-mono font-bold uppercase tracking-wider" 
+                onClick={handleCheckin} 
+                disabled={!checkinText.trim()}
               >
-                Drop 🚩
+                Log Today's Check-in
               </Button>
             </div>
-            {flagDropped && (
-              <div className="p-2 bg-positive/20 border-2 border-positive text-ink font-mono text-[10px] font-bold flex items-center gap-2 animate-in fade-in duration-200">
-                <Check className="w-3 h-3 text-positive shrink-0" />
-                <span>Red flag logged!</span>
-              </div>
-            )}
-          </div>
+          )}
         </div>
       </div>
 
-      {/* ── SANCTUARY CARDS — compact horizontal ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div 
-          onClick={() => navigate.push('/closure')}
-          className="border-4 border-ink brutalist-shadow bg-white hover:bg-brand/10 transition-all cursor-pointer p-4 sm:p-5 flex items-center gap-4 group overflow-hidden"
-        >
-          <div className="p-2.5 bg-brand border-3 border-ink brutalist-shadow-sm group-hover:scale-110 transition-transform shrink-0">
-            <MessageSquare className="w-5 h-5 text-ink" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h4 className="font-heading text-lg sm:text-xl tracking-tight uppercase group-hover:text-brand transition-colors">
-              Talk to them
-            </h4>
-            <p className="font-sans text-[11px] sm:text-xs text-ink/60 leading-snug mt-0.5 line-clamp-1">
-              Say the things left unsaid. Find closure privately.
-            </p>
-          </div>
-          <ArrowRight className="w-4 h-4 text-brand shrink-0 group-hover:translate-x-1 transition-transform" />
-        </div>
-
-        <div 
+      {/* ── QUICK ACTIONS ── */}
+      <div className="grid grid-cols-2 gap-3">
+        <button
           onClick={() => navigate.push('/therapist')}
-          className="border-4 border-ink brutalist-shadow bg-white hover:bg-purple/10 transition-all cursor-pointer p-4 sm:p-5 flex items-center gap-4 group overflow-hidden"
+          className="border-3 border-ink brutalist-shadow-sm bg-white hover:bg-purple/15 p-3 sm:p-4 text-left transition-all flex items-center gap-3 group"
         >
-          <div className="p-2.5 bg-purple border-3 border-ink brutalist-shadow-sm group-hover:scale-110 transition-transform shrink-0">
-            <Zap className="w-5 h-5 text-ink" />
+          <div className="p-2 bg-purple border-2 border-ink shrink-0 group-hover:scale-105 transition-transform">
+            <Zap className="w-4 h-4 text-ink" />
           </div>
-          <div className="flex-1 min-w-0">
-            <h4 className="font-heading text-lg sm:text-xl tracking-tight uppercase group-hover:text-purple transition-colors">
-              Healing Companion
-            </h4>
-            <p className="font-sans text-[11px] sm:text-xs text-ink/60 leading-snug mt-0.5 line-clamp-1">
-              A warm listener, available 24/7 when the urge hits.
-            </p>
+          <div className="min-w-0 flex-1">
+            <span className="font-heading text-xs sm:text-sm uppercase font-black block group-hover:text-purple transition-colors truncate">
+              Healing AI
+            </span>
+            <span className="font-mono text-[9px] text-ink/50 block truncate">24/7 Companion</span>
           </div>
-          <ArrowRight className="w-4 h-4 text-purple shrink-0 group-hover:translate-x-1 transition-transform" />
-        </div>
-      </div>
+        </button>
 
-      <div className="text-center">
-        <p className="font-mono text-[10px] text-ink/40 uppercase tracking-widest">
-          📌 Diary, Red Flags, Timeline, Streak, Rewards & Account via the bottom nav bar.
-        </p>
+        <button
+          onClick={() => navigate.push('/closure')}
+          className="border-3 border-ink brutalist-shadow-sm bg-white hover:bg-brand/15 p-3 sm:p-4 text-left transition-all flex items-center gap-3 group"
+        >
+          <div className="p-2 bg-brand border-2 border-ink shrink-0 group-hover:scale-105 transition-transform">
+            <MessageSquare className="w-4 h-4 text-ink" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <span className="font-heading text-xs sm:text-sm uppercase font-black block group-hover:text-ink transition-colors truncate">
+              Closure Simulator
+            </span>
+            <span className="font-mono text-[9px] text-ink/50 block truncate">Unsent Words</span>
+          </div>
+        </button>
       </div>
 
       {showAnchor && <AnchorModal onClose={() => setShowAnchor(false)} />}
