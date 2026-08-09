@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Textarea } from "@/components/ui/Textarea";
-import { Zap, MessageSquare, Anchor, Sparkles, ShieldAlert, Check, Send, Flame, Award, Flag } from "lucide-react";
+import { Zap, MessageSquare, Anchor, Sparkles, ShieldAlert, Send, Flame, Award, Flag } from "lucide-react";
 import { useCheckins } from "@/lib/useCheckins";
 import { useUser } from "@/lib/useUser";
 import { useFlags } from "@/lib/useFlags";
@@ -34,7 +34,6 @@ export default function DashboardPage() {
   const [checkinDone, setCheckinDone] = useState(false);
   const [showAnchor, setShowAnchor] = useState(false);
   const [moodNote, setMoodNote] = useState("");
-  const [moodJustLogged, setMoodJustLogged] = useState(false);
 
   const todayMood = getMoodForDate(new Date());
   const todayDate = new Date();
