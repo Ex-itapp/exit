@@ -355,7 +355,7 @@ export default function LandingPage() {
                       : "bg-white text-ink shadow-[1px_1px_0px_0px_rgba(17,17,17,1)]"
                   }`}
                 >
-                  {React.cloneElement(f.icon as React.ReactElement, { className: "w-6 h-6" })}
+                  {React.cloneElement(f.icon as React.ReactElement<{ className?: string }>, { className: "w-6 h-6" })}
                 </button>
               ))}
             </div>
