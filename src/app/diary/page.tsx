@@ -2,214 +2,135 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/Button";
-import { Card, CardContent } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
-import { Lock, Trash2, PenLine, Flag as FlagIcon, Plus } from "lucide-react";
+import { PenLine, Plus, Trash2, BookOpen } from "lucide-react";
 import { useDiary } from "@/lib/useDiary";
-import { useFlags } from "@/lib/useFlags";
 import { ShareModal, type ShareEntryData } from "@/components/ShareModal";
-import { cn } from "@/lib/utils";
 
-type Tab = 'diary' | 'flags';
-
-export default function Diary() {
+export default function DiaryPage() {
   const navigate = useRouter();
   const { entries, deleteEntry } = useDiary();
-  const { flags, deleteFlag } = useFlags();
-  
-  const [activeTab, setActiveTab] = useState<Tab>('diary');
   const [selectedEntry, setSelectedEntry] = useState<ShareEntryData | null>(null);
 
-  const formatTime = (isoString: string) => {
-    const date = new Date(isoString);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
+  const formatDate = (iso: string) => {
+    const d = new Date(iso);
+    return {
+      day: d.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase(),
+      date: d.getDate(),
+      month: d.toLocaleDateString("en-US", { month: "short" }).toUpperCase(),
+      year: d.getFullYear(),
+      time: d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }),
+    };
   };
 
-  const handleDiaryClick = (entry: any) => {
+  const handleEntryClick = (entry: any) => {
     setSelectedEntry({
-      type: 'diary',
+      type: "diary",
       id: entry.id,
       content: entry.content,
       createdAt: entry.createdAt,
       tags: entry.moods,
-      isUnsent: entry.isUnsent
+      isUnsent: entry.isUnsent,
     });
   };
 
-  const handleFlagClick = (flag: any) => {
-    setSelectedEntry({
-      type: 'flag',
-      id: flag.id,
-      content: flag.content,
-      createdAt: flag.createdAt,
-      tags: [flag.category]
-    });
-  };
+  // ── EMPTY STATE ──────────────────────────────────────────────
+  if (entries.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[70vh] text-center space-y-6 px-4 animate-in fade-in duration-200">
+        <div className="w-20 h-20 border-4 border-dashed border-ink/30 flex items-center justify-center">
+          <BookOpen className="w-8 h-8 text-ink/40" />
+        </div>
+        <div className="space-y-1">
+          <p className="font-heading text-xl tracking-tight">No diary entries yet</p>
+          <p className="font-mono text-xs text-ink/50 uppercase tracking-widest">Your thoughts deserve a home</p>
+        </div>
+        <button
+          onClick={() => navigate.push("/diary/new")}
+          className="flex items-center gap-2 bg-ink text-bg font-mono text-sm font-bold uppercase tracking-widest px-6 py-3 hover:opacity-90 transition-opacity brutalist-shadow"
+        >
+          <PenLine className="w-4 h-4" />
+          Write First Entry
+        </button>
+      </div>
+    );
+  }
 
+  // ── LIST STATE ───────────────────────────────────────────────
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-150 pb-20 max-w-[1200px] mx-auto w-full">
-      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b-4 border-ink pb-6">
+    <div className="animate-in fade-in slide-in-from-bottom-3 duration-200 pb-28 max-w-2xl mx-auto w-full px-3 sm:px-4">
+      {/* Header */}
+      <div className="flex items-center justify-between pt-1 pb-5 border-b-2 border-ink/10 mb-5">
         <div>
-          <h1 className="text-4xl md:text-5xl font-heading tracking-tighter">LOGBOOK</h1>
-          <p className="font-mono text-ink/70 mt-2 text-sm md:text-base uppercase tracking-widest">
-            {activeTab === 'diary' ? 'Your week, unfiltered.' : 'Write it down so you don\'t forget.'}
+          <h1 className="font-heading text-2xl sm:text-3xl tracking-tighter">MY DIARY</h1>
+          <p className="font-mono text-[10px] text-ink/50 uppercase tracking-widest mt-0.5">
+            {entries.length} {entries.length === 1 ? "entry" : "entries"}
           </p>
         </div>
-        
-        {/* Tab Switcher */}
-        <div className="flex bg-white border-3 border-ink p-1 brutalist-shadow-sm self-start sm:self-auto">
-          <button
-            onClick={() => setActiveTab('diary')}
-            className={cn(
-              "px-4 py-2 font-mono text-xs font-bold uppercase transition-colors flex items-center gap-2",
-              activeTab === 'diary' ? "bg-ink text-bg" : "hover:bg-bg"
-            )}
-          >
-            <PenLine className="w-4 h-4" /> Diary
-          </button>
-          <button
-            onClick={() => setActiveTab('flags')}
-            className={cn(
-              "px-4 py-2 font-mono text-xs font-bold uppercase transition-colors flex items-center gap-2",
-              activeTab === 'flags' ? "bg-accent text-bg" : "hover:bg-bg"
-            )}
-          >
-            <FlagIcon className="w-4 h-4" /> Flags
-          </button>
-        </div>
+      </div>
 
-        <div className="flex gap-2">
-          {activeTab === 'diary' ? (
-            <Button onClick={() => navigate.push('/diary/new')} className="brutalist-shadow-sm group h-10 px-4 shrink-0">
-              <PenLine className="w-4 h-4 mr-2 group-hover:animate-pulse" />
-              New Entry
-            </Button>
-          ) : (
-            <Button onClick={() => navigate.push('/flags/new')} className="brutalist-shadow-sm group bg-accent hover:bg-accent/90 text-bg border-accent h-10 px-4 shrink-0">
-              <Plus className="w-5 h-5 mr-2 group-hover:scale-125 transition-transform" />
-              Log Flag
-            </Button>
-          )}
-        </div>
-      </header>
-
-      {/* DIARY TAB */}
-      {activeTab === 'diary' && (
-        <>
-          {entries.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center opacity-50 space-y-4">
-              <div className="w-24 h-24 border-4 border-dashed border-ink flex items-center justify-center rounded-xl">
-                <PenLine className="w-8 h-8" />
+      {/* Timeline List */}
+      <div className="space-y-2.5">
+        {entries.map((entry) => {
+          const f = formatDate(entry.createdAt);
+          const preview = entry.content.replace(/\n+/g, " ").trim();
+          return (
+            <button
+              key={entry.id}
+              onClick={() => handleEntryClick(entry)}
+              className="w-full bg-white border-2 border-ink brutalist-shadow-sm p-4 text-left flex items-start gap-4 hover:bg-[#fdfaf4] transition-colors group"
+            >
+              {/* Date Stamp */}
+              <div className="shrink-0 w-12 text-center border-r-2 border-ink/10 pr-3">
+                <span className="font-mono text-[9px] font-bold text-ink/40 block">{f.day}</span>
+                <span className="font-heading text-2xl leading-none font-black text-ink block">{f.date}</span>
+                <span className="font-mono text-[9px] font-bold text-ink/50 block">{f.month}</span>
+                <span className="font-mono text-[8px] text-ink/30 block">{f.year}</span>
               </div>
-              <p className="font-mono uppercase font-bold tracking-widest">No entries yet</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {entries.map(entry => (
-                <Card 
-                  key={entry.id} 
-                  onClick={() => handleDiaryClick(entry)}
-                  className={`group relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[8px_8px_0_var(--color-ink)] cursor-pointer ${
-                    entry.isUnsent ? "bg-ink text-bg border-ink" : "bg-[#f4f1ea] border-ink"
-                  }`}
-                >
-                  {!entry.isUnsent && (
-                    <div className="absolute inset-0 opacity-5 pointer-events-none" 
-                         style={{ backgroundImage: 'radial-gradient(var(--color-ink) 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+
+              {/* Content Preview */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  {entry.moods?.length > 0 && (
+                    <span className="font-mono text-[9px] bg-ink/5 px-1.5 py-0.5 text-ink/60 uppercase tracking-widest">
+                      {entry.moods.slice(0, 2).join(" · ")}
+                    </span>
                   )}
-                  <CardContent className="p-6 flex flex-col h-full min-h-[250px] relative z-10">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex flex-wrap gap-2">
-                        {entry.isUnsent ? (
-                          <Badge variant="accent" className="border-bg bg-accent text-bg font-bold">
-                            <Lock className="w-3 h-3 mr-1 inline-block" /> Sealed
-                          </Badge>
-                        ) : (
-                          entry.moods.map(mood => (
-                            <Badge key={mood} variant="outline" className="border-ink bg-white/50 backdrop-blur-sm font-bold">
-                              {mood}
-                            </Badge>
-                          ))
-                        )}
-                      </div>
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); deleteEntry(entry.id); }} 
-                        className={`opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-full hover:bg-black/10 z-20 ${entry.isUnsent ? 'text-bg' : 'text-ink'}`}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <p className={`flex-1 text-lg leading-relaxed mb-6 whitespace-pre-wrap line-clamp-6 ${
-                      entry.isUnsent ? 'font-mono italic opacity-90' : 'font-medium'
-                    }`}>
-                      {entry.content}
-                    </p>
-                    <div className="mt-auto pt-4 border-t-2 border-current opacity-30 flex justify-between items-center">
-                      <span className="font-mono text-xs font-bold tracking-widest">
-                        {formatTime(entry.createdAt)}
-                      </span>
-                      {!entry.isUnsent && <span className="font-heading text-xl">#</span>}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </>
-      )}
-
-      {/* FLAGS TAB */}
-      {activeTab === 'flags' && (
-        <>
-          {flags.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center opacity-50 space-y-4">
-              <div className="w-24 h-24 border-4 border-dashed border-ink flex items-center justify-center rounded-xl bg-accent/5">
-                <FlagIcon className="w-8 h-8 text-accent" />
+                  {entry.isUnsent && (
+                    <span className="font-mono text-[9px] bg-ink text-bg px-1.5 py-0.5 uppercase tracking-widest">
+                      Sealed
+                    </span>
+                  )}
+                </div>
+                <p className="font-mono text-sm text-ink/80 leading-relaxed line-clamp-2 whitespace-pre-wrap">
+                  {preview}
+                </p>
+                <span className="font-mono text-[9px] text-ink/30 mt-1.5 block">{f.time}</span>
               </div>
-              <p className="font-mono uppercase font-bold tracking-widest">No flags logged yet</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {flags.map(flag => (
-                <Card 
-                  key={flag.id} 
-                  onClick={() => handleFlagClick(flag)}
-                  className="group relative overflow-hidden transition-all duration-300 hover:-translate-y-1 bg-white border-ink hover:shadow-[8px_8px_0_var(--color-accent)] border-t-8 border-t-accent cursor-pointer"
-                >
-                  <CardContent className="p-6 flex flex-col h-full min-h-[200px] relative z-10">
-                    <div className="flex justify-between items-start mb-4 gap-2">
-                      <Badge variant="accent" className="font-bold text-xs uppercase tracking-widest">{flag.category}</Badge>
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); deleteFlag(flag.id); }} 
-                        className="opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-full hover:bg-accent/10 text-accent z-20"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <p className="flex-1 text-lg font-medium leading-relaxed whitespace-pre-wrap mb-6 text-ink/90 line-clamp-6">
-                      {flag.content}
-                    </p>
-                    <div className="mt-auto pt-4 border-t-2 border-ink/10 flex justify-between items-center text-ink/40">
-                      <span className="font-mono text-xs font-bold tracking-widest">
-                        {formatTime(flag.createdAt)}
-                      </span>
-                      <FlagIcon className="w-4 h-4" />
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </>
-      )}
 
-      {/* Share Modal */}
+              {/* Delete */}
+              <button
+                onClick={(e) => { e.stopPropagation(); deleteEntry(entry.id); }}
+                className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-accent/10 text-accent"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Floating + FAB */}
+      <button
+        onClick={() => navigate.push("/diary/new")}
+        className="fixed bottom-24 right-5 sm:right-8 w-14 h-14 bg-ink text-bg border-2 border-ink brutalist-shadow flex items-center justify-center hover:scale-105 transition-transform z-40"
+        aria-label="New diary entry"
+      >
+        <Plus className="w-6 h-6" />
+      </button>
+
+      {/* Share / Read Modal */}
       {selectedEntry && (
-        <ShareModal 
-          entry={selectedEntry} 
-          onClose={() => setSelectedEntry(null)} 
-        />
+        <ShareModal entry={selectedEntry} onClose={() => setSelectedEntry(null)} />
       )}
     </div>
   );
