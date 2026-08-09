@@ -9,7 +9,7 @@ import { Shield, Sparkles, Heart, Compass, ArrowRight, ArrowLeft, Check } from "
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
 const goals = [
   { label: "Breaking the urge to reach out", icon: Shield,   desc: "Strict accountability and streak tracking." },
@@ -35,7 +35,7 @@ export default function OnboardingPage() {
   const [anchor, setAnchor] = useState("");
   const [breakupDate, setBreakupDate] = useState(new Date().toISOString().split("T")[0]);
 
-  const handleFinish = async () => {
+  const handleFinish = (startTrial: boolean) => {
     completeOnboarding(
       name.trim() || "Friend",
       goal || "Finding peace and clarity",
@@ -43,7 +43,7 @@ export default function OnboardingPage() {
       "no_contact",
       new Date(breakupDate).toISOString()
     );
-    navigate.push("/dashboard");
+    navigate.push(startTrial ? "/pricing" : "/dashboard");
   };
 
   const progress = ((step - 1) / (TOTAL_STEPS - 1)) * 100;
@@ -353,10 +353,93 @@ export default function OnboardingPage() {
                     <ArrowLeft className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={handleFinish}
+                    onClick={() => setStep(6)}
                     className="flex-1 h-14 bg-brand text-ink border-4 border-ink font-mono font-black uppercase text-sm tracking-widest hover:opacity-90 transition-opacity flex items-center justify-center gap-2 brutalist-shadow"
                   >
-                    Enter My Sanctuary <ArrowRight className="w-4 h-4" />
+                    Continue <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* ── STEP 6: PRICING / FREE TRIAL ── */}
+            {step === 6 && (
+              <motion.div
+                key="s6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-5"
+              >
+                {/* Header */}
+                <div className="text-center space-y-1">
+                  <div className="inline-block bg-brand border-2 border-ink px-3 py-1 font-mono text-[10px] font-black uppercase tracking-widest mb-2">
+                    🎉 Your sanctuary is ready, {name.trim().split(" ")[0] || "friend"}!
+                  </div>
+                  <h2 className="font-heading text-3xl sm:text-4xl uppercase tracking-tight">
+                    Start healing for free
+                  </h2>
+                  <p className="font-mono text-xs text-ink/50">
+                    Try every Pro feature free for 3 days. No charge today.
+                  </p>
+                </div>
+
+                {/* Pricing card */}
+                <div className="border-4 border-ink brutalist-shadow bg-white relative overflow-hidden">
+                  {/* Badge */}
+                  <div className="absolute top-0 right-0 bg-accent text-white font-mono text-[9px] font-black uppercase px-3 py-1 tracking-widest">
+                    Most Popular
+                  </div>
+
+                  <div className="p-5 border-b-2 border-ink/10">
+                    <div className="flex items-end gap-2">
+                      <span className="font-heading text-5xl font-black tracking-tighter">$39</span>
+                      <div className="mb-1">
+                        <span className="font-mono text-xs text-ink/50 block">/year</span>
+                        <span className="font-mono text-[9px] text-ink/40 block">≈ $3.25/month</span>
+                      </div>
+                    </div>
+                    <p className="font-mono text-xs text-ink/60 mt-1">
+                      Billed annually after your 3-day free trial.
+                    </p>
+                  </div>
+
+                  <div className="p-5 space-y-2">
+                    {[
+                      "🔥 Unlimited healing streak tracking",
+                      "🤖 AI Healing Companion — unlimited chats",
+                      "💬 AI Ex Simulator — say what you need to say",
+                      "🚩 Unlimited red flag logging & history",
+                      "📖 Private diary with mood analytics",
+                      "🔒 End-to-end encrypted, always private",
+                    ].map((f) => (
+                      <div key={f} className="flex items-start gap-2">
+                        <Check className="w-3.5 h-3.5 text-positive mt-0.5 shrink-0" />
+                        <span className="font-mono text-xs text-ink/80">{f}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Trust line */}
+                <p className="text-center font-mono text-[9px] text-ink/40 uppercase tracking-widest">
+                  Cancel anytime · No credit card needed to try
+                </p>
+
+                {/* CTAs */}
+                <div className="space-y-2">
+                  <button
+                    onClick={() => handleFinish(true)}
+                    className="w-full h-14 bg-ink text-bg font-mono font-black uppercase text-sm tracking-widest hover:opacity-90 transition-opacity flex items-center justify-center gap-2 brutalist-shadow border-4 border-ink"
+                  >
+                    Start 3-Day Free Trial <ArrowRight className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleFinish(false)}
+                    className="w-full h-10 font-mono text-[10px] text-ink/40 uppercase tracking-widest hover:text-ink/70 transition-colors"
+                  >
+                    Continue with free features →
                   </button>
                 </div>
               </motion.div>
