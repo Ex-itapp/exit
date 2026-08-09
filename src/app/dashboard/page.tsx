@@ -281,9 +281,9 @@ export default function DashboardPage() {
             </div>
             <div className="min-w-0 flex-1">
               <span className="font-heading text-xs uppercase font-black block group-hover:text-ink transition-colors truncate">
-                Unsent Letter
+                AI Ex Simulator
               </span>
-              <span className="font-mono text-[9px] text-ink/50 block truncate">Say it here, not to them</span>
+              <span className="font-mono text-[9px] text-ink/50 block truncate">Practice what you&apos;d say</span>
             </div>
           </button>
         </div>
