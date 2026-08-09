@@ -32,13 +32,13 @@ export function useAuth() {
         const { data: { session: currentSession } } = await supabase.auth.getSession();
         if (mounted) {
           setSession(currentSession);
-          setUser(currentSession?.user ?? (isLocalhost ? MOCK_LOCAL_USER : null));
+          setUser(currentSession?.user ?? null);
           setLoading(false);
         }
       } catch (err) {
         console.error("Auth init error:", err);
         if (mounted) {
-          setUser(isLocalhost ? MOCK_LOCAL_USER : null);
+          setUser(null);
           setLoading(false);
         }
       }
@@ -49,7 +49,7 @@ export function useAuth() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
       if (mounted) {
         setSession(newSession);
-        setUser(newSession?.user ?? (isLocalhost ? MOCK_LOCAL_USER : null));
+        setUser(newSession?.user ?? null);
         setLoading(false);
       }
     });

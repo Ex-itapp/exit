@@ -11,14 +11,12 @@ import { useUser } from "@/lib/useUser";
 
 export default function AuthPage() {
   const router = useRouter();
-  const { signInAnonymously, signInWithEmail, signInWithGoogle, user } = useAuth();
+  const { signInWithEmail, signInWithGoogle, user } = useAuth();
   const { hasCompletedOnboarding } = useUser();
 
   const [email, setEmail] = useState("");
   const [authMsg, setAuthMsg] = useState("");
   const [isAuthLoading, setIsAuthLoading] = useState(false);
-
-  const isSignedUp = !!(user && !user.is_anonymous);
 
   const handleMagicLinkLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,31 +31,13 @@ export default function AuthPage() {
     }
   };
 
-  const handleGuestLogin = async () => {
-    setIsAuthLoading(true);
-    const { error } = await signInAnonymously();
-    setIsAuthLoading(false);
-    if (error) {
-      setAuthMsg("Error: " + error.message);
-    } else {
-      setAuthMsg("✨ Logged in as Guest!");
-      setTimeout(() => {
-        router.push(hasCompletedOnboarding ? "/dashboard" : "/onboarding");
-      }, 800);
-    }
-  };
-
-  const handleLaunchApp = () => {
-    router.push(hasCompletedOnboarding ? "/dashboard" : "/onboarding");
-  };
-
   useEffect(() => {
-    if (isSignedUp) {
-      router.push("/dashboard");
+    if (user) {
+      router.push(hasCompletedOnboarding ? "/dashboard" : "/onboarding");
     }
-  }, [isSignedUp, router]);
+  }, [user, hasCompletedOnboarding, router]);
 
-  if (isSignedUp) return null;
+  if (user) return null;
 
   return (
     <div className="min-h-screen bg-bg text-ink font-sans selection:bg-brand selection:text-ink flex items-center justify-center p-4">
@@ -140,22 +120,7 @@ export default function AuthPage() {
             </Button>
           </form>
 
-          <div className="relative flex items-center justify-center border-t-2 border-ink/20 pt-4">
-            <span className="font-mono text-[11px] text-ink/60 uppercase bg-white px-2 absolute -top-3">
-              Or Continue As
-            </span>
-          </div>
 
-          <div className="space-y-3 pt-2">
-            <Button
-              variant="secondary"
-              onClick={handleGuestLogin}
-              disabled={isAuthLoading}
-              className="w-full h-12 border-3 border-ink font-mono font-bold uppercase text-xs bg-bg hover:bg-white"
-            >
-              Guest / Demo Sanctuary Access 👤
-            </Button>
-          </div>
 
           {authMsg && (
             <div className="p-3 bg-positive/20 border-2 border-positive font-mono text-xs font-bold text-center">

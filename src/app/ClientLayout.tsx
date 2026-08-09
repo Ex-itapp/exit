@@ -26,7 +26,7 @@ export function ClientLayout({ children }: { children: ReactNode }) {
 
   React.useEffect(() => {
     if (!loading && user && pathname === '/') {
-      router.replace('/dashboard');
+      router.replace(localStorage.getItem('unsent_onboarding_done_clean') === 'true' ? '/dashboard' : '/onboarding');
     }
   }, [user, loading, pathname, router]);
 
