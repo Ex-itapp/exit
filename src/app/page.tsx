@@ -455,79 +455,64 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Desktop: Grid. Mobile: Hidden */}
-            <div className="hidden sm:grid sm:grid-cols-2 gap-8 max-w-3xl mx-auto">
-              {/* Desktop Monthly */}
+            {/* Desktop Grid */}
+            <div className="hidden sm:grid sm:grid-cols-2 gap-8 items-stretch max-w-4xl mx-auto">
+              {/* Monthly */}
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -6 }}
-                className="bg-white border-4 border-ink p-8 shadow-[6px_6px_0px_0px_rgba(17,17,17,1)] flex flex-col"
+                whileHover={{ y: -6, transition: { duration: 0.2 } }}
+                className="bg-white border-4 border-ink p-8 shadow-[6px_6px_0px_0px_rgba(17,17,17,1)] flex flex-col justify-between"
               >
-                <div className="block">
-                  <div>
-                    <p className="font-mono text-xs font-bold uppercase tracking-widest text-ink/40 mb-3">Monthly</p>
-                    <div className="font-heading text-6xl mb-1">$10<span className="text-xl text-ink/35">/mo</span></div>
-                  </div>
-                  <p className="font-mono text-xs text-ink/35 mb-6 pb-4 border-b-4 border-ink/10">Cancel anytime</p>
-                </div>
                 <div>
-                  <ul className="space-y-3 mb-8 flex-1">
-                    {["Unlimited unsent messages", "Red flag tracker", "Healing companion", "Private diary"].map(item => (
+                  <p className="font-mono text-xs font-bold uppercase tracking-widest text-ink/40 mb-3">Monthly</p>
+                  <div className="font-heading text-6xl mb-1">$10<span className="text-xl text-ink/35">/mo</span></div>
+                  <p className="font-mono text-xs text-ink/40 mb-6 pb-4 border-b-4 border-ink/10">Billed monthly · Cancel anytime</p>
+                  <ul className="space-y-3 mb-8">
+                    {["Unlimited unsent messages", "Red flag tracker & analytics", "AI Healing companion", "Private encrypted diary"].map(item => (
                       <li key={item} className="flex items-center gap-3 font-sans text-sm font-medium text-ink/80">
                         <Check className="w-5 h-5 text-positive shrink-0" strokeWidth={3} />
                         {item}
                       </li>
                     ))}
                   </ul>
-                  <Link href="/auth" className="block text-center border-4 border-ink py-3.5 font-heading text-base shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] hover:bg-ink hover:text-white hover:shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
-                    Start healing
-                  </Link>
                 </div>
+                <Link href="/pricing" className="block text-center border-4 border-ink py-3.5 font-heading text-base shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] hover:shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
+                  Choose Monthly →
+                </Link>
               </motion.div>
 
-              {/* Desktop Yearly */}
+              {/* Yearly */}
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.08 }}
-                whileHover={{ y: -6 }}
-                className="bg-ink text-white border-4 border-ink p-8 shadow-[6px_6px_0px_0px_rgba(255,51,102,1)] flex flex-col relative"
+                whileHover={{ y: -6, transition: { duration: 0.2 } }}
+                className="bg-ink text-white border-4 border-ink p-8 shadow-[8px_8px_0px_0px_rgba(255,51,102,1)] flex flex-col justify-between relative"
               >
                 <motion.div
                   animate={{ rotate: [3, -2, 3] }}
                   transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
                   className="absolute -top-4 right-4 bg-brand text-ink font-heading text-xs px-4 py-1.5 border-4 border-ink shadow-[3px_3px_0px_0px_rgba(255,51,102,1)]"
                 >
-                  BEST VALUE
+                  3-DAY FREE TRIAL
                 </motion.div>
-                <div className="block">
-                  <div>
-                    <p className="font-mono text-xs font-bold uppercase tracking-widest text-white/40 mb-3">Yearly</p>
-                    <div className="font-heading text-6xl mb-1">$40<span className="text-xl text-white/35">/yr</span></div>
-                  </div>
-                  <p className="font-mono text-xs text-brand mb-6 pb-4 border-b-4 border-white/10">Save 67%</p>
-                </div>
                 <div>
-                  <ul className="space-y-3 mb-8 flex-1">
-                    {["Everything in Monthly", "Exclusive themes", "Priority support", "Lifetime badges"].map(item => (
-                      <li key={item} className="flex items-center gap-3 font-sans text-sm font-medium text-white/80">
+                  <p className="font-mono text-xs font-bold uppercase tracking-widest text-white/40 mb-3">Annual (Best Value)</p>
+                  <div className="font-heading text-6xl mb-1">$39<span className="text-xl text-white/35">/yr</span></div>
+                  <p className="font-mono text-xs text-brand mb-6 pb-4 border-b-4 border-white/10">🎁 3 Days Free · Then $3.25/mo (Save 67%)</p>
+                  <ul className="space-y-3 mb-8">
+                    {["3 Days 100% Free Trial", "Everything in Monthly", "Exclusive sanctuary themes", "Priority AI response pipeline", "Lifetime recovery badges"].map(item => (
+                      <li key={item} className="flex items-center gap-3 font-sans text-sm font-medium text-white/90">
                         <Check className="w-5 h-5 text-brand shrink-0" strokeWidth={3} />
                         {item}
                       </li>
                     ))}
                   </ul>
-                  <Link href="/auth" className="block text-center bg-brand text-ink border-4 border-ink py-3.5 font-heading text-base shadow-[4px_4px_0px_0px_rgba(255,51,102,1)] hover:shadow-[2px_2px_0px_0px_rgba(255,51,102,1)] hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
-                    Most popular
-                  </Link>
                 </div>
+                <Link href="/pricing" className="block text-center bg-brand text-ink border-4 border-ink py-3.5 font-heading text-base shadow-[4px_4px_0px_0px_rgba(255,51,102,1)] hover:shadow-[2px_2px_0px_0px_rgba(255,51,102,1)] hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
+                  Start 3-Day Free Trial →
+                </Link>
               </motion.div>
             </div>
 
             {/* Mobile: Dynamic Single Card based on Toggle */}
-            <div className="sm:hidden w-full max-w-sm mx-auto min-h-[400px] relative">
+            <div className="sm:hidden w-full max-w-sm mx-auto min-h-[420px] relative">
               <AnimatePresence mode="wait">
                 {billing === "monthly" ? (
                   <motion.div
@@ -536,22 +521,23 @@ export default function LandingPage() {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 20 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute inset-0 bg-white border-3 border-ink p-5 shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] flex flex-col"
+                    className="absolute inset-0 bg-white border-3 border-ink p-5 shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] flex flex-col justify-between"
                   >
-                    <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-ink/40 mb-1">Monthly</p>
-                    <div className="font-heading text-5xl mb-0.5">$10<span className="text-base text-ink/35">/mo</span></div>
-                    <p className="font-mono text-[10px] text-ink/35 mb-4 pb-3 border-b-3 border-ink/10">Cancel anytime</p>
-                    
-                    <ul className="space-y-3 mb-6 flex-1">
-                      {["Unlimited unsent messages", "Red flag tracker", "Healing companion", "Private diary"].map(item => (
-                        <li key={item} className="flex items-center gap-2 font-sans text-sm font-medium text-ink/80">
-                          <Check className="w-4 h-4 text-positive shrink-0" strokeWidth={3} />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                    <Link href="/auth" className="block text-center border-3 border-ink py-3 font-heading text-sm shadow-[3px_3px_0px_0px_rgba(17,17,17,1)] active:shadow-none active:translate-x-[3px] active:translate-y-[3px] transition-all">
-                      Start healing
+                    <div>
+                      <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-ink/40 mb-1">Monthly</p>
+                      <div className="font-heading text-5xl mb-0.5">$10<span className="text-base text-ink/35">/mo</span></div>
+                      <p className="font-mono text-[10px] text-ink/35 mb-4 pb-3 border-b-3 border-ink/10">Billed monthly · Cancel anytime</p>
+                      <ul className="space-y-2.5 mb-6">
+                        {["Unlimited unsent messages", "Red flag tracker", "Healing companion", "Private diary"].map(item => (
+                          <li key={item} className="flex items-center gap-2 font-sans text-xs font-medium text-ink/80">
+                            <Check className="w-4 h-4 text-positive shrink-0" strokeWidth={3} />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <Link href="/pricing" className="block text-center border-3 border-ink py-3 font-heading text-sm shadow-[3px_3px_0px_0px_rgba(17,17,17,1)] active:shadow-none active:translate-x-[3px] active:translate-y-[3px] transition-all">
+                      Choose Monthly →
                     </Link>
                   </motion.div>
                 ) : (
@@ -561,29 +547,30 @@ export default function LandingPage() {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute inset-0 bg-ink text-white border-3 border-ink p-5 shadow-[4px_4px_0px_0px_rgba(255,51,102,1)] flex flex-col"
+                    className="absolute inset-0 bg-ink text-white border-3 border-ink p-5 shadow-[4px_4px_0px_0px_rgba(255,51,102,1)] flex flex-col justify-between relative"
                   >
                     <motion.div
                       animate={{ rotate: [3, -2, 3] }}
                       transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
                       className="absolute -top-3 right-3 bg-brand text-ink font-heading text-[10px] px-3 py-1 border-3 border-ink shadow-[2px_2px_0px_0px_rgba(255,51,102,1)]"
                     >
-                      BEST VALUE
+                      3-DAY FREE TRIAL
                     </motion.div>
-                    <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-white/40 mb-1">Yearly</p>
-                    <div className="font-heading text-5xl mb-0.5">$40<span className="text-base text-white/35">/yr</span></div>
-                    <p className="font-mono text-[10px] text-brand mb-4 pb-3 border-b-3 border-white/10">Save 67%</p>
-                    
-                    <ul className="space-y-3 mb-6 flex-1">
-                      {["Everything in Monthly", "Exclusive themes", "Priority support", "Lifetime badges"].map(item => (
-                        <li key={item} className="flex items-center gap-2 font-sans text-sm font-medium text-white/80">
-                          <Check className="w-4 h-4 text-brand shrink-0" strokeWidth={3} />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                    <Link href="/auth" className="block text-center bg-brand text-ink border-3 border-ink py-3 font-heading text-sm shadow-[3px_3px_0px_0px_rgba(255,51,102,1)] active:shadow-none active:translate-x-[3px] active:translate-y-[3px] transition-all">
-                      Most popular
+                    <div>
+                      <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-white/40 mb-1">Annual (Save 67%)</p>
+                      <div className="font-heading text-5xl mb-0.5">$39<span className="text-base text-white/35">/yr</span></div>
+                      <p className="font-mono text-[10px] text-brand mb-4 pb-3 border-b-3 border-white/10">🎁 3 Days Free · Then $3.25/mo</p>
+                      <ul className="space-y-2.5 mb-6">
+                        {["🎁 3-Day Free Trial included", "Everything in Monthly", "Exclusive sanctuary themes", "Priority AI response pipeline"].map(item => (
+                          <li key={item} className="flex items-center gap-2 font-sans text-xs font-medium text-white/90">
+                            <Check className="w-4 h-4 text-brand shrink-0" strokeWidth={3} />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <Link href="/pricing" className="block text-center bg-brand text-ink border-3 border-ink py-3 font-heading text-sm shadow-[3px_3px_0px_0px_rgba(255,51,102,1)] active:shadow-none active:translate-x-[3px] active:translate-y-[3px] transition-all">
+                      Start 3-Day Free Trial →
                     </Link>
                   </motion.div>
                 )}
