@@ -64,13 +64,7 @@ export default function DashboardPage() {
     setCheckinDone(true);
   };
 
-  const handleDropQuickFlag = () => {
-    if (!quickFlagText.trim()) return;
-    addFlag(quickFlagText, quickFlagCategory);
-    setQuickFlagText("");
-    setFlagDropped(true);
-    setTimeout(() => setFlagDropped(false), 4000);
-  };
+
 
   const handleMoodSelect = (emoji: string) => {
     logMood(emoji, moodNote);
