@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Textarea } from "@/components/ui/Textarea";
-import { Zap, MessageSquare, Anchor, Sparkles, ShieldAlert, Check, Send, Flame, Award } from "lucide-react";
+import { Zap, MessageSquare, Anchor, Sparkles, ShieldAlert, Check, Send, Flame, Award, Flag } from "lucide-react";
 import { useCheckins } from "@/lib/useCheckins";
 import { useUser } from "@/lib/useUser";
 import { useFlags } from "@/lib/useFlags";
@@ -278,34 +278,49 @@ export default function DashboardPage() {
       </div>
 
       {/* ── QUICK ACTIONS ── */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
         <button
-          onClick={() => navigate.push('/therapist')}
-          className="border-3 border-ink brutalist-shadow-sm bg-white hover:bg-purple/15 p-3 sm:p-4 text-left transition-all flex items-center gap-3 group"
+          onClick={() => navigate.push('/flags/new')}
+          className="border-3 border-ink brutalist-shadow-sm bg-white hover:bg-accent/15 p-2.5 sm:p-3.5 text-left transition-all flex items-center gap-2.5 group"
         >
-          <div className="p-2 bg-purple border-2 border-ink shrink-0 group-hover:scale-105 transition-transform">
-            <Zap className="w-4 h-4 text-ink" />
+          <div className="p-1.5 sm:p-2 bg-accent text-white border-2 border-ink shrink-0 group-hover:scale-105 transition-transform">
+            <Flag className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
           <div className="min-w-0 flex-1">
-            <span className="font-heading text-xs sm:text-sm uppercase font-black block group-hover:text-purple transition-colors truncate">
+            <span className="font-heading text-[11px] sm:text-xs uppercase font-black block group-hover:text-accent transition-colors truncate">
+              Log Flag 🚩
+            </span>
+            <span className="font-mono text-[8px] sm:text-[9px] text-ink/50 block truncate">Drop incident</span>
+          </div>
+        </button>
+
+        <button
+          onClick={() => navigate.push('/therapist')}
+          className="border-3 border-ink brutalist-shadow-sm bg-white hover:bg-purple/15 p-2.5 sm:p-3.5 text-left transition-all flex items-center gap-2.5 group"
+        >
+          <div className="p-1.5 sm:p-2 bg-purple border-2 border-ink shrink-0 group-hover:scale-105 transition-transform">
+            <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-ink" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <span className="font-heading text-[11px] sm:text-xs uppercase font-black block group-hover:text-purple transition-colors truncate">
               Healing AI
             </span>
-            <span className="font-mono text-[9px] text-ink/50 block truncate">24/7 Companion</span>
+            <span className="font-mono text-[8px] sm:text-[9px] text-ink/50 block truncate">24/7 Companion</span>
           </div>
         </button>
 
         <button
           onClick={() => navigate.push('/closure')}
-          className="border-3 border-ink brutalist-shadow-sm bg-white hover:bg-brand/15 p-3 sm:p-4 text-left transition-all flex items-center gap-3 group"
+          className="border-3 border-ink brutalist-shadow-sm bg-white hover:bg-brand/15 p-2.5 sm:p-3.5 text-left transition-all flex items-center gap-2.5 group"
         >
-          <div className="p-2 bg-brand border-2 border-ink shrink-0 group-hover:scale-105 transition-transform">
-            <MessageSquare className="w-4 h-4 text-ink" />
+          <div className="p-1.5 sm:p-2 bg-brand border-2 border-ink shrink-0 group-hover:scale-105 transition-transform">
+            <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-ink" />
           </div>
           <div className="min-w-0 flex-1">
-            <span className="font-heading text-xs sm:text-sm uppercase font-black block group-hover:text-ink transition-colors truncate">
-              Closure Simulator
+            <span className="font-heading text-[11px] sm:text-xs uppercase font-black block group-hover:text-ink transition-colors truncate">
+              Closure
             </span>
-            <span className="font-mono text-[9px] text-ink/50 block truncate">Unsent Words</span>
+            <span className="font-mono text-[8px] sm:text-[9px] text-ink/50 block truncate">Unsent Words</span>
           </div>
         </button>
       </div>
