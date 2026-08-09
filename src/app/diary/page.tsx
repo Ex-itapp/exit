@@ -74,10 +74,13 @@ export default function DiaryPage() {
           const f = formatDate(entry.createdAt);
           const preview = entry.content.replace(/\n+/g, " ").trim();
           return (
-            <button
+            <div
               key={entry.id}
               onClick={() => handleEntryClick(entry)}
-              className="w-full bg-white border-2 border-ink brutalist-shadow-sm p-4 text-left flex items-start gap-4 hover:bg-[#fdfaf4] transition-colors group"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && handleEntryClick(entry)}
+              className="w-full bg-white border-2 border-ink brutalist-shadow-sm p-4 text-left flex items-start gap-4 hover:bg-[#fdfaf4] transition-colors group cursor-pointer"
             >
               {/* Date Stamp */}
               <div className="shrink-0 w-12 text-center border-r-2 border-ink/10 pr-3">
@@ -114,7 +117,7 @@ export default function DiaryPage() {
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
-            </button>
+            </div>
           );
         })}
       </div>

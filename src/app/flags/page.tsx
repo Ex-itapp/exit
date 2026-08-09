@@ -84,10 +84,13 @@ export default function FlagsPage() {
           const preview = flag.content.replace(/\n+/g, " ").trim();
           const dotColor = CATEGORY_COLORS[flag.category] ?? "bg-accent";
           return (
-            <button
+            <div
               key={flag.id}
+              role="button"
+              tabIndex={0}
               onClick={() => handleFlagClick(flag)}
-              className="w-full bg-white border-2 border-ink brutalist-shadow-sm p-4 text-left flex items-start gap-4 hover:bg-rose-50/30 transition-colors group"
+              onKeyDown={(e) => e.key === "Enter" && handleFlagClick(flag)}
+              className="w-full bg-white border-2 border-ink brutalist-shadow-sm p-4 text-left flex items-start gap-4 hover:bg-rose-50/30 transition-colors group cursor-pointer"
             >
               {/* Date Stamp */}
               <div className="shrink-0 w-12 text-center border-r-2 border-ink/10 pr-3">
@@ -118,7 +121,7 @@ export default function FlagsPage() {
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
-            </button>
+            </div>
           );
         })}
       </div>
