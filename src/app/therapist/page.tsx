@@ -10,6 +10,7 @@ import { useCheckins } from "@/lib/useCheckins";
 import { usePro } from "@/lib/usePro";
 import { ProGateModal } from "@/components/ProGateModal";
 import { ArrowLeft, Sparkles, MessageSquare, Send, BookOpen, Flag, Zap } from "lucide-react";
+import { triggerPWAActivity } from "@/lib/usePWAInstall";
 
 interface Message {
   role: 'user' | 'model';
@@ -136,6 +137,8 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
       }
 
       setMessages([...updatedMessages, { role: 'model', parts: [{ text: data.aiReply }] }]);
+      // Trigger PWA install prompt after first chat message
+      triggerPWAActivity();
     } catch (error: any) {
       console.error(error);
       setErrorBanner(`We couldn't reach your companion right now: ${error.message}`);

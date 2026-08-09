@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { Badge } from "@/components/ui/Badge";
 import { Plus, ArrowLeft } from "lucide-react";
 import { useFlags } from "@/lib/useFlags";
+import { triggerPWAActivity } from "@/lib/usePWAInstall";
 
 const CATEGORIES = ["Gaslighting", "Inconsistency", "Disrespect", "Manipulation", "Avoidance"];
 
@@ -20,6 +21,7 @@ export default function NewFlagEntry() {
   const handleSave = () => {
     if (!content.trim()) return;
     addFlag(content, selectedCategory);
+    triggerPWAActivity();
     navigate.push('/flags');
   };
 

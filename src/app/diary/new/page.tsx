@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { Badge } from "@/components/ui/Badge";
 import { Lock, Send, ArrowLeft } from "lucide-react";
 import { useDiary } from "@/lib/useDiary";
+import { triggerPWAActivity } from "@/lib/usePWAInstall";
 
 const MOODS = ["Numb", "Angry", "Nostalgic", "Relieved", "Spiraling"];
 
@@ -21,6 +22,7 @@ export default function NewDiaryEntry() {
   const handleSave = () => {
     if (!content.trim()) return;
     addEntry(content, isUnsentMode ? [] : selectedMoods, isUnsentMode);
+    triggerPWAActivity();
     navigate.push('/diary');
   };
 

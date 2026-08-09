@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="180" height="180" fill="#f5f0e8"/>
+  
+  <!-- Brand diamond (rotated square) -->
+  <g transform="translate(90, 68.4) rotate(45)">
+    <rect x="-25.200000000000003" y="-25.200000000000003" width="50.400000000000006" height="50.400000000000006" fill="#FFD700" stroke="#1a1a1a" stroke-width="4.5"/>
+  </g>
+  
+  <!-- App name -->
+  <text
+    x="90"
+    y="115.2"
+    text-anchor="middle"
+    dominant-baseline="middle"
+    font-family="Arial Black, Arial, sans-serif"
+    font-weight="900"
+    font-size="37.8"
+    fill="#1a1a1a"
+    letter-spacing="-0.9"
+  >EX-it.</text>
+</svg>

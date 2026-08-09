@@ -68,7 +68,7 @@ export function usePro() {
   const [endedPro, setEndedPro] = useState<EndedProInfo | null>(
     bootCachedStatus?.endedPro ?? null
   );
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!bootCachedStatus);
   const [paymentFailed, setPaymentFailed] = useState(false);
 
   const readCachedStatus = useCallback((userId: string): CachedProStatus | null => {

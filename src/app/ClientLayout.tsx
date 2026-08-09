@@ -1,16 +1,28 @@
 "use client";
 
-import React, { ReactNode } from "react";
+import React, { useEffect } from "react";
+import type { ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { useAuth } from "@/lib/useAuth";
-import { CompulsoryAuthGate } from "@/components/auth/CompulsoryAuthGate";
-import { ArrowLeft } from "lucide-react";
+import { usePro } from "@/lib/usePro";
+import { ArrowLeft, Crown } from "lucide-react";
+import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 
 export function ClientLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
+  const { isPro } = usePro();
   const pathname = usePathname();
   const router = useRouter();
+
+  // Register service worker for PWA
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch((err) => {
+        console.warn('SW registration failed:', err);
+      });
+    }
+  }, []);
 
   React.useEffect(() => {
     if (!loading && user && pathname === '/') {
@@ -36,11 +48,7 @@ export function ClientLayout({ children }: { children: ReactNode }) {
     );
   }
 
-  const isLocalhost = typeof window !== 'undefined' && (
-    window.location.hostname === 'localhost' || 
-    window.location.hostname === '127.0.0.1' || 
-    window.location.hostname.startsWith('192.168.')
-  );
+
 
   const isPublicPage = pathname === '/' || pathname === '/onboarding' || pathname === '/tos' || pathname === '/privacy' || pathname === '/support' || pathname === '/auth';
 
@@ -85,6 +93,29 @@ export function ClientLayout({ children }: { children: ReactNode }) {
               </h1>
             </div>
           </div>
+          {user && (
+            <div className="pointer-events-auto shrink-0">
+              {isPro ? (
+                <button
+                  onClick={() => router.push('/account')}
+                  className="flex items-center gap-1.5 sm:gap-2 bg-ink text-bg px-2.5 sm:px-3 py-1 sm:py-1.5 border-2 border-ink brutalist-shadow-sm hover:opacity-90 transition-opacity cursor-pointer"
+                  title="Pro status"
+                >
+                  <Crown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand" />
+                  <span className="font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest">Pro Active</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => router.push('/pricing')}
+                  className="flex items-center gap-1.5 sm:gap-2 bg-white px-2.5 sm:px-3 py-1 sm:py-1.5 border-2 border-ink brutalist-shadow-sm hover:bg-brand hover:text-ink transition-colors cursor-pointer"
+                  title="Upgrade to Pro"
+                >
+                  <Crown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-ink" />
+                  <span className="font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest">Pro</span>
+                </button>
+              )}
+            </div>
+          )}
         </header>
 
         <main className="flex-1 overflow-y-auto p-2 sm:p-4 md:p-8 relative custom-scrollbar">
@@ -103,6 +134,7 @@ export function ClientLayout({ children }: { children: ReactNode }) {
           </div>
         </main>
         {!hideBottomNav && <BottomNav />}
+        <PWAInstallBanner />
       </div>
   );
 }
