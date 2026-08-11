@@ -174,8 +174,8 @@ const features = [
 /* ─────────────────────────────────────────────
    Animated Headline
 ───────────────────────────────────────────── */
-const AnimatedTitle = ({ text }: { text: string }) => {
-  const words = text.split(" ");
+const AnimatedTitle = ({ text }: { text: string | string[] }) => {
+  const words = Array.isArray(text) ? text : text.split(" ");
   
   const container = {
     hidden: { opacity: 0 },
@@ -211,7 +211,7 @@ const AnimatedTitle = ({ text }: { text: string }) => {
     >
       {words.map((word, index) => (
         <motion.span variants={child} key={index} className="inline-block pb-2">
-          {word === "ex." ? (
+          {word.includes("ex.") ? (
             <span className="text-accent relative inline-block" style={{ WebkitTextStroke: "1px var(--color-accent)" }}>
               {word}
               <motion.div
@@ -283,7 +283,7 @@ export default function LandingPage() {
         <section className="min-h-[100svh] w-full flex flex-col items-center justify-center relative shrink-0 px-4 pt-28 sm:pt-16 pb-16">
           <div className="w-full max-w-5xl mx-auto flex flex-col items-center relative z-10">
             <div className="font-heading text-[13vw] sm:text-[9vw] lg:text-[120px] tracking-tighter leading-[0.9] text-ink mb-6 sm:mb-8 text-center" style={{ WebkitTextStroke: "1px #111" }}>
-              <AnimatedTitle text="Stop texting your ex." />
+              <AnimatedTitle text={["Stop", "texting", "your ex."]} />
             </div>
 
             <motion.p
@@ -346,11 +346,11 @@ export default function LandingPage() {
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeFeature}
-                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 1.05, y: -20 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                  className="w-full max-w-4xl border-4 border-ink bg-bg shadow-[8px_8px_0px_0px_rgba(17,17,17,1)] sm:shadow-[16px_16px_0px_0px_rgba(17,17,17,1)] p-6 sm:p-16 flex flex-col sm:flex-row items-center gap-8 sm:gap-16 relative overflow-hidden"
+                  initial={{ opacity: 0, x: 30, scale: 0.98 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  exit={{ opacity: 0, x: -30, scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 25 }}
+                  className="w-full max-w-4xl min-h-[460px] sm:min-h-[380px] border-4 border-ink bg-bg shadow-[8px_8px_0px_0px_rgba(17,17,17,1)] sm:shadow-[16px_16px_0px_0px_rgba(17,17,17,1)] p-6 sm:p-16 flex flex-col sm:flex-row items-center gap-8 sm:gap-16 relative overflow-hidden"
                 >
                   <div className={`absolute top-0 left-0 w-3 sm:w-6 h-full ${features[activeFeature].color}`} />
                   
