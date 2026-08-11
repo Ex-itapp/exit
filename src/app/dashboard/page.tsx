@@ -71,7 +71,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="space-y-5 sm:space-y-6 animate-in fade-in slide-in-from-bottom-3 duration-200 pb-28 max-w-2xl mx-auto w-full px-3 sm:px-4">
+    <div className="space-y-3 sm:space-y-4 animate-in fade-in slide-in-from-bottom-3 duration-200 pb-4 max-w-2xl mx-auto w-full px-2 sm:px-4">
       
       {/* ── TOP BAR / USER GREETING ── */}
       <div className="flex items-center justify-between gap-3 pt-1">

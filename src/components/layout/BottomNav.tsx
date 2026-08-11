@@ -28,7 +28,7 @@ export function BottomNav() {
               key={item.path}
               href={item.path}
               className={cn(
-                "relative flex-1 flex justify-center items-center py-2 sm:py-3 px-1 sm:px-2 rounded-full transition-colors min-w-[2.3rem] sm:min-w-[3.2rem] group select-none cursor-pointer",
+                "relative flex-1 flex justify-center items-center py-3 sm:py-3.5 px-2 rounded-full transition-colors group select-none cursor-pointer",
                 isActive ? "text-bg" : "text-ink hover:text-ink/80"
               )}
             >
@@ -52,7 +52,7 @@ export function BottomNav() {
                 whileHover={{ scale: 1.1 }}
                 transition={{ type: "spring", stiffness: 400, damping: 20 }}
               >
-                <item.icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 shrink-0" strokeWidth={2.5} />
+                <item.icon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 shrink-0" strokeWidth={2.5} />
               </motion.div>
             </Link>
           );
