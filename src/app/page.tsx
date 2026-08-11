@@ -276,11 +276,11 @@ export default function LandingPage() {
         </Link>
       </motion.div>
 
-      {/* Snap Container */}
-      <div className="h-[100svh] overflow-y-auto overflow-x-hidden snap-y snap-mandatory scroll-smooth font-sans bg-bg text-ink selection:bg-brand selection:text-ink relative">
+      {/* Main Container */}
+      <div className="overflow-x-hidden scroll-smooth font-sans bg-bg text-ink selection:bg-brand selection:text-ink relative">
         
         {/* ── SECTION 1: HERO ── */}
-        <section className="snap-start h-[100svh] min-h-[100svh] w-full flex flex-col items-center justify-center relative shrink-0 px-4 pt-16 sm:pt-0">
+        <section className="min-h-[100svh] w-full flex flex-col items-center justify-center relative shrink-0 px-4 pt-28 sm:pt-16 pb-16">
           <div className="w-full max-w-5xl mx-auto flex flex-col items-center relative z-10">
             <div className="font-heading text-[13vw] sm:text-[9vw] lg:text-[120px] tracking-tighter leading-[0.9] text-ink mb-6 sm:mb-8 text-center" style={{ WebkitTextStroke: "1px #111" }}>
               <AnimatedTitle text="Stop texting your ex." />
@@ -323,7 +323,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── SECTION 2: FEATURES ── */}
-        <section className="snap-start h-[100svh] min-h-[100svh] w-full flex flex-col items-center justify-center relative shrink-0 px-4 bg-bg border-y-8 border-ink">
+        <section className="min-h-[100svh] w-full flex flex-col items-center justify-center relative shrink-0 px-4 py-24 sm:py-32 bg-bg">
           <div className="w-full max-w-6xl mx-auto z-10 flex flex-col h-full py-16 sm:py-24 justify-between">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -394,7 +394,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── SECTION 3: INTERACTIVE DEMO ── */}
-        <section className="snap-start h-[100svh] min-h-[100svh] w-full flex flex-col items-center justify-center relative shrink-0 px-4 bg-brand text-ink">
+        <section className="min-h-[100svh] w-full flex flex-col items-center justify-center relative shrink-0 px-4 py-24 sm:py-32 bg-brand text-ink">
           <div className="absolute inset-0 pointer-events-none opacity-[0.05]"
             style={{ backgroundImage: "repeating-linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%), repeating-linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%)", backgroundPosition: "0 0, 40px 40px", backgroundSize: "80px 80px" }} />
           
@@ -427,7 +427,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── SECTION 4: PRICING ── */}
-        <section className="snap-start h-[100svh] min-h-[100svh] w-full flex flex-col items-center justify-center relative shrink-0 px-4 bg-bg border-t-8 border-ink">
+        <section className="min-h-[100svh] w-full flex flex-col items-center justify-center relative shrink-0 px-4 py-24 sm:py-32 bg-bg">
           <div className="w-full max-w-5xl mx-auto z-10 flex flex-col items-center h-full py-16 sm:py-24 justify-center">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -588,7 +588,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── SECTION 5: FINAL CTA ── */}
-        <section className="snap-start h-[100svh] min-h-[100svh] w-full flex flex-col items-center justify-center relative shrink-0 px-4 bg-positive overflow-hidden border-t-8 border-ink">
+        <section className="min-h-[100svh] w-full flex flex-col items-center justify-center relative shrink-0 px-4 py-24 sm:py-32 bg-positive overflow-hidden">
           
           {/* Ambient Background Animation */}
           <div className="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
