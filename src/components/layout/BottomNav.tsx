@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, CalendarDays, User } from "lucide-react";
+import { Book, Home, CalendarDays, User } from "lucide-react";
 import { motion } from "motion/react";
 
 const navItems = [
   { icon: Home, path: "/dashboard", label: "Home" },
+  { icon: Book, path: "/diary", label: "Logs" },
   { icon: CalendarDays, path: "/timeline", label: "Timeline" },
   { icon: User, path: "/account", label: "Account" },
 ];
