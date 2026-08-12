@@ -29,6 +29,38 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/icon-180.svg" />
         <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.svg" />
         <link rel="manifest" href="/manifest.json" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const removeAttr = (el) => {
+                  if (el && el.removeAttribute) el.removeAttribute('bis_skin_checked');
+                };
+                document.querySelectorAll('[bis_skin_checked]').forEach(removeAttr);
+                const observer = new MutationObserver((mutations) => {
+                  mutations.forEach((m) => {
+                    if (m.type === 'attributes' && m.attributeName === 'bis_skin_checked') {
+                      removeAttr(m.target);
+                    } else if (m.addedNodes.length) {
+                      m.addedNodes.forEach((node) => {
+                        if (node.nodeType === 1) {
+                          removeAttr(node);
+                          node.querySelectorAll('[bis_skin_checked]').forEach(removeAttr);
+                        }
+                      });
+                    }
+                  });
+                });
+                observer.observe(document.documentElement, {
+                  attributes: true,
+                  childList: true,
+                  subtree: true,
+                  attributeFilter: ['bis_skin_checked']
+                });
+              })();
+            `
+          }}
+        />
       </head>
       <body suppressHydrationWarning>
         <ClientLayout>{children}</ClientLayout>

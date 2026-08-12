@@ -8,23 +8,25 @@ export interface AIOptions {
 }
 
 /**
- * Multi-Provider AI Router Helper
- * Routes requests across Groq, OpenRouter, and Google Gemini based on task tier
- * to optimize for speed (Groq LPUs), heavy reasoning (OpenRouter/Gemini Pro), and rate limit resilience.
+ * DeepSeek AI Router Helper
+ * Routes requests to DeepSeek's latest models:
+ * - deepseek-v4-pro for heavy tasks, persona simulations, and complex reasoning
+ * - deepseek-v4-flash for lightning-fast responses and classification
  */
 export async function callAIRouter(options: AIOptions): Promise<string | null> {
   const {
     prompt,
     systemPrompt,
     messages = [],
-    tier = 'fast',
     temperature = 0.7,
     jsonMode = false,
   } = options;
 
-  const groqKey = process.env.GROQ_API_KEY || process.env.NEXT_PUBLIC_GROQ_API_KEY;
-  const openRouterKey = process.env.OPENROUTER_API_KEY || process.env.NEXT_PUBLIC_OPENROUTER_API_KEY;
-  const geminiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+  const deepseekKey = process.env.DEEPSEEK_API_KEY || process.env.NEXT_PUBLIC_DEEPSEEK_API_KEY;
+  if (!deepseekKey) {
+    console.error('DeepSeek API Key is missing. Please set DEEPSEEK_API_KEY in your environment.');
+    return null;
+  }
 
   // Build standard messages array
   const formattedMessages: Array<{ role: string; content: string }> = [];
@@ -40,178 +42,70 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
     formattedMessages.push({ role: 'user', content: prompt });
   }
 
-  // Helper 1: Call Groq API (OpenAI-compatible /v1/chat/completions)
-  const callGroq = async (model = 'llama-3.3-70b-versatile'): Promise<string | null> => {
-    if (!groqKey) return null;
-    try {
-      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${groqKey}`,
-        },
-        body: JSON.stringify({
-          model,
-          messages: formattedMessages,
-          temperature,
-          ...(jsonMode ? { response_format: { type: 'json_object' } } : {})
-        }),
-      });
-      if (!res.ok) {
-        console.warn(`Groq API Error (${res.status} on ${model}): ${await res.text()}`);
-        return null;
-      }
-      const data = await res.json();
-      return data.choices?.[0]?.message?.content?.trim() || null;
-    } catch (e) {
-      console.warn('Groq API Exception:', e);
-      return null;
-    }
-  };
-
-  // Helper 2: Call OpenRouter API (OpenAI-compatible) - uses :free suffix to prevent 402 on free keys
-  const callOpenRouter = async (model = 'meta-llama/llama-3.3-70b-instruct:free'): Promise<string | null> => {
-    if (!openRouterKey) return null;
-    try {
-      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${openRouterKey}`,
-          'HTTP-Referer': 'https://unsent.app',
-          'X-Title': 'UNSENT Breakup App'
-        },
-        body: JSON.stringify({
-          model,
-          messages: formattedMessages,
-          temperature,
-          ...(jsonMode ? { response_format: { type: 'json_object' } } : {})
-        }),
-      });
-      if (!res.ok) {
-        console.warn(`OpenRouter API Error (${res.status} on ${model}): ${await res.text()}`);
-        return null;
-      }
-      const data = await res.json();
-      return data.choices?.[0]?.message?.content?.trim() || null;
-    } catch (e) {
-      console.warn('OpenRouter API Exception:', e);
-      return null;
-    }
-  };
-
-  // Helper 3: Call Google Gemini API
-  const callGemini = async (model = 'gemini-1.5-flash'): Promise<string | null> => {
-    if (!geminiKey) return null;
-    try {
-      const geminiContents: any[] = [];
-      let sysInst: any = undefined;
-
-      formattedMessages.forEach(m => {
-        if (m.role === 'system') {
-          sysInst = { parts: [{ text: m.content }] };
-        } else {
-          geminiContents.push({
-            role: m.role === 'assistant' ? 'model' : 'user',
-            parts: [{ text: m.content }]
-          });
-        }
-      });
-
-      if (geminiContents.length === 0) return null;
-
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': geminiKey,
-        },
-        body: JSON.stringify({
-          ...(sysInst ? { system_instruction: sysInst } : {}),
-          contents: geminiContents,
-          generationConfig: {
-            temperature,
-            ...(jsonMode ? { responseMimeType: 'application/json' } : {})
-          }
-        }),
-      });
-      if (!res.ok) {
-        console.warn(`Gemini API Error (${res.status} on ${model}): ${await res.text()}`);
-        return null;
-      }
-      const data = await res.json();
-      return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || null;
-    } catch (e) {
-      console.warn('Gemini API Exception:', e);
-      return null;
-    }
-  };
-
-  // ROUTING LOGIC BASED ON TIER (Strict order prioritizing working Google Gemini models)
-  if (tier === 'persona') {
-    return await callGemini('gemini-1.5-flash') ||
-      await callGemini('gemini-1.5-pro') ||
-      await callGemini('gemini-flash-latest') ||
-      await callOpenRouter('google/gemma-4-26b-a4b-it:free') ||
-      await callOpenRouter('inclusionai/ling-3.0-flash:free') ||
-      await callGroq('llama-3.3-70b-versatile') ||
-      await callGroq('llama-3.1-8b-instant');
-  }
-
-  if (tier === 'fast') {
-    return await callGemini('gemini-1.5-flash') ||
-      await callGemini('gemini-flash-latest') ||
-      await callOpenRouter('google/gemma-4-26b-a4b-it:free') ||
-      await callGroq('llama-3.1-8b-instant') ||
-      await callGroq('llama-3.3-70b-versatile');
-  }
-
-  if (tier === 'heavy') {
-    return await callGemini('gemini-1.5-pro') ||
-      await callGemini('gemini-1.5-flash') ||
-      await callOpenRouter('nvidia/nemotron-3-super-120b-a12b:free') ||
-      await callOpenRouter('google/gemma-4-26b-a4b-it:free') ||
-      await callGroq('llama-3.3-70b-versatile');
-  }
-
-  if (tier === 'classifier' || tier === 'embed') {
-    return await callGemini('gemini-1.5-flash') ||
-      await callGemini('gemini-flash-latest') ||
-      await callOpenRouter('google/gemma-4-26b-a4b-it:free') ||
-      await callGroq('llama-3.1-8b-instant');
-  }
-
-  // Default fallback chain
-  return await callGemini('gemini-1.5-flash') ||
-    await callGemini('gemini-flash-latest') ||
-    await callOpenRouter('google/gemma-4-26b-a4b-it:free') ||
-    await callGroq('llama-3.3-70b-versatile');
-}
-
-/**
- * Generate 768-dimensional text embedding for Memory Bank semantic similarity search
- */
-export async function generateEmbedding(text: string): Promise<number[] | null> {
-  const geminiKey = process.env.GEMINI_API_KEY;
-  if (!geminiKey || !text.trim()) return null;
+  // Always use the latest deepseek-v4-flash model for all tiers
+  const model = 'deepseek-v4-flash';
 
   try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent`, {
+    console.log('[DeepSeek Request Info]', {
+      model,
+      messagesCount: formattedMessages.length,
+      temperature,
+      jsonMode,
+      systemPromptPreview: systemPrompt ? systemPrompt.substring(0, 100) + '...' : 'none',
+      latestMessagePreview: formattedMessages.length > 0 
+        ? formattedMessages[formattedMessages.length - 1].content.substring(0, 100) + '...'
+        : 'none'
+    });
+
+    const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-goog-api-key': geminiKey,
+        'Authorization': `Bearer ${deepseekKey}`,
       },
       body: JSON.stringify({
-        model: "models/text-embedding-004",
-        content: { parts: [{ text: text.trim() }] }
+        model,
+        messages: formattedMessages,
+        temperature,
+        ...(jsonMode ? { response_format: { type: 'json_object' } } : {})
       }),
     });
-    if (!res.ok) return null;
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error('[DeepSeek API Error Response]', {
+        status: res.status,
+        statusText: res.statusText,
+        model,
+        errorBody: errorText
+      });
+      return null;
+    }
+
     const data = await res.json();
-    return data.embedding?.values || null;
+    console.log('[DeepSeek Response Success]', {
+      model,
+      choicesCount: data.choices?.length,
+      promptTokens: data.usage?.prompt_tokens,
+      completionTokens: data.usage?.completion_tokens,
+      totalTokens: data.usage?.total_tokens
+    });
+
+    return data.choices?.[0]?.message?.content?.trim() || null;
   } catch (e) {
-    console.warn('Embedding generation error:', e);
+    console.error('[DeepSeek API Exception]', {
+      errorMessage: e instanceof Error ? e.message : String(e),
+      errorStack: e instanceof Error ? e.stack : undefined,
+      rawError: e
+    });
     return null;
   }
 }
+
+/**
+ * Generate text embedding (returns null as DeepSeek focuses on LLM chat models)
+ */
+export async function generateEmbedding(_text: string): Promise<number[] | null> {
+  return null;
+}
+
