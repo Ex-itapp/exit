@@ -49,8 +49,8 @@ export function usePWAInstall() {
 
     window.addEventListener("beforeinstallprompt", handler);
 
-    // Listen for custom activity events from any page
-    const activityHandler = async () => {
+    // Trigger automatically on mount if on mobile and hasn't seen it
+    const checkAndShow = async () => {
       if (!mobile || isStandalone) return;
       
       const { data: { session } } = await supabase.auth.getSession();
@@ -60,12 +60,11 @@ export function usePWAInstall() {
         setTimeout(() => setShowBanner(true), 1200);
       }
     };
-
-    window.addEventListener("pwa-activity", activityHandler);
+    
+    checkAndShow();
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handler);
-      window.removeEventListener("pwa-activity", activityHandler);
     };
   }, []);
 

@@ -195,10 +195,20 @@ export function useUser() {
   const resetAccount = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.user) {
-      await supabase.from('diary_entries').delete().eq('user_id', session.user.id);
-      await supabase.from('flags').delete().eq('user_id', session.user.id);
-      await supabase.from('checkins').delete().eq('user_id', session.user.id);
-      await supabase.from('user_profiles').update({ has_completed_onboarding: false }).eq('id', session.user.id);
+      try {
+        await Promise.allSettled([
+          supabase.from('diary_entries').delete().eq('user_id', session.user.id),
+          supabase.from('red_flags').delete().eq('user_id', session.user.id),
+          supabase.from('checkins').delete().eq('user_id', session.user.id),
+          supabase.from('ex_profiles').delete().eq('user_id', session.user.id),
+          supabase.from('memory_bank').delete().eq('user_id', session.user.id),
+          supabase.from('closure_sessions').delete().eq('user_id', session.user.id),
+          supabase.from('closure_messages').delete().eq('user_id', session.user.id)
+        ]);
+        await supabase.from('user_profiles').update({ has_completed_onboarding: false }).eq('id', session.user.id);
+      } catch (err) {
+        console.error("Error wiping remote data:", err);
+      }
     }
 
     localStorage.removeItem('unsent_user_name_clean');
