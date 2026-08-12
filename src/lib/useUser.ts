@@ -206,25 +206,21 @@ export function useUser() {
           supabase.from('closure_messages').delete().eq('user_id', session.user.id)
         ]);
         await supabase.from('user_profiles').update({ has_completed_onboarding: false }).eq('id', session.user.id);
+        await supabase.auth.updateUser({ data: { has_seen_pwa_prompt: null } });
       } catch (err) {
         console.error("Error wiping remote data:", err);
       }
     }
 
-    localStorage.removeItem('unsent_user_name_clean');
-    localStorage.removeItem('unsent_user_goal_clean');
-    localStorage.removeItem('unsent_user_anchor_clean');
-    localStorage.removeItem('unsent_app_mode_clean');
-    localStorage.removeItem('unsent_breakup_date_clean');
-    localStorage.removeItem('unsent_punched_dates_clean');
-    localStorage.removeItem('unsent_onboarding_done_clean');
-    localStorage.removeItem('unsent_diary_clean');
-    localStorage.removeItem('unsent_flags_clean');
-    localStorage.removeItem('unsent_checkins_clean');
-    localStorage.removeItem('unsent_closure_profile_clean');
-    localStorage.removeItem('unsent_closure_memories_clean');
-    localStorage.removeItem('unsent_closure_sessions_clean');
-    localStorage.removeItem('unsent_closure_messages_clean');
+    if (typeof window !== 'undefined') {
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('unsent_')) {
+          localStorage.removeItem(key);
+        }
+      });
+    }
+
+    setHasCompletedOnboarding(false);
     window.location.href = '/onboarding';
   };
 
