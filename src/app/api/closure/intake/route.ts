@@ -74,7 +74,7 @@ ${rawText}`;
     let parsed: any = {};
     try {
       // Clean markdown code blocks if present
-      const cleanJson = resultText.replace(/```json/g, '').replace(/```/g, '').trim();
+      const cleanJson = resultText.replace(/```json/gi, '').replace(/```/g, '').trim();
       parsed = JSON.parse(cleanJson);
     } catch (e) {
       console.warn("JSON parse error in intake:", e, resultText);

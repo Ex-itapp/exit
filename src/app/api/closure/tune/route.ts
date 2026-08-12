@@ -60,7 +60,7 @@ Instructions for updating:
 
     let parsed: any = {};
     try {
-      const cleanJson = updatedJsonText.replace(/```json/g, '').replace(/```/g, '').trim();
+      const cleanJson = updatedJsonText.replace(/```json/gi, '').replace(/```/g, '').trim();
       parsed = JSON.parse(cleanJson);
     } catch (e) {
       console.warn("JSON parse error in tune:", e);
