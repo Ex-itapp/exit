@@ -360,23 +360,20 @@ export default function OnboardingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
-                className="space-y-5"
+                className="space-y-3"
               >
                 {/* Header */}
                 <div className="text-center space-y-1">
-                  <div className="inline-block bg-brand border-2 border-ink px-3 py-1 font-mono text-[10px] font-black uppercase tracking-widest mb-2 shadow-[2px_2px_0px_0px_#111]">
+                  <div className="inline-block bg-brand border-2 border-ink px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-widest mb-1 shadow-[2px_2px_0px_0px_#111]">
                     🎉 Your sanctuary is ready, {name.trim().split(" ")[0] || "friend"}!
                   </div>
-                  <h2 className="font-heading text-3xl sm:text-4xl uppercase tracking-tight">
+                  <h2 className="font-heading text-2xl sm:text-3xl uppercase tracking-tight leading-none">
                     Invest in your healing
                   </h2>
-                  <p className="font-sans text-sm text-ink/60 max-w-[280px] mx-auto">
-                    Unlock all premium tools to process, reflect, and recover faster.
-                  </p>
                 </div>
 
                 {/* Billing Toggle */}
-                <div className="flex bg-ink/5 p-1 border-2 border-ink w-fit mx-auto brutalist-shadow-sm mt-4">
+                <div className="flex bg-ink/5 p-1 border-2 border-ink w-fit mx-auto brutalist-shadow-sm mt-2">
                   <button
                     onClick={() => setBilling("monthly")}
                     className={cn(
@@ -398,24 +395,24 @@ export default function OnboardingPage() {
                 </div>
 
                 {/* Pricing card */}
-                <div className="border-4 border-ink brutalist-shadow bg-white relative overflow-hidden transition-all duration-300 mt-4">
+                <div className="border-4 border-ink brutalist-shadow bg-white relative overflow-hidden transition-all duration-300 mt-2">
                   {billing === "yearly" && (
-                    <div className="absolute top-0 right-0 bg-accent text-white font-mono text-[9px] font-black uppercase px-3 py-1 tracking-widest border-b-2 border-l-2 border-ink z-10">
+                    <div className="absolute top-0 right-0 bg-accent text-white font-mono text-[8px] font-black uppercase px-2 py-0.5 tracking-widest border-b-2 border-l-2 border-ink z-10">
                       Free Trial + Save 50%
                     </div>
                   )}
 
-                  <div className="p-5 border-b-2 border-ink/10 bg-bg/30">
+                  <div className="p-3 border-b-2 border-ink/10 bg-bg/30">
                     <div className="flex flex-col items-center justify-center text-center">
-                      <div className="flex items-end gap-1 justify-center">
-                        <span className="font-heading text-6xl font-black tracking-tighter">
+                      <div className="flex items-end gap-1 justify-center leading-none">
+                        <span className="font-heading text-5xl font-black tracking-tighter">
                           ${billing === "yearly" ? "39" : "6.50"}
                         </span>
-                        <span className="font-mono text-xs text-ink/50 pb-2">
+                        <span className="font-mono text-xs text-ink/50 pb-1">
                           /{billing === "yearly" ? "year" : "mo"}
                         </span>
                       </div>
-                      <p className="font-mono text-[10px] text-ink/60 mt-1 uppercase tracking-wider font-bold">
+                      <p className="font-mono text-[9px] text-ink/60 mt-1 uppercase tracking-wider font-bold">
                         {billing === "yearly" 
                           ? "Billed annually after 3-day free trial" 
                           : "Billed monthly. Cancel anytime."}
@@ -423,7 +420,7 @@ export default function OnboardingPage() {
                     </div>
                   </div>
 
-                  <div className="p-5 space-y-3 bg-white">
+                  <div className="p-3 space-y-2 bg-white">
                     {[
                       "🔥 Unlimited streak tracking",
                       "🤖 AI Companion — unlimited chats",
@@ -431,23 +428,23 @@ export default function OnboardingPage() {
                       "🚩 Unlimited red flag logging & analytics",
                       "🔒 End-to-end encrypted, strictly private",
                     ].map((f) => (
-                      <div key={f} className="flex items-start gap-3">
-                        <div className="w-5 h-5 bg-positive/20 border border-positive/50 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                          <Check className="w-3 h-3 text-positive" strokeWidth={3} />
+                      <div key={f} className="flex items-start gap-2">
+                        <div className="w-4 h-4 bg-positive/20 border border-positive/50 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+                          <Check className="w-2.5 h-2.5 text-positive" strokeWidth={3} />
                         </div>
-                        <span className="font-sans text-sm font-medium text-ink/80">{f}</span>
+                        <span className="font-sans text-[11px] font-medium text-ink/80 leading-snug">{f}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* CTAs */}
-                <div className="space-y-3 mt-6">
+                <div className="space-y-2 mt-4">
                   <button
                     onClick={() => handleFinish(true)}
-                    className="w-full h-14 bg-brand hover:bg-brand/90 text-ink font-heading font-black uppercase text-xl tracking-tight transition-colors flex items-center justify-center gap-2 brutalist-shadow border-4 border-ink"
+                    className="w-full h-12 bg-brand hover:bg-brand/90 text-ink font-heading font-black uppercase text-lg tracking-tight transition-colors flex items-center justify-center gap-2 brutalist-shadow border-4 border-ink"
                   >
-                    {billing === "yearly" ? "Start 3-Day Free Trial" : "Subscribe & Heal"} <ArrowRight className="w-5 h-5" />
+                    {billing === "yearly" ? "Start 3-Day Free Trial" : "Subscribe & Heal"} <ArrowRight className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleFinish(false)}

@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 
+import { supabase } from "./supabase";
+
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
@@ -14,8 +16,8 @@ export function usePWAInstall() {
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [isIOSSafari, setIsIOSSafari] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
-  const [activityCount, setActivityCount] = useState(0);
 
   useEffect(() => {
     // Detect iOS
@@ -25,8 +27,10 @@ export function usePWAInstall() {
       (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
     const isSafari =
       /Safari/.test(ua) && !/Chrome/.test(ua) && !/CriOS/.test(ua);
+    const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
     setIsIOS(isApple);
     setIsIOSSafari(isApple && isSafari);
+    setIsMobile(mobile);
 
     // Check if already installed (standalone mode)
     const isStandalone =
@@ -46,22 +50,15 @@ export function usePWAInstall() {
     window.addEventListener("beforeinstallprompt", handler);
 
     // Listen for custom activity events from any page
-    const activityHandler = () => {
-      setActivityCount((prev) => {
-        const next = prev + 1;
-        // Show banner after 1st meaningful activity
-        if (next === 1) {
-          const dismissed = sessionStorage.getItem("pwa-banner-dismissed");
-          const permanentlyDismissed = localStorage.getItem(
-            "pwa-banner-dismissed"
-          );
-          if (!dismissed && !permanentlyDismissed) {
-            // Small delay so it doesn't feel abrupt
-            setTimeout(() => setShowBanner(true), 1200);
-          }
-        }
-        return next;
-      });
+    const activityHandler = async () => {
+      if (!mobile || isStandalone) return;
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      const hasSeen = session?.user?.user_metadata?.has_seen_pwa_prompt === true;
+      
+      if (!hasSeen) {
+        setTimeout(() => setShowBanner(true), 1200);
+      }
     };
 
     window.addEventListener("pwa-activity", activityHandler);
@@ -81,15 +78,14 @@ export function usePWAInstall() {
       setIsInstallable(false);
       setDeferredPrompt(null);
     }
+    // Record that they saw and interacted with it
+    supabase.auth.updateUser({ data: { has_seen_pwa_prompt: true } });
     return outcome === "accepted";
   }, [deferredPrompt]);
 
-  const dismissBanner = useCallback((permanent = false) => {
+  const dismissBanner = useCallback(async () => {
     setShowBanner(false);
-    sessionStorage.setItem("pwa-banner-dismissed", "1");
-    if (permanent) {
-      localStorage.setItem("pwa-banner-dismissed", "1");
-    }
+    await supabase.auth.updateUser({ data: { has_seen_pwa_prompt: true } });
   }, []);
 
   return {
@@ -97,11 +93,11 @@ export function usePWAInstall() {
     isInstalled,
     isIOS,
     isIOSSafari,
+    isMobile,
     showBanner,
     setShowBanner,
     promptInstall,
     dismissBanner,
-    activityCount,
   };
 }
 

@@ -10,6 +10,7 @@ export function PWAInstallBanner() {
     isInstalled,
     isIOS,
     isIOSSafari,
+    isMobile,
     showBanner,
     promptInstall,
     dismissBanner,
@@ -29,10 +30,13 @@ export function PWAInstallBanner() {
   }, [showBanner, isInstalled]);
 
   // Don't render if: already installed, or banner not triggered
-  // On non-iOS: only show if browser supports install prompt
-  // On iOS Safari: always show instructions (no beforeinstallprompt on iOS)
   if (isInstalled) return null;
   if (!showBanner) return null;
+  
+  // We only show on mobile devices. If it's Android but not installable (no prompt), 
+  // we still don't show to avoid a broken "Install App" button, unless we add an Android guide.
+  // But wait, the hook checks `!mobile || isStandalone` so it's already only mobile.
+  if (!isMobile) return null;
   if (!isIOS && !isInstallable) return null;
 
   const handleInstall = async () => {
@@ -43,13 +47,13 @@ export function PWAInstallBanner() {
     const accepted = await promptInstall();
     if (accepted) {
       setIsVisible(false);
-      setTimeout(() => dismissBanner(true), 400);
+      setTimeout(() => dismissBanner(), 400);
     }
   };
 
-  const handleDismiss = (permanent = false) => {
+  const handleDismiss = () => {
     setIsVisible(false);
-    setTimeout(() => dismissBanner(permanent), 350);
+    setTimeout(() => dismissBanner(), 350);
   };
 
   return (
@@ -58,7 +62,7 @@ export function PWAInstallBanner() {
       <div
         className="fixed inset-0 z-[90] bg-ink/20 backdrop-blur-[2px] transition-opacity duration-300"
         style={{ opacity: isVisible ? 1 : 0, pointerEvents: isVisible ? "auto" : "none" }}
-        onClick={() => handleDismiss(false)}
+        onClick={() => handleDismiss()}
       />
 
       {/* Banner sheet */}
@@ -84,7 +88,7 @@ export function PWAInstallBanner() {
               onDismiss={handleDismiss}
             />
           ) : (
-            <IOSGuideStep onDone={() => handleDismiss(true)} />
+            <IOSGuideStep onDone={() => handleDismiss()} />
           )}
         </div>
       </div>
@@ -104,7 +108,7 @@ function PromptStep({
   isIOS: boolean;
   isIOSSafari: boolean;
   onInstall: () => void;
-  onDismiss: (permanent?: boolean) => void;
+  onDismiss: () => void;
 }) {
   return (
     <div className="space-y-4">
@@ -125,7 +129,7 @@ function PromptStep({
           </div>
         </div>
         <button
-          onClick={() => onDismiss(false)}
+          onClick={() => onDismiss()}
           className="w-8 h-8 border-2 border-ink flex items-center justify-center hover:bg-ink hover:text-bg transition-colors shrink-0 mt-0.5"
           aria-label="Close"
         >
@@ -171,7 +175,7 @@ function PromptStep({
           )}
         </button>
         <button
-          onClick={() => onDismiss(true)}
+          onClick={() => onDismiss()}
           className="px-4 py-3 border-2 border-ink font-mono text-xs font-bold uppercase tracking-widest hover:bg-ink/5 transition-colors"
           aria-label="Not now"
         >
