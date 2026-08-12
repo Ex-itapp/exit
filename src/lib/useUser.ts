@@ -192,7 +192,15 @@ export function useUser() {
     }
   };
 
-  const resetAccount = () => {
+  const resetAccount = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      await supabase.from('diary_entries').delete().eq('user_id', session.user.id);
+      await supabase.from('flags').delete().eq('user_id', session.user.id);
+      await supabase.from('checkins').delete().eq('user_id', session.user.id);
+      await supabase.from('user_profiles').update({ has_completed_onboarding: false }).eq('id', session.user.id);
+    }
+
     localStorage.removeItem('unsent_user_name_clean');
     localStorage.removeItem('unsent_user_goal_clean');
     localStorage.removeItem('unsent_user_anchor_clean');

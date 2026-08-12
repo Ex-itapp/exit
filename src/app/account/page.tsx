@@ -24,6 +24,7 @@ export default function AccountPage() {
   const [date, setDate] = useState(breakupDate ? new Date(breakupDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
   const [isSaved, setIsSaved] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
 
   useEffect(() => {
     if (userName) setName(userName);
@@ -291,10 +292,14 @@ export default function AccountPage() {
               </Button>
               <Button
                 variant="danger"
-                onClick={resetAccount}
-                className="w-full h-12 font-mono uppercase text-xs"
+                onClick={async () => {
+                  setIsResetting(true);
+                  await resetAccount();
+                }}
+                disabled={isResetting}
+                className="w-full h-12 font-mono uppercase text-xs disabled:opacity-50"
               >
-                Yes, Wipe Everything & Restart Setup
+                {isResetting ? "Wiping Data..." : "Yes, Wipe Everything & Restart Setup"}
               </Button>
             </div>
           </div>
