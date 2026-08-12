@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useUser } from "@/lib/useUser";
 import { useAuth } from "@/lib/useAuth";
 import { usePro } from "@/lib/usePro";
-import { usePWAInstall } from "@/lib/usePWAInstall";
+import { usePWAInstall, forceShowPWABanner } from "@/lib/usePWAInstall";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
@@ -18,7 +18,7 @@ export default function AccountPage() {
   const { signOut } = useAuth();
   const { isPro, expiresAt, endedPro, loading: proLoading } = usePro();
   const { userName, userGoal, userAnchor, breakupDate, updateProfile, resetAccount } = useUser();
-  const { setShowBanner, isMobile } = usePWAInstall();
+  const { isMobile } = usePWAInstall();
 
   const [name, setName] = useState(userName || "Friend");
   const [goal, setGoal] = useState(userGoal || "Finding peace and clarity");
@@ -193,7 +193,7 @@ export default function AccountPage() {
             <p className="font-sans text-sm md:text-base text-ink/80">
               Install EX-it. directly to your device's home screen for instant access and a full-screen app experience. No App Store required.
             </p>
-            <Button className="w-full h-14 text-base bg-brand hover:bg-brand/90 text-ink" onClick={() => setShowBanner(true)}>
+            <Button className="w-full h-14 text-base bg-brand hover:bg-brand/90 text-ink" onClick={forceShowPWABanner}>
               Show Install Guide
             </Button>
           </CardContent>

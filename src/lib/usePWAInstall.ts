@@ -63,8 +63,12 @@ export function usePWAInstall() {
     
     checkAndShow();
 
+    const showHandler = () => setShowBanner(true);
+    window.addEventListener("pwa-show-banner", showHandler);
+
     return () => {
       window.removeEventListener("beforeinstallprompt", handler);
+      window.removeEventListener("pwa-show-banner", showHandler);
     };
   }, []);
 
@@ -100,9 +104,14 @@ export function usePWAInstall() {
   };
 }
 
-/** Call this from any page after a user completes an action */
-export function triggerPWAActivity() {
+/** Call this to force the banner to show from anywhere */
+export function forceShowPWABanner() {
   if (typeof window !== "undefined") {
-    window.dispatchEvent(new Event("pwa-activity"));
+    window.dispatchEvent(new Event("pwa-show-banner"));
   }
+}
+
+/** Deprecated. The PWA trigger is now automatic on mount. */
+export function triggerPWAActivity() {
+  // no-op
 }
