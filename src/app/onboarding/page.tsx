@@ -34,6 +34,7 @@ export default function OnboardingPage() {
   const [goal, setGoal] = useState("Finding peace and clarity");
   const [anchor, setAnchor] = useState("");
   const [breakupDate, setBreakupDate] = useState(new Date().toISOString().split("T")[0]);
+  const [billing, setBilling] = useState<"monthly" | "yearly">("yearly");
 
   const handleFinish = (startTrial: boolean) => {
     completeOnboarding(
@@ -124,17 +125,6 @@ export default function OnboardingPage() {
                   </p>
                 </div>
 
-                {/* Social proof strip */}
-                <div className="border-2 border-ink/10 bg-ink/[0.02] p-3 flex items-center gap-3 text-left">
-                  <div className="flex -space-x-2 shrink-0">
-                    {["#f9c5d1", "#c5e1f9", "#c5f9d6"].map((c, i) => (
-                      <div key={i} className="w-7 h-7 rounded-full border-2 border-white" style={{ background: c }} />
-                    ))}
-                  </div>
-                  <p className="font-mono text-[10px] text-ink/60 leading-relaxed">
-                    <span className="font-black text-ink">2,400+</span> people are healing in EX-it right now.
-                  </p>
-                </div>
 
                 <button
                   onClick={() => setStep(2)}
@@ -374,66 +364,90 @@ export default function OnboardingPage() {
               >
                 {/* Header */}
                 <div className="text-center space-y-1">
-                  <div className="inline-block bg-brand border-2 border-ink px-3 py-1 font-mono text-[10px] font-black uppercase tracking-widest mb-2">
+                  <div className="inline-block bg-brand border-2 border-ink px-3 py-1 font-mono text-[10px] font-black uppercase tracking-widest mb-2 shadow-[2px_2px_0px_0px_#111]">
                     🎉 Your sanctuary is ready, {name.trim().split(" ")[0] || "friend"}!
                   </div>
                   <h2 className="font-heading text-3xl sm:text-4xl uppercase tracking-tight">
-                    Start healing for free
+                    Invest in your healing
                   </h2>
-                  <p className="font-mono text-xs text-ink/50">
-                    Try every Pro feature free for 3 days. No charge today.
+                  <p className="font-sans text-sm text-ink/60 max-w-[280px] mx-auto">
+                    Unlock all premium tools to process, reflect, and recover faster.
                   </p>
                 </div>
 
+                {/* Billing Toggle */}
+                <div className="flex bg-ink/5 p-1 border-2 border-ink w-fit mx-auto brutalist-shadow-sm mt-4">
+                  <button
+                    onClick={() => setBilling("monthly")}
+                    className={cn(
+                      "px-4 py-2 font-mono text-xs font-bold uppercase tracking-widest transition-all",
+                      billing === "monthly" ? "bg-white border-2 border-ink shadow-[2px_2px_0px_0px_#111]" : "text-ink/60 hover:text-ink"
+                    )}
+                  >
+                    Monthly
+                  </button>
+                  <button
+                    onClick={() => setBilling("yearly")}
+                    className={cn(
+                      "px-4 py-2 font-mono text-xs font-bold uppercase tracking-widest transition-all",
+                      billing === "yearly" ? "bg-white border-2 border-ink shadow-[2px_2px_0px_0px_#111]" : "text-ink/60 hover:text-ink"
+                    )}
+                  >
+                    Yearly
+                  </button>
+                </div>
+
                 {/* Pricing card */}
-                <div className="border-4 border-ink brutalist-shadow bg-white relative overflow-hidden">
-                  {/* Badge */}
-                  <div className="absolute top-0 right-0 bg-accent text-white font-mono text-[9px] font-black uppercase px-3 py-1 tracking-widest">
-                    Most Popular
-                  </div>
-
-                  <div className="p-5 border-b-2 border-ink/10">
-                    <div className="flex items-end gap-2">
-                      <span className="font-heading text-5xl font-black tracking-tighter">$39</span>
-                      <div className="mb-1">
-                        <span className="font-mono text-xs text-ink/50 block">/year</span>
-                        <span className="font-mono text-[9px] text-ink/40 block">≈ $3.25/month</span>
-                      </div>
+                <div className="border-4 border-ink brutalist-shadow bg-white relative overflow-hidden transition-all duration-300 mt-4">
+                  {billing === "yearly" && (
+                    <div className="absolute top-0 right-0 bg-accent text-white font-mono text-[9px] font-black uppercase px-3 py-1 tracking-widest border-b-2 border-l-2 border-ink z-10">
+                      Free Trial + Save 50%
                     </div>
-                    <p className="font-mono text-xs text-ink/60 mt-1">
-                      Billed annually after your 3-day free trial.
-                    </p>
+                  )}
+
+                  <div className="p-5 border-b-2 border-ink/10 bg-bg/30">
+                    <div className="flex flex-col items-center justify-center text-center">
+                      <div className="flex items-end gap-1 justify-center">
+                        <span className="font-heading text-6xl font-black tracking-tighter">
+                          ${billing === "yearly" ? "39" : "6.50"}
+                        </span>
+                        <span className="font-mono text-xs text-ink/50 pb-2">
+                          /{billing === "yearly" ? "year" : "mo"}
+                        </span>
+                      </div>
+                      <p className="font-mono text-[10px] text-ink/60 mt-1 uppercase tracking-wider font-bold">
+                        {billing === "yearly" 
+                          ? "Billed annually after 3-day free trial" 
+                          : "Billed monthly. Cancel anytime."}
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="p-5 space-y-2">
+                  <div className="p-5 space-y-3 bg-white">
                     {[
-                      "🔥 Unlimited healing streak tracking",
-                      "🤖 AI Healing Companion — unlimited chats",
-                      "💬 AI Ex Simulator — say what you need to say",
-                      "🚩 Unlimited red flag logging & history",
-                      "📖 Private diary with mood analytics",
-                      "🔒 End-to-end encrypted, always private",
+                      "🔥 Unlimited streak tracking",
+                      "🤖 AI Companion — unlimited chats",
+                      "💬 AI Ex Simulator — closure without contact",
+                      "🚩 Unlimited red flag logging & analytics",
+                      "🔒 End-to-end encrypted, strictly private",
                     ].map((f) => (
-                      <div key={f} className="flex items-start gap-2">
-                        <Check className="w-3.5 h-3.5 text-positive mt-0.5 shrink-0" />
-                        <span className="font-mono text-xs text-ink/80">{f}</span>
+                      <div key={f} className="flex items-start gap-3">
+                        <div className="w-5 h-5 bg-positive/20 border border-positive/50 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+                          <Check className="w-3 h-3 text-positive" strokeWidth={3} />
+                        </div>
+                        <span className="font-sans text-sm font-medium text-ink/80">{f}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Trust line */}
-                <p className="text-center font-mono text-[9px] text-ink/40 uppercase tracking-widest">
-                  Cancel anytime · No credit card needed to try
-                </p>
-
                 {/* CTAs */}
-                <div className="space-y-2">
+                <div className="space-y-3 mt-6">
                   <button
                     onClick={() => handleFinish(true)}
-                    className="w-full h-14 bg-ink text-bg font-mono font-black uppercase text-sm tracking-widest hover:opacity-90 transition-opacity flex items-center justify-center gap-2 brutalist-shadow border-4 border-ink"
+                    className="w-full h-14 bg-brand hover:bg-brand/90 text-ink font-heading font-black uppercase text-xl tracking-tight transition-colors flex items-center justify-center gap-2 brutalist-shadow border-4 border-ink"
                   >
-                    Start 3-Day Free Trial <ArrowRight className="w-4 h-4" />
+                    {billing === "yearly" ? "Start 3-Day Free Trial" : "Subscribe & Heal"} <ArrowRight className="w-5 h-5" />
                   </button>
                   <button
                     onClick={() => handleFinish(false)}

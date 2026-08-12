@@ -52,6 +52,11 @@ export default function DashboardPage() {
         navigate.push('/onboarding');
       }
     }
+    
+    // Trigger PWA install prompt after landing on dashboard
+    if (typeof window !== 'undefined') {
+      import('@/lib/usePWAInstall').then(m => m.triggerPWAActivity());
+    }
   }, [authLoading, isProfileSyncing, hasCompletedOnboarding, navigate]);
 
   const todayCheckin = checkins.find(c => new Date(c.createdAt).toDateString() === new Date().toDateString());

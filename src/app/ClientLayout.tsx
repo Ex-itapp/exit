@@ -37,8 +37,9 @@ export function ClientLayout({ children }: { children: ReactNode }) {
                         pathname.includes('/new') ||
                         pathname.includes('/edit');
 
-  // Prevent flash of home or onboarding while verifying auth session, except on the landing page which should load instantly
-  if (loading && pathname !== '/') {
+  // Prevent flash of home or onboarding while verifying auth session, except on the landing page which should load instantly (unless we detect a stored session)
+  const hasLocalSession = typeof window !== 'undefined' && Object.keys(localStorage).some(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
+  if (loading && (pathname !== '/' || hasLocalSession)) {
     return (
       <div className="min-h-screen bg-bg flex items-center justify-center p-4">
         <div className="border-4 border-ink bg-white p-6 brutalist-shadow text-center">

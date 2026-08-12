@@ -52,7 +52,7 @@ export function useAuth() {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/` : undefined,
+        redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth` : undefined,
       },
     });
     return { data, error };
