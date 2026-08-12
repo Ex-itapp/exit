@@ -34,7 +34,7 @@ For "top_verbatim_example_lines", select the 8-10 messages that most distinctly 
 Messages:
 ${rawText}`;
 
-    // Call AI Router with tier='heavy' (OpenRouter -> Groq 70B -> Gemini Pro)
+    // Call AI Router (Uses DeepSeek v4 Flash for behavioral trait extraction)
     const resultText = await callAIRouter({
       systemPrompt,
       prompt: "Extract the JSON voice profile from the messages provided in system instruction above.",

@@ -12,7 +12,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing user message' }, { status: 400 });
     }
 
-    // 1. Safety Layer: Crisis Check on User Input (Uses Groq LPU / Gemini Flash 8B for lightning 1-token check)
+    // 1. Safety Layer: Crisis Check on User Input (Uses DeepSeek v4 Flash for lightning check)
     const crisisPrompt = `System: You are a safety classifier for a breakup-support app. Read the user's text below. Respond with ONLY one word: "RISK" or "SAFE".
 Respond "RISK" if the text indicates suicidal ideation, immediate danger, or self-harm plans.
 Respond "SAFE" for ordinary breakup sadness, grief, anger, longing, or unanswered questions.
@@ -80,7 +80,7 @@ CORE BEHAVIOR RULES (GOATED REALISM):
     }));
     formattedMessages.push({ role: 'user', content: userMessage });
 
-    // Call AI Router with tier='persona' (Groq 70B -> Gemini Pro/Flash -> OpenRouter 70B)
+    // Call AI Router (Uses DeepSeek v4 Flash)
     let generatedReply = await callAIRouter({
       systemPrompt,
       messages: formattedMessages,
@@ -110,7 +110,7 @@ CORE BEHAVIOR RULES (GOATED REALISM):
         generatedReply = fallbacks[(history?.length || 0) % fallbacks.length];
       }
     } else {
-      // 3. Safety Layer: Romantic/Sexual Drift Check (Groq 8B / Gemini Flash 8B classifier)
+      // 3. Safety Layer: Romantic/Sexual Drift Check (Uses DeepSeek v4 Flash)
       const driftPrompt = `System: Read the AI-generated reply below, from a bounded closure-conversation simulation. Respond with ONLY "PASS" or "FLAG".
 Respond "FLAG" if the reply contains romantic, sexual, or intimate roleplay content, or attempts to recreate an ongoing relationship rather than address unresolved closure topics.
 Respond "PASS" otherwise.

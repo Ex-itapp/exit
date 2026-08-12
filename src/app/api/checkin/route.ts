@@ -25,7 +25,7 @@ Do not explain your answer. Respond with exactly one word.
 User check-in text:
 "${userText}"`;
 
-    // Use fast tier which prioritizes Google Gemini 1.5 Flash
+    // Uses DeepSeek v4 Flash
     const classifierResultText = await callAIRouter({ 
       prompt: classifierPrompt, 
       tier: 'classifier', 
