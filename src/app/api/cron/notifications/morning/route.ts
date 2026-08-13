@@ -51,7 +51,7 @@ export async function GET(req: Request) {
       };
 
       try {
-        await webpush.sendNotification(pushSub, payload);
+        await webpush.sendNotification(pushSub, payload, { urgency: 'high', TTL: 86400 });
         sentCount++;
       } catch (err: any) {
         console.error('Failed to send push to', sub.endpoint, err);

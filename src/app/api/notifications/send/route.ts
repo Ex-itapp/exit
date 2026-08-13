@@ -66,7 +66,7 @@ export async function POST(req: Request) {
             auth: sub.auth,
           },
         };
-        await webpush.sendNotification(pushSubscription, payload);
+        await webpush.sendNotification(pushSubscription, payload, { urgency: 'high', TTL: 86400 });
       } catch (err: any) {
         if (err.statusCode === 410 || err.statusCode === 404) {
           // Subscription has expired or is no longer valid, delete it

@@ -50,7 +50,7 @@ export async function POST(req: Request) {
             auth: sub.auth,
           },
         };
-        await webpush.sendNotification(pushSubscription, payload);
+        await webpush.sendNotification(pushSubscription, payload, { urgency: 'high', TTL: 86400 });
         successCount++;
       } catch (err: any) {
         failCount++;
