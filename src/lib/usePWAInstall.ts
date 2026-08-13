@@ -40,11 +40,18 @@ export function usePWAInstall() {
 
     if (isStandalone) return;
 
-    // Listen for the browser's install prompt (Android/Desktop Chrome)
+    // Check if the event fired before React mounted
+    if ((window as any).deferredPWAInstallPrompt) {
+      setDeferredPrompt((window as any).deferredPWAInstallPrompt);
+      setIsInstallable(true);
+    }
+
+    // Listen for the browser's install prompt (Android/Desktop Chrome) if it fires late
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setIsInstallable(true);
+      (window as any).deferredPWAInstallPrompt = e;
     };
 
     window.addEventListener("beforeinstallprompt", handler);
