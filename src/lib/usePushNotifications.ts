@@ -154,28 +154,32 @@ export function usePushNotifications() {
     
     setLoading(true);
     try {
-      const successful = await subscription.unsubscribe();
-      if (successful) {
-        // Remove from backend
-        const { data: { session } } = await supabase.auth.getSession();
-        const token = session?.access_token;
-        
-        await fetch('/api/notifications/unsubscribe', {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-          },
-          credentials: 'omit',
-          body: JSON.stringify({ endpoint: subscription.endpoint })
-        });
-        
-        setSubscription(null);
-      }
+      // Attempt to unsubscribe from the browser's push manager, but don't block on its success
+      // Sometimes Apple/Google return false here, but we still want to wipe it from our DB!
+      await subscription.unsubscribe().catch(console.error);
+      
+      // Force remove from our backend so we stop sending pushes
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      
+      await fetch('/api/notifications/unsubscribe', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        credentials: 'omit',
+        body: JSON.stringify({ endpoint: subscription.endpoint })
+      });
+      
+      // Force clear the local state
+      setSubscription(null);
       setLoading(false);
-      return successful;
+      return true;
     } catch (err: any) {
       console.error('Failed to unsubscribe:', err);
+      // Even if there's an error, try to clear the local state to unstick the UI
+      setSubscription(null);
       setLoading(false);
       return false;
     }
