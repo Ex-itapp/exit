@@ -79,6 +79,7 @@ export function usePushNotifications() {
       const res = await fetch('/api/notifications/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ subscription: sub })
       });
       
@@ -105,6 +106,7 @@ export function usePushNotifications() {
       const subRes = await fetch('/api/notifications/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ subscription })
       });
       if (!subRes.ok) {
@@ -115,6 +117,7 @@ export function usePushNotifications() {
       const res = await fetch('/api/notifications/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           title: "Test Notification",
           body: "This is a test notification from EX-it."
