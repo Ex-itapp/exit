@@ -102,11 +102,15 @@ export function usePushNotifications() {
     if (!subscription) return;
     try {
       // Auto-sync the subscription to the DB just in case it was lost
-      await fetch('/api/notifications/subscribe', {
+      const subRes = await fetch('/api/notifications/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ subscription })
       });
+      if (!subRes.ok) {
+         const subErr = await subRes.json().catch(() => ({}));
+         throw new Error(`Subscribe failed: ${subErr.details || subErr.error || subRes.statusText}`);
+      }
 
       const res = await fetch('/api/notifications/send', {
         method: 'POST',
@@ -116,10 +120,13 @@ export function usePushNotifications() {
           body: "This is a test notification from EX-it."
         })
       });
-      if (!res.ok) throw new Error("Failed to send test notification");
-    } catch (err) {
+      if (!res.ok) {
+         const sendErr = await res.json().catch(() => ({}));
+         throw new Error(`Send failed: ${sendErr.details || sendErr.error || res.statusText}`);
+      }
+    } catch (err: any) {
       console.error(err);
-      alert("Failed to send test notification.");
+      alert(err.message || "Failed to send test notification.");
     }
   };
 
