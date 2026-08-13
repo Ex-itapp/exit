@@ -38,8 +38,11 @@ export async function POST(req: Request) {
 
     const userIdToNotify = targetUserId || user.id;
 
+    const { createAdminSupabase } = await import('@/lib/supabase-server');
+    const adminSupabase = createAdminSupabase();
+
     // Fetch all active subscriptions for the user
-    const { data: subscriptions, error } = await supabase
+    const { data: subscriptions, error } = await adminSupabase
       .from('push_subscriptions')
       .select('*')
       .eq('user_id', userIdToNotify);
