@@ -155,8 +155,19 @@ export default function AccountPage() {
                 </div>
               </div>
               
-              {/* Brutalist Toggle */}
-              <button
+              <div className="flex items-center gap-3">
+                {/* Test Button */}
+                {subscription && (
+                  <button
+                    onClick={sendTestNotification}
+                    className="h-8 px-3 border-2 border-ink bg-white font-mono text-[10px] uppercase font-bold text-ink hover:bg-ink/5 transition-colors"
+                  >
+                    Test Push
+                  </button>
+                )}
+
+                {/* Brutalist Toggle */}
+                <button
                 onClick={async () => {
                    if (subscription) {
                      await unsubscribe();
@@ -177,6 +188,7 @@ export default function AccountPage() {
                   )}
                 />
               </button>
+              </div>
             </div>
             
             {permission === 'denied' && (
