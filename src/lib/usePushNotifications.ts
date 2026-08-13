@@ -51,10 +51,24 @@ export function usePushNotifications() {
         throw new Error('Notification permission denied');
       }
 
-      const registration = await navigator.serviceWorker.ready;
+      // Explicitly register/get the service worker to prevent hanging on .ready
+      const registration = await navigator.serviceWorker.register('/sw.js', {
+        scope: '/'
+      });
       
+      // Wait until it's active
+      if (registration.installing) {
+        await new Promise((resolve) => {
+          registration.installing?.addEventListener('statechange', (e) => {
+            if ((e.target as ServiceWorker).state === 'activated') {
+              resolve(true);
+            }
+          });
+        });
+      }
+
       const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-      if (!vapidKey) throw new Error("Missing VAPID key");
+      if (!vapidKey) throw new Error("Missing VAPID key in environment");
       
       const sub = await registration.pushManager.subscribe({
         userVisibleOnly: true,
