@@ -13,11 +13,18 @@ export async function POST(req: Request) {
     // Note: We use the service role key or require standard auth depending on how this is called.
     // For now, we will require the caller to be authenticated (e.g. testing their own push) 
     // or you can secure this with an API key if called from a cron job.
-    const supabase = await createServerSupabase();
-    const { data: { user } } = await supabase.auth.getUser();
+    const authHeader = req.headers.get('Authorization');
+    const token = authHeader?.split('Bearer ')[1];
+    
+    if (!token) {
+      return NextResponse.json({ error: 'Missing auth token' }, { status: 401 });
+    }
 
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const supabase = await createServerSupabase();
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized', details: authError?.message }, { status: 401 });
     }
 
     const { title, body, data, targetUserId, adminSecret } = await req.json();

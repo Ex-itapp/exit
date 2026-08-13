@@ -3,11 +3,20 @@ import { createServerSupabase } from '@/lib/supabase-server';
 
 export async function POST(req: Request) {
   try {
-    const supabase = await createServerSupabase();
-    const { data: { user } } = await supabase.auth.getUser();
+    const authHeader = req.headers.get('Authorization');
+    const token = authHeader?.split('Bearer ')[1];
+    
+    if (!token) {
+      return NextResponse.json({ error: 'Missing auth token' }, { status: 401 });
+    }
 
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const supabase = await createServerSupabase();
+    
+    // Verify the token
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized', details: authError?.message }, { status: 401 });
     }
 
     const { subscription } = await req.json();

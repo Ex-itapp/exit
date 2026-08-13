@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
 
 // Helper function to convert VAPID key
 function urlBase64ToUint8Array(base64String: string) {
@@ -76,10 +77,16 @@ export function usePushNotifications() {
       });
       
       // Send to our backend
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
       const res = await fetch('/api/notifications/subscribe', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        credentials: 'omit',
         body: JSON.stringify({ subscription: sub })
       });
       
@@ -102,11 +109,17 @@ export function usePushNotifications() {
   const sendTestNotification = async () => {
     if (!subscription) return;
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
       // Auto-sync the subscription to the DB just in case it was lost
       const subRes = await fetch('/api/notifications/subscribe', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        credentials: 'omit',
         body: JSON.stringify({ subscription })
       });
       if (!subRes.ok) {
@@ -116,8 +129,11 @@ export function usePushNotifications() {
 
       const res = await fetch('/api/notifications/send', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        credentials: 'omit',
         body: JSON.stringify({
           title: "Test Notification",
           body: "This is a test notification from EX-it."
