@@ -70,61 +70,45 @@ export default function AccountPage() {
     : null;
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-150 pb-24 max-w-4xl mx-auto">
-      {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b-4 border-ink pb-6">
-        <div>
-          <h1 className="font-heading text-4xl uppercase tracking-tight font-black">Account</h1>
-          <p className="font-mono text-ink/70 mt-2 text-sm md:text-base">YOUR HEALING PREFERENCES, CLOUD SYNC & PERSONAL SETTINGS.</p>
-        </div>
-        <div className="flex items-center gap-2 bg-ink text-bg px-4 py-2 border-2 border-ink">
-          <User className="w-5 h-5 text-brand" />
-          <span className="font-mono text-xs font-bold uppercase tracking-widest">{userName}</span>
-        </div>
+    <div className="space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-150 pb-24 max-w-2xl mx-auto px-4">
+      {/* Minimal Header */}
+      <header className="flex flex-col gap-1 pb-4 border-b border-ink/10 mt-4">
+        <h1 className="font-heading text-3xl text-ink">Settings</h1>
+        <p className="font-sans text-ink/50 text-sm">Manage your profile, notifications, and subscription.</p>
       </header>
 
-      {/* Profile Preferences */}
-      <Card className="border-[4px] border-ink">
-        <CardHeader className="border-b-[4px] border-ink bg-bg p-4">
-          <CardTitle className="text-xl flex items-center gap-2">
-            <Compass className="w-5 h-5" />
-            PERSONAL DETAILS & REASON
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="font-mono text-xs font-bold uppercase tracking-wider block">
-                Your Name / Nickname
-              </label>
-              <Input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="h-12 font-medium border-2 border-ink"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="font-mono text-xs font-bold uppercase tracking-wider block">
-                Breakup / Day Zero Date
-              </label>
-              <Input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="h-12 font-mono border-2 border-ink"
-              />
-            </div>
+      {/* Profile Section */}
+      <section className="space-y-4">
+        <h2 className="font-sans font-bold text-xs tracking-wider text-ink/40 uppercase">Profile</h2>
+        
+        <div className="bg-white rounded-xl border border-ink/10 overflow-hidden divide-y divide-ink/10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-2">
+            <label className="font-sans text-sm font-medium text-ink w-1/3">Display Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="flex-1 bg-transparent border-none text-right font-sans text-sm text-ink/80 focus:outline-none focus:ring-0 p-0"
+              placeholder="Your name"
+            />
           </div>
 
-          <div className="space-y-2">
-            <label className="font-mono text-xs font-bold uppercase tracking-wider block">
-              Primary Healing Focus
-            </label>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-2">
+            <label className="font-sans text-sm font-medium text-ink w-1/3">Day Zero</label>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="flex-1 bg-transparent border-none text-right font-sans text-sm text-ink/80 focus:outline-none focus:ring-0 p-0"
+            />
+          </div>
+
+          <div className="flex flex-col p-4 gap-3">
+            <label className="font-sans text-sm font-medium text-ink">Primary Goal</label>
             <select
               value={goal}
               onChange={(e) => setGoal(e.target.value)}
-              className="w-full h-12 px-4 bg-white border-2 border-ink font-sans font-medium text-ink focus:outline-none focus:ring-2 focus:ring-ink"
+              className="w-full bg-ink/5 border-none rounded-lg p-3 font-sans text-sm text-ink focus:outline-none"
             >
               {goals.map((g) => (
                 <option key={g} value={g}>{g}</option>
@@ -132,241 +116,154 @@ export default function AccountPage() {
             </select>
           </div>
 
-          <div className="space-y-2">
-            <label className="font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2">
-              <Anchor className="w-4 h-4 text-brand" /> Your Reason for Leaving
-            </label>
-            <Textarea
+          <div className="flex flex-col p-4 gap-3">
+            <label className="font-sans text-sm font-medium text-ink">Your Anchor (Why you left)</label>
+            <textarea
               value={anchor}
               onChange={(e) => setAnchor(e.target.value)}
-              className="min-h-[100px] font-medium border-2 border-ink p-3"
+              className="w-full bg-ink/5 border-none rounded-lg p-3 font-sans text-sm text-ink focus:outline-none min-h-[80px] resize-none"
+              placeholder="I deserve peace..."
             />
           </div>
+        </div>
 
-          <Button 
-            className={cn(
-              "w-full h-14 text-base transition-colors",
-              isSaved ? "bg-positive text-ink hover:bg-positive" : "bg-ink text-bg hover:bg-ink/90"
-            )} 
-            onClick={handleSave}
-          >
-            {isSaved ? (
-              <>
-                <CheckCircle2 className="w-5 h-5 mr-2 inline" /> Preferences Saved!
-              </>
-            ) : (
-              <>
-                <Save className="w-5 h-5 mr-2 inline" /> Save Changes
-              </>
-            )}
-          </Button>
-        </CardContent>
-      </Card>
+        <button 
+          onClick={handleSave}
+          className={cn(
+            "w-full py-3.5 rounded-xl font-sans font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2",
+            isSaved ? "bg-positive text-ink" : "bg-ink text-white hover:bg-ink/90"
+          )}
+        >
+          {isSaved ? <><CheckCircle2 className="w-4 h-4" /> Saved</> : "Save Profile"}
+        </button>
+      </section>
 
-      {/* Push Notifications */}
+      {/* Notifications Section */}
       {isSupported && (
-        <Card className="border-[4px] border-ink bg-white">
-          <CardHeader className="border-b-4 border-ink bg-purple/10 p-4">
-            <CardTitle className="text-xl flex items-center gap-2 text-purple">
-              <Bell className="w-5 h-5" />
-              NOTIFICATIONS
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6 space-y-4">
-            <p className="font-sans text-sm md:text-base text-ink/80">
-              Get notified when it's time for your daily check-in, or when you reach a new healing milestone.
-            </p>
-            {permission === 'granted' && subscription ? (
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 font-mono text-sm font-bold text-positive">
-                  <CheckCircle2 className="w-5 h-5" /> Notifications Enabled
+        <section className="space-y-4">
+          <h2 className="font-sans font-bold text-xs tracking-wider text-ink/40 uppercase">Notifications</h2>
+          
+          <div className="bg-white rounded-xl border border-ink/10 overflow-hidden">
+            <div className="flex items-center justify-between p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center">
+                  <Bell className="w-4 h-4 text-brand" />
                 </div>
-                <Button 
-                  onClick={sendTestNotification} 
-                  className="w-full h-12 text-sm bg-purple hover:bg-purple/90 text-white"
-                >
-                  Send Test Notification
-                </Button>
+                <div>
+                  <p className="font-sans text-sm font-medium text-ink">Push Notifications</p>
+                  <p className="font-sans text-xs text-ink/50">Daily check-ins & milestones</p>
+                </div>
               </div>
-            ) : permission === 'denied' ? (
-              <div className="flex items-center gap-2 font-mono text-sm font-bold text-danger">
-                <AlertTriangle className="w-5 h-5" /> Notifications Blocked in Browser Settings
-              </div>
-            ) : (
-              <Button 
-                onClick={subscribe} 
-                disabled={pushLoading}
-                className="w-full h-14 text-base bg-purple hover:bg-purple/90 text-white"
+              
+              {/* Minimal Toggle Switch */}
+              <button
+                onClick={async () => {
+                   if (subscription) {
+                     await unsubscribe();
+                   } else {
+                     await subscribe();
+                   }
+                }}
+                disabled={pushLoading || permission === 'denied'}
+                className={cn(
+                  "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed",
+                  subscription ? "bg-brand" : "bg-ink/20"
+                )}
               >
-                {pushLoading ? "Enabling..." : "Enable Push Notifications"}
-              </Button>
+                <span
+                  className={cn(
+                    "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
+                    subscription ? "translate-x-5" : "translate-x-0"
+                  )}
+                />
+              </button>
+            </div>
+            
+            {permission === 'denied' && (
+              <div className="p-3 bg-danger/10 text-danger text-xs px-4 border-t border-danger/10 flex items-center gap-2">
+                <AlertTriangle className="w-3.5 h-3.5" /> Blocked in browser settings
+              </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
+
+      {/* Subscription Section */}
+      <section className="space-y-4">
+        <h2 className="font-sans font-bold text-xs tracking-wider text-ink/40 uppercase">Subscription</h2>
+        
+        <div className="bg-white rounded-xl border border-ink/10 overflow-hidden p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className={cn("w-8 h-8 rounded-full flex items-center justify-center", isPro ? "bg-positive/10" : "bg-ink/5")}>
+              <CreditCard className={cn("w-4 h-4", isPro ? "text-positive" : "text-ink/40")} />
+            </div>
+            <div>
+              <p className="font-sans text-sm font-medium text-ink">{isPro ? "Pro Plan Active" : "Free Plan"}</p>
+              {isPro && daysRemaining !== null && (
+                <p className="font-sans text-xs text-ink/50">{daysRemaining} days remaining</p>
+              )}
+            </div>
+          </div>
+          {!isPro && (
+            <button 
+              onClick={() => router.push('/pricing')}
+              className="text-xs font-medium text-brand bg-brand/10 px-3 py-1.5 rounded-full hover:bg-brand/20 transition-colors"
+            >
+              Upgrade
+            </button>
+          )}
+        </div>
+      </section>
 
       {/* Danger Zone */}
-      <Card className="border-[4px] border-danger bg-white">
-        <CardHeader className="border-b-4 border-danger bg-danger/10 p-4">
-          <CardTitle className="text-xl text-danger flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5" />
-            DANGER ZONE & RESET
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 space-y-4">
-          <p className="font-sans text-sm md:text-base text-ink/80">
-            Need a fresh start? This will clear all your saved diary entries, red flags, check-ins, and rewards, and take you back to step 1 of onboarding.
-          </p>
-          <Button variant="danger" className="w-full h-14 text-base" onClick={handleReset}>
-            <RefreshCcw className="w-5 h-5 mr-2" />
-            Reset Account & Restart Setup
-          </Button>
-        </CardContent>
-      </Card>
+      <section className="space-y-4 pt-6 border-t border-ink/10">
+        <button 
+          onClick={handleSignOut}
+          className="w-full p-4 rounded-xl border border-ink/10 bg-white text-ink font-sans text-sm font-medium flex items-center justify-between hover:bg-ink/5 transition-colors"
+        >
+          <span className="flex items-center gap-2"><LogOut className="w-4 h-4 text-ink/50" /> Sign Out</span>
+        </button>
 
-      {/* App Install */}
-      {isMobile && (
-        <Card className="border-[4px] border-ink bg-white">
-          <CardHeader className="border-b-4 border-ink bg-brand/10 p-4">
-            <CardTitle className="text-xl flex items-center gap-2">
-              <Compass className="w-5 h-5" />
-              APP INSTALL
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6 space-y-4">
-            <p className="font-sans text-sm md:text-base text-ink/80">
-              Install EX-it. directly to your device's home screen for instant access and a full-screen app experience. No App Store required.
-            </p>
-            <Button className="w-full h-14 text-base bg-brand hover:bg-brand/90 text-ink" onClick={forceShowPWABanner}>
-              Show Install Guide
-            </Button>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Plan / Subscription */}
-      <Card className="border-[4px] border-ink bg-white">
-        <CardHeader className="border-b-4 border-ink bg-bg p-4">
-          <CardTitle className="text-xl flex items-center gap-2">
-            <CreditCard className="w-5 h-5" />
-            PLAN
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 space-y-4">
-          {proLoading ? (
-            <div className="flex items-center gap-4 p-4 border-2 border-ink/20 animate-pulse">
-              <div className="w-8 h-8 bg-ink/10 border-2 border-ink/20 rounded-none" />
-              <div className="space-y-2 flex-1">
-                <div className="h-5 bg-ink/10 w-40 border-2 border-ink/20" />
-                <div className="h-3 bg-ink/10 w-60 border-2 border-ink/20" />
-              </div>
-            </div>
-          ) : isPro ? (
-            <div className="flex items-center gap-4 p-4 bg-positive/10 border-2 border-positive">
-              <CheckCircle2 className="w-8 h-8 text-positive shrink-0" />
-              <div>
-                <span className="font-heading text-lg uppercase tracking-tight">Pro Plan Active</span>
-                {daysRemaining !== null && (
-                  <p className="font-mono text-sm text-ink/70 mt-1">
-                    {daysRemaining} day{daysRemaining !== 1 ? 's' : ''} remaining in billing period
-                  </p>
-                )}
-                <p className="font-mono text-[10px] text-ink/50 mt-0.5">
-                  No refunds on current billing period. To cancel, contact your bank.
-                </p>
-              </div>
-            </div>
-          ) : endedPro ? (
-            <div className="space-y-4">
-              <div className="flex items-center gap-4 p-4 bg-accent/10 border-2 border-accent">
-                <AlertTriangle className="w-8 h-8 text-accent shrink-0" />
-                <div>
-                  <span className="font-heading text-lg uppercase tracking-tight">Pro Plan Ended</span>
-                  <p className="font-mono text-sm text-ink/70 mt-1">
-                    Your subscription was cancelled. Resubscribe to get Pro access again.
-                  </p>
-                </div>
-              </div>
-              <Button
-                onClick={() => router.push('/pricing')}
-                className="w-full h-14 text-base bg-brand border-3 border-ink brutalist-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
-              >
-                Resubscribe to Pro →
-              </Button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3 p-4 border-2 border-ink/30">
-              <span className="font-heading text-lg uppercase tracking-tight">Free Plan</span>
-              <span className="ml-auto font-mono text-xs text-ink/50">upgrade anytime</span>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Sign Out */}
-      <Card className="border-[4px] border-ink bg-white">
-        <CardHeader className="border-b-4 border-ink bg-bg p-4">
-          <CardTitle className="text-xl flex items-center gap-2">
-            <LogOut className="w-5 h-5" />
-            SESSION
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 space-y-4">
-          <p className="font-sans text-sm md:text-base text-ink/80">
-            Sign out of your account and return to the landing page.
-          </p>
-          <Button
-            onClick={handleSignOut}
-            className="w-full h-14 text-base border-3 border-ink bg-ink text-bg hover:bg-ink/90"
-          >
-            <LogOut className="w-5 h-5 mr-2" />
-            Sign Out
-          </Button>
-        </CardContent>
-      </Card>
+        <button 
+          onClick={handleReset}
+          className="w-full p-4 rounded-xl border border-danger/20 bg-danger/5 text-danger font-sans text-sm font-medium flex items-center justify-between hover:bg-danger/10 transition-colors"
+        >
+          <span className="flex items-center gap-2"><RefreshCcw className="w-4 h-4" /> Reset Account Data</span>
+        </button>
+      </section>
 
       {/* CUSTOM UI ACCOUNT RESET MODAL */}
       {showResetModal && (
-        <div className="fixed inset-0 z-50 bg-ink/90 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white border-4 border-ink brutalist-shadow max-w-lg w-full p-6 sm:p-8 space-y-6 text-ink relative shadow-2xl">
-            <button
-              onClick={() => setShowResetModal(false)}
-              className="absolute top-4 right-4 p-1.5 border-2 border-ink hover:bg-ink hover:text-white transition-colors"
-              title="Close"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="flex items-center gap-3 border-b-4 border-ink pb-4 text-danger">
-              <AlertTriangle className="w-8 h-8 shrink-0 animate-bounce" />
-              <div>
-                <span className="font-mono text-[10px] uppercase font-bold bg-danger text-white px-2 py-0.5">Danger Action</span>
-                <h3 className="font-heading text-2xl uppercase mt-1">RESET ALL ACCOUNT DATA?</h3>
-              </div>
+        <div className="fixed inset-0 z-50 bg-ink/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 space-y-6 text-ink shadow-2xl relative">
+            <div className="w-12 h-12 rounded-full bg-danger/10 flex items-center justify-center mb-4">
+              <AlertTriangle className="w-6 h-6 text-danger" />
+            </div>
+            
+            <div>
+              <h3 className="font-sans font-bold text-lg text-ink">Reset all data?</h3>
+              <p className="font-sans text-sm text-ink/60 mt-2">
+                This will permanently delete your diary entries, red flags, and streak. You cannot undo this action.
+              </p>
             </div>
 
-            <p className="font-sans text-sm sm:text-base font-medium leading-relaxed">
-              Are you sure you want to wipe all your data? This will permanently delete your diary entries, red flags, timeline records, and streak, and restart onboarding from scratch.
-            </p>
-
-            <div className="flex flex-col gap-3 pt-2">
-              <Button
-                onClick={() => setShowResetModal(false)}
-                className="w-full h-12 bg-positive hover:bg-positive/90 text-ink border-3 border-ink font-heading uppercase tracking-tight text-base"
-              >
-                Nevermind, Keep My Data 🛡️
-              </Button>
-              <Button
-                variant="danger"
+            <div className="flex flex-col gap-2 pt-2">
+              <button
                 onClick={async () => {
                   setIsResetting(true);
                   await resetAccount();
                 }}
                 disabled={isResetting}
-                className="w-full h-12 font-mono uppercase text-xs disabled:opacity-50"
+                className="w-full py-3 rounded-xl bg-danger text-white font-sans text-sm font-medium hover:bg-danger/90 transition-colors disabled:opacity-50"
               >
-                {isResetting ? "Wiping Data..." : "Yes, Wipe Everything & Restart Setup"}
-              </Button>
+                {isResetting ? "Wiping Data..." : "Delete everything"}
+              </button>
+              <button
+                onClick={() => setShowResetModal(false)}
+                className="w-full py-3 rounded-xl bg-ink/5 text-ink font-sans text-sm font-medium hover:bg-ink/10 transition-colors"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>

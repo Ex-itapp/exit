@@ -149,12 +149,45 @@ export function usePushNotifications() {
     }
   };
 
+  const unsubscribe = async () => {
+    if (!subscription) return false;
+    
+    setLoading(true);
+    try {
+      const successful = await subscription.unsubscribe();
+      if (successful) {
+        // Remove from backend
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session?.access_token;
+        
+        await fetch('/api/notifications/unsubscribe', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          },
+          credentials: 'omit',
+          body: JSON.stringify({ endpoint: subscription.endpoint })
+        });
+        
+        setSubscription(null);
+      }
+      setLoading(false);
+      return successful;
+    } catch (err: any) {
+      console.error('Failed to unsubscribe:', err);
+      setLoading(false);
+      return false;
+    }
+  };
+
   return {
     isSupported,
     subscription,
     permission,
     loading,
     subscribe,
+    unsubscribe,
     sendTestNotification
   };
 }

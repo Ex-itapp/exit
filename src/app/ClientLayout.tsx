@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/useAuth";
 import { usePro } from "@/lib/usePro";
 import { ArrowLeft, Crown } from "lucide-react";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
+import { PWANotificationsPrompt } from "@/components/PWANotificationsPrompt";
 
 export function ClientLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
@@ -175,6 +176,7 @@ export function ClientLayout({ children }: { children: ReactNode }) {
         </main>
         {!hideBottomNav && <BottomNav />}
         <PWAInstallBanner />
+        <PWANotificationsPrompt />
       </div>
   );
 }
