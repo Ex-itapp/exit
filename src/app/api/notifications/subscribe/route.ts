@@ -25,20 +25,41 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid subscription' }, { status: 400 });
     }
 
-    // Insert or update the subscription in Supabase
-    const { error } = await supabase
+    // Instead of upsert (which requires a UNIQUE constraint the user might have forgotten),
+    // we manually check if the endpoint exists, then update or insert.
+    const { data: existing } = await supabase
       .from('push_subscriptions')
-      .upsert({
-        user_id: user.id,
-        endpoint: subscription.endpoint,
-        p256dh: subscription.keys?.p256dh,
-        auth: subscription.keys?.auth,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'endpoint' });
+      .select('id')
+      .eq('endpoint', subscription.endpoint)
+      .maybeSingle();
 
-    if (error) {
-      console.error('Supabase error saving subscription:', error);
-      return NextResponse.json({ error: 'Failed to save to database', details: error.message || error.toString() }, { status: 500 });
+    let dbError;
+    if (existing) {
+      const { error } = await supabase
+        .from('push_subscriptions')
+        .update({
+          user_id: user.id,
+          p256dh: subscription.keys?.p256dh,
+          auth: subscription.keys?.auth,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', existing.id);
+      dbError = error;
+    } else {
+      const { error } = await supabase
+        .from('push_subscriptions')
+        .insert({
+          user_id: user.id,
+          endpoint: subscription.endpoint,
+          p256dh: subscription.keys?.p256dh,
+          auth: subscription.keys?.auth,
+        });
+      dbError = error;
+    }
+
+    if (dbError) {
+      console.error('Supabase error saving subscription:', dbError);
+      return NextResponse.json({ error: 'Failed to save to database', details: dbError.message || dbError.toString() }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
