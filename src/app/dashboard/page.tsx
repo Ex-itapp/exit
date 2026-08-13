@@ -13,6 +13,20 @@ import { useMoods } from "@/lib/useMoods";
 import { AnchorModal } from "@/components/AnchorModal";
 import { useAuth } from "@/lib/useAuth";
 import { cn } from "@/lib/utils";
+import { motion } from "motion/react";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+};
 
 const MOODS = [
   { emoji: "😭", label: "Rough" },
@@ -71,10 +85,15 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="space-y-3 sm:space-y-4 animate-in fade-in slide-in-from-bottom-3 duration-200 pb-4 max-w-2xl mx-auto w-full px-2 sm:px-4">
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+      className="space-y-3 sm:space-y-4 pb-4 max-w-2xl mx-auto w-full px-2 sm:px-4"
+    >
       
       {/* ── TOP BAR / USER GREETING ── */}
-      <div className="flex items-center justify-between gap-3 pt-1">
+      <motion.div variants={itemVariants} className="flex items-center justify-between gap-3 pt-1">
         <div>
           <div className="flex items-center gap-2 mb-0.5">
             <span className="w-2 h-2 bg-brand border border-ink block animate-pulse" />
@@ -107,10 +126,10 @@ export default function DashboardPage() {
             <Award className="w-4 h-4 text-ink" />
           </button>
         </div>
-      </div>
+      </motion.div>
 
       {/* ── COMPACT RECOVERY SNAPSHOT ── */}
-      <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+      <motion.div variants={itemVariants} className="grid grid-cols-3 gap-2.5 sm:gap-3">
         {/* Streak */}
         <div 
           onClick={() => navigate.push('/streak')}
@@ -161,10 +180,10 @@ export default function DashboardPage() {
             <span className="font-mono text-[8px] sm:text-[9px] text-ink/60 uppercase block mt-1">View Log</span>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* ── HERO FOCUS CARD: DAILY CHECK-IN ── */}
-      <div className="border-3 sm:border-4 border-ink brutalist-shadow bg-white overflow-hidden">
+      <motion.div variants={itemVariants} className="border-3 sm:border-4 border-ink brutalist-shadow bg-white overflow-hidden">
         <div className="bg-ink text-bg px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-brand" />
@@ -233,10 +252,10 @@ export default function DashboardPage() {
             </div>
           )}
         </div>
-      </div>
+      </motion.div>
 
       {/* ── CORE HEALING TOOLS GRID ── */}
-      <div className="space-y-2">
+      <motion.div variants={itemVariants} className="space-y-2">
         <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-ink/50 block px-1">
           Quick Healing Tools
         </span>
@@ -302,9 +321,9 @@ export default function DashboardPage() {
             </div>
           </button>
         </div>
-      </div>
+      </motion.div>
 
       {showAnchor && <AnchorModal onClose={() => setShowAnchor(false)} />}
-    </div>
+    </motion.div>
   );
 }

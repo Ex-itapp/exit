@@ -22,14 +22,27 @@ export function ClientLayout({ children }: { children: ReactNode }) {
 
   React.useEffect(() => {
     if (!loading && user) {
-      setProfileLoading(true);
-      import('@/lib/supabase').then(({ supabase }) => {
-        supabase.from('user_profiles').select('has_completed_onboarding').eq('id', user.id).maybeSingle()
-          .then(({ data }) => {
-            setHasCompletedOnboarding(!!data?.has_completed_onboarding);
-            setProfileLoading(false);
-          });
-      });
+      // Fast path: if localStorage says they finished onboarding, trust it instantly to unblock the UI!
+      const localOnboarding = localStorage.getItem('unsent_onboarding_done_clean');
+      if (localOnboarding === 'true') {
+        setHasCompletedOnboarding(true);
+        setProfileLoading(false);
+      } else {
+        // Slow path: Only hit Supabase if we don't have a local cache (e.g. fresh PWA install)
+        setProfileLoading(true);
+        import('@/lib/supabase').then(({ supabase }) => {
+          supabase.from('user_profiles').select('has_completed_onboarding').eq('id', user.id).maybeSingle()
+            .then(({ data }) => {
+              if (data?.has_completed_onboarding) {
+                 localStorage.setItem('unsent_onboarding_done_clean', 'true');
+                 setHasCompletedOnboarding(true);
+              } else {
+                 setHasCompletedOnboarding(false);
+              }
+              setProfileLoading(false);
+            });
+        });
+      }
     } else if (!loading && !user) {
       setProfileLoading(false);
     }
