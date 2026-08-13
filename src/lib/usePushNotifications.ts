@@ -73,8 +73,9 @@ export function usePushNotifications() {
       setSubscription(sub);
       setLoading(false);
       return true;
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to subscribe:', err);
+      alert(`Push Notification Error: ${err.message || "Unknown error"}. Check console for details.`);
       setLoading(false);
       return false;
     }
