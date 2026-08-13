@@ -12,7 +12,6 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: 'EX-it.',
   description: 'Your personal breakup recovery space',
-  manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
