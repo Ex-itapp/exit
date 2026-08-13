@@ -37,17 +37,21 @@ export function PWAInstallBanner() {
   // we still don't show to avoid a broken "Install App" button, unless we add an Android guide.
   // But wait, the hook checks `!mobile || isStandalone` so it's already only mobile.
   if (!isMobile) return null;
-  if (!isIOS && !isInstallable) return null;
 
   const handleInstall = async () => {
     if (isIOS) {
       setStep("ios-guide");
       return;
     }
-    const accepted = await promptInstall();
-    if (accepted) {
-      setIsVisible(false);
-      setTimeout(() => dismissBanner(), 400);
+    
+    if (isInstallable) {
+      const accepted = await promptInstall();
+      if (accepted) {
+        setIsVisible(false);
+        setTimeout(() => dismissBanner(), 400);
+      }
+    } else {
+      setStep("android-guide" as any);
     }
   };
 
@@ -87,8 +91,10 @@ export function PWAInstallBanner() {
               onInstall={handleInstall}
               onDismiss={handleDismiss}
             />
-          ) : (
+          ) : step === "ios-guide" ? (
             <IOSGuideStep onDone={() => handleDismiss()} />
+          ) : (
+            <AndroidGuideStep onDone={() => handleDismiss()} />
           )}
         </div>
       </div>
@@ -273,6 +279,62 @@ function IOSGuideStep({ onDone }: { onDone: () => void }) {
   );
 }
 
+/* ──────────────────────────────────────────────
+   Step 3: Android visual guide (fallback)
+────────────────────────────────────────────── */
+function AndroidGuideStep({ onDone }: { onDone: () => void }) {
+  const steps = [
+    {
+      icon: <DotsMenuIcon />,
+      label: "Tap the Browser Menu",
+      hint: "The three dots in the top right corner",
+    },
+    {
+      icon: <PlusBoxIcon />,
+      label: 'Tap "Install app" or "Add to Home screen"',
+      hint: 'Scroll down the menu to find this option',
+    },
+    {
+      icon: <CheckmarkIcon />,
+      label: 'Confirm the prompt',
+      hint: "EX-it. will appear on your Home Screen",
+    },
+  ];
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <div className="w-2 h-2 bg-brand border border-ink transform -rotate-6 shrink-0" />
+        <h2 className="font-heading text-lg uppercase font-black">
+          Install App
+        </h2>
+      </div>
+      <p className="font-mono text-[11px] text-ink/60 uppercase tracking-wide">
+        Follow these steps in your browser:
+      </p>
+      <div className="space-y-3">
+        {steps.map((s, i) => (
+          <div key={i} className="flex items-center gap-4 bg-white border-2 border-ink p-3 brutalist-shadow-sm">
+            <div className="w-8 h-8 bg-ink text-bg font-heading text-sm font-black flex items-center justify-center shrink-0">
+              {i + 1}
+            </div>
+            <div className="w-10 h-10 bg-brand/20 border-2 border-ink flex items-center justify-center shrink-0">
+              {s.icon}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-mono text-[12px] font-bold text-ink leading-snug">{s.label}</p>
+              <p className="font-mono text-[10px] text-ink/50 mt-0.5 leading-snug">{s.hint}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <button onClick={onDone} className="w-full flex items-center justify-center gap-2 bg-brand text-ink px-4 py-3 border-2 border-ink brutalist-shadow-sm font-mono text-xs font-bold uppercase tracking-widest hover:bg-brand/90 transition-colors">
+        Got it!
+      </button>
+    </div>
+  );
+}
+
 /* ── Inline SVG icons for iOS steps ── */
 function ShareIcon() {
   return (
@@ -298,6 +360,16 @@ function CheckmarkIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="20 6 9 17 4 12" />
+    </svg>
+  );
+}
+
+function DotsMenuIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="1" />
+      <circle cx="12" cy="5" r="1" />
+      <circle cx="12" cy="19" r="1" />
     </svg>
   );
 }
