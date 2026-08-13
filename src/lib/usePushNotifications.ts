@@ -32,9 +32,18 @@ export function usePushNotifications() {
       
       // Check existing subscription
       navigator.serviceWorker.ready.then(async (reg) => {
-        const sub = await reg.pushManager.getSubscription();
-        if (sub) {
-          setSubscription(sub);
+        try {
+          const sub = await reg.pushManager.getSubscription();
+          const isToggledOff = localStorage.getItem('push_toggled_off') === 'true';
+          
+          if (sub && !isToggledOff) {
+            setSubscription(sub);
+          } else if (sub && isToggledOff) {
+            // Silently try to clean up orphaned subscription if browser allows
+            sub.unsubscribe().catch(() => {});
+          }
+        } catch (e) {
+          console.error("Error checking subscription:", e);
         }
       });
     }
@@ -96,6 +105,7 @@ export function usePushNotifications() {
       }
 
       setSubscription(sub);
+      localStorage.setItem('push_toggled_off', 'false');
       setLoading(false);
       return true;
     } catch (err: any) {
@@ -174,12 +184,14 @@ export function usePushNotifications() {
       
       // Force clear the local state
       setSubscription(null);
+      localStorage.setItem('push_toggled_off', 'true');
       setLoading(false);
       return true;
     } catch (err: any) {
       console.error('Failed to unsubscribe:', err);
       // Even if there's an error, try to clear the local state to unstick the UI
       setSubscription(null);
+      localStorage.setItem('push_toggled_off', 'true');
       setLoading(false);
       return false;
     }
