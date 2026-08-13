@@ -99,18 +99,27 @@ export function usePushNotifications() {
   };
 
   const sendTestNotification = async () => {
+    if (!subscription) return;
     try {
-      await fetch('/api/notifications/send', {
+      // Auto-sync the subscription to the DB just in case it was lost
+      await fetch('/api/notifications/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscription })
+      });
+
+      const res = await fetch('/api/notifications/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: 'Healing Space',
-          body: 'This is a test notification. We will remind you to check-in!',
-          data: { url: '/dashboard' }
+          title: "Test Notification",
+          body: "This is a test notification from EX-it."
         })
       });
+      if (!res.ok) throw new Error("Failed to send test notification");
     } catch (err) {
-      console.error("Failed to send test notification", err);
+      console.error(err);
+      alert("Failed to send test notification.");
     }
   };
 
