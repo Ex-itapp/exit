@@ -75,6 +75,9 @@ export function useUser() {
         if (data.app_mode) setAppModeState(data.app_mode as AppMode);
         setHasCompletedOnboarding(!!data.has_completed_onboarding);
 
+        // Fire and forget tracker to log the user as active today
+        supabase.from('user_profiles').update({ last_active_at: new Date().toISOString() }).eq('id', session.user.id).then();
+
         localStorage.setItem('unsent_user_name_clean', data.user_name || "Friend");
         localStorage.setItem('unsent_user_goal_clean', data.user_goal || "Finding peace and clarity");
         localStorage.setItem('unsent_user_anchor_clean', data.user_anchor || "I deserve someone who chooses me every day.");
