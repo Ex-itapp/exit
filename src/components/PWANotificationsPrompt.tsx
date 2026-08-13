@@ -29,7 +29,7 @@ export function PWANotificationsPrompt() {
 
       const timer = setTimeout(() => {
         setShowPrompt(true);
-      }, 3000);
+      }, 800);
       return () => clearTimeout(timer);
     };
     
@@ -53,30 +53,30 @@ export function PWANotificationsPrompt() {
   if (!showPrompt) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] bg-ink/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-4 animate-in fade-in duration-300">
-      <div className="bg-white w-full max-w-sm rounded-[24px] p-6 space-y-6 relative shadow-2xl animate-in slide-in-from-bottom-8 duration-300">
+    <div className="fixed inset-0 z-[100] bg-ink/90 backdrop-blur-md flex items-end sm:items-center justify-center p-4 animate-in fade-in duration-200">
+      <div className="bg-white w-full max-w-sm border-4 border-ink p-6 sm:p-8 space-y-6 relative brutalist-shadow animate-in slide-in-from-bottom-4 duration-300">
         <button
           onClick={handleDismiss}
-          className="absolute top-4 right-4 p-2 bg-ink/5 rounded-full hover:bg-ink/10 transition-colors"
+          className="absolute top-4 right-4 p-2 bg-transparent hover:bg-ink/5 transition-colors"
         >
-          <X className="w-5 h-5 text-ink/60" />
+          <X className="w-6 h-6 text-ink" />
         </button>
 
-        <div className="w-16 h-16 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-2">
-          <Bell className="w-8 h-8 text-brand" />
+        <div className="w-16 h-16 border-4 border-ink bg-brand flex items-center justify-center mx-auto mb-2 transform -rotate-3 brutalist-shadow-sm">
+          <Bell className="w-8 h-8 text-ink" />
         </div>
 
-        <div className="text-center space-y-2">
-          <h2 className="font-heading text-2xl text-ink uppercase tracking-tight">Enable Notifications</h2>
-          <p className="font-sans text-sm text-ink/70 leading-relaxed px-2">
+        <div className="text-center space-y-3">
+          <h2 className="font-heading text-2xl sm:text-3xl text-ink uppercase tracking-tight font-black leading-none">Enable Push</h2>
+          <p className="font-sans font-medium text-sm text-ink/80 leading-relaxed px-2">
             Never miss a check-in. Get a gentle nudge each day to log your streak and keep your healing on track.
           </p>
         </div>
 
-        <div className="bg-positive/10 rounded-xl p-3 flex items-start gap-3 border border-positive/20">
-          <ShieldCheck className="w-5 h-5 text-positive shrink-0 mt-0.5" />
-          <p className="font-sans text-xs text-ink/70">
-            We only send 1-2 notifications per day. No spam, ever.
+        <div className="bg-positive border-2 border-ink p-3 flex items-start gap-3 brutalist-shadow-sm">
+          <ShieldCheck className="w-5 h-5 text-ink shrink-0 mt-0.5" />
+          <p className="font-mono font-bold text-[10px] sm:text-xs text-ink uppercase tracking-wider">
+            1-2 notifications daily.<br/>No spam, ever.
           </p>
         </div>
 
@@ -84,13 +84,13 @@ export function PWANotificationsPrompt() {
           <button
             onClick={handleSubscribe}
             disabled={loading}
-            className="w-full py-4 rounded-xl bg-ink text-white font-sans font-medium text-base hover:bg-ink/90 transition-colors disabled:opacity-50"
+            className="w-full h-14 border-4 border-ink bg-ink text-white font-mono font-bold uppercase tracking-widest text-sm hover:bg-ink/90 transition-colors disabled:opacity-50"
           >
-            {loading ? "Enabling..." : "Turn on Notifications"}
+            {loading ? "Enabling..." : "Turn On"}
           </button>
           <button
             onClick={handleDismiss}
-            className="w-full py-3 rounded-xl bg-transparent text-ink/50 font-sans font-medium text-sm hover:text-ink transition-colors"
+            className="w-full h-14 border-4 border-ink bg-white text-ink font-mono font-bold uppercase tracking-widest text-sm hover:bg-ink/5 transition-colors brutalist-shadow-sm"
           >
             Maybe later
           </button>
