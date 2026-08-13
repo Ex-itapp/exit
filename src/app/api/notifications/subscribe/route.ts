@@ -25,9 +25,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid subscription' }, { status: 400 });
     }
 
+    // Bypass RLS using the admin client since we ALREADY securely verified the user token above
+    const { createAdminSupabase } = await import('@/lib/supabase-server');
+    const adminSupabase = createAdminSupabase();
+
     // Instead of upsert (which requires a UNIQUE constraint the user might have forgotten),
     // we manually check if the endpoint exists, then update or insert.
-    const { data: existing } = await supabase
+    const { data: existing } = await adminSupabase
       .from('push_subscriptions')
       .select('id')
       .eq('endpoint', subscription.endpoint)
@@ -35,7 +39,7 @@ export async function POST(req: Request) {
 
     let dbError;
     if (existing) {
-      const { error } = await supabase
+      const { error } = await adminSupabase
         .from('push_subscriptions')
         .update({
           user_id: user.id,
@@ -46,7 +50,7 @@ export async function POST(req: Request) {
         .eq('id', existing.id);
       dbError = error;
     } else {
-      const { error } = await supabase
+      const { error } = await adminSupabase
         .from('push_subscriptions')
         .insert({
           user_id: user.id,
