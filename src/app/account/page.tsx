@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { User, Compass, Anchor, AlertTriangle, RefreshCcw, Save, CheckCircle2, X, LogOut, CreditCard } from "lucide-react";
+import { User, Compass, Anchor, AlertTriangle, RefreshCcw, Save, CheckCircle2, X, LogOut, CreditCard, Bell } from "lucide-react";
+import { usePushNotifications } from "@/lib/usePushNotifications";
 import { cn } from "@/lib/utils";
 
 export default function AccountPage() {
@@ -19,6 +20,7 @@ export default function AccountPage() {
   const { isPro, expiresAt, endedPro, loading: proLoading } = usePro();
   const { userName, userGoal, userAnchor, breakupDate, updateProfile, resetAccount } = useUser();
   const { isMobile } = usePWAInstall();
+  const { isSupported, permission, loading: pushLoading, subscribe, sendTestNotification } = usePushNotifications();
 
   const [name, setName] = useState(userName || "Friend");
   const [goal, setGoal] = useState(userGoal || "Finding peace and clarity");
@@ -160,6 +162,48 @@ export default function AccountPage() {
           </Button>
         </CardContent>
       </Card>
+
+      {/* Push Notifications */}
+      {isSupported && (
+        <Card className="border-[4px] border-ink bg-white">
+          <CardHeader className="border-b-4 border-ink bg-purple/10 p-4">
+            <CardTitle className="text-xl flex items-center gap-2 text-purple">
+              <Bell className="w-5 h-5" />
+              NOTIFICATIONS
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 space-y-4">
+            <p className="font-sans text-sm md:text-base text-ink/80">
+              Get notified when it's time for your daily check-in, or when you reach a new healing milestone.
+            </p>
+            {permission === 'granted' ? (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 font-mono text-sm font-bold text-positive">
+                  <CheckCircle2 className="w-5 h-5" /> Notifications Enabled
+                </div>
+                <Button 
+                  onClick={sendTestNotification} 
+                  className="w-full h-12 text-sm bg-purple hover:bg-purple/90 text-white"
+                >
+                  Send Test Notification
+                </Button>
+              </div>
+            ) : permission === 'denied' ? (
+              <div className="flex items-center gap-2 font-mono text-sm font-bold text-danger">
+                <AlertTriangle className="w-5 h-5" /> Notifications Blocked in Browser Settings
+              </div>
+            ) : (
+              <Button 
+                onClick={subscribe} 
+                disabled={pushLoading}
+                className="w-full h-14 text-base bg-purple hover:bg-purple/90 text-white"
+              >
+                {pushLoading ? "Enabling..." : "Enable Push Notifications"}
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Danger Zone */}
       <Card className="border-[4px] border-danger bg-white">
