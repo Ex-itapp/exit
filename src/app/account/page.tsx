@@ -20,7 +20,7 @@ export default function AccountPage() {
   const { isPro, expiresAt, endedPro, loading: proLoading } = usePro();
   const { userName, userGoal, userAnchor, breakupDate, updateProfile, resetAccount } = useUser();
   const { isMobile } = usePWAInstall();
-  const { isSupported, permission, loading: pushLoading, subscribe, sendTestNotification } = usePushNotifications();
+  const { isSupported, permission, subscription, loading: pushLoading, subscribe, sendTestNotification } = usePushNotifications();
 
   const [name, setName] = useState(userName || "Friend");
   const [goal, setGoal] = useState(userGoal || "Finding peace and clarity");
