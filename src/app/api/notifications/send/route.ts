@@ -20,9 +20,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { title, body, data, targetUserId } = await req.json();
+    const { title, body, data, targetUserId, adminSecret } = await req.json();
     
-    // Allow users to send to themselves, or admins to send to targetUserId
+    // Security check: Only allow users to ping themselves, UNLESS they provide the admin secret
+    if (targetUserId && targetUserId !== user.id) {
+      if (adminSecret !== process.env.ADMIN_API_KEY) {
+        return NextResponse.json({ error: 'Unauthorized to ping other users' }, { status: 403 });
+      }
+    }
+
     const userIdToNotify = targetUserId || user.id;
 
     // Fetch all active subscriptions for the user
