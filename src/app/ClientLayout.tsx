@@ -15,14 +15,7 @@ export function ClientLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Register service worker for PWA
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch((err) => {
-        console.warn('SW registration failed:', err);
-      });
-    }
-  }, []);
+
 
   React.useEffect(() => {
     if (!loading && user && pathname === '/') {
