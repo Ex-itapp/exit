@@ -185,6 +185,7 @@ export function usePushNotifications() {
       // Force clear the local state
       setSubscription(null);
       localStorage.setItem('push_toggled_off', 'true');
+      localStorage.removeItem('has_been_reprompted_for_push');
       setLoading(false);
       return true;
     } catch (err: any) {
@@ -192,6 +193,7 @@ export function usePushNotifications() {
       // Even if there's an error, try to clear the local state to unstick the UI
       setSubscription(null);
       localStorage.setItem('push_toggled_off', 'true');
+      localStorage.removeItem('has_been_reprompted_for_push');
       setLoading(false);
       return false;
     }
