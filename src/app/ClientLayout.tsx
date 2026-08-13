@@ -17,11 +17,29 @@ export function ClientLayout({ children }: { children: ReactNode }) {
 
 
 
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = React.useState<boolean | null>(null);
+  const [profileLoading, setProfileLoading] = React.useState<boolean>(true);
+
   React.useEffect(() => {
-    if (!loading && user && pathname === '/') {
-      router.replace(localStorage.getItem('unsent_onboarding_done_clean') === 'true' ? '/dashboard' : '/onboarding');
+    if (!loading && user) {
+      setProfileLoading(true);
+      import('@/lib/supabase').then(({ supabase }) => {
+        supabase.from('user_profiles').select('has_completed_onboarding').eq('id', user.id).maybeSingle()
+          .then(({ data }) => {
+            setHasCompletedOnboarding(!!data?.has_completed_onboarding);
+            setProfileLoading(false);
+          });
+      });
+    } else if (!loading && !user) {
+      setProfileLoading(false);
     }
-  }, [user, loading, pathname, router]);
+  }, [user, loading]);
+
+  React.useEffect(() => {
+    if (!loading && !profileLoading && user && pathname === '/') {
+      router.replace(hasCompletedOnboarding ? '/dashboard' : '/onboarding');
+    }
+  }, [user, loading, profileLoading, hasCompletedOnboarding, pathname, router]);
 
   const hideBottomNav = ['/onboarding', '/therapist', '/closure', '/diary/new', '/flags/new'].includes(pathname) || 
                         pathname.startsWith('/closure') || 
@@ -32,7 +50,22 @@ export function ClientLayout({ children }: { children: ReactNode }) {
 
   // Prevent flash of home or onboarding while verifying auth session, except on the landing page which should load instantly (unless we detect a stored session)
   const hasLocalSession = typeof window !== 'undefined' && Object.keys(localStorage).some(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
-  if (loading && (pathname !== '/' || hasLocalSession)) {
+  
+  const isResolvingAuth = loading || (user && profileLoading);
+
+  if (isResolvingAuth && (pathname !== '/' || hasLocalSession)) {
+    return (
+      <div className="min-h-screen bg-bg flex items-center justify-center p-4">
+        <div className="border-4 border-ink bg-white p-6 brutalist-shadow text-center">
+          <p className="font-mono font-bold text-sm tracking-widest uppercase text-ink">PREPARING YOUR SPACE...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If a user is fully authenticated and still on the landing page, block the rendering of the landing page completely
+  // to prevent heavy entrance animations from firing for 1 frame before the router pushes them away.
+  if (user && pathname === '/') {
     return (
       <div className="min-h-screen bg-bg flex items-center justify-center p-4">
         <div className="border-4 border-ink bg-white p-6 brutalist-shadow text-center">
