@@ -25,7 +25,7 @@ export function useRewards() {
       id: 'onboarding',
       title: 'A New Beginning',
       category: 'Milestones',
-      description: 'You took the courageous first step and set up your healing sanctuary.',
+      description: 'You took the courageous first step and set up your healing space.',
       iconName: 'Sparkles',
       isUnlocked: hasCompletedOnboarding || entries.length > 0 || checkins.length > 0,
       progressText: hasCompletedOnboarding ? 'Unlocked on Day 1' : 'Complete Setup'

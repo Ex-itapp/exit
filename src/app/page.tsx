@@ -142,7 +142,7 @@ const features = [
     color: "bg-purple",
     label: "01",
     title: "AI Ex Simulator.",
-    body: "Text an AI that responds exactly like your ex. Say whatever you need to say to get closure, with zero real-life consequences.",
+    body: "Text a companion that responds exactly like your ex. Say whatever you need to say to get closure, with zero real-life consequences.",
     accent: "text-purple",
   },
   {
@@ -166,7 +166,7 @@ const features = [
     color: "bg-blue",
     label: "04",
     title: "Healing companion.",
-    body: "An AI that knows your story, doesn't judge, and is available at 3am when you're about to relapse.",
+    body: "A companion that knows your story, doesn't judge, and is available at 3am when you're about to relapse.",
     accent: "text-blue",
   },
 ];
@@ -506,7 +506,7 @@ export default function LandingPage() {
                     <div className="font-heading text-7xl lg:text-8xl mb-2">$39<span className="text-3xl text-white/35">/yr</span></div>
                     <p className="font-mono text-xs lg:text-sm text-brand mb-8 pb-6 border-b-4 border-white/15">🎁 3 Days Free · Then $3.25/mo</p>
                     <ul className="space-y-4 mb-10">
-                      {["3 Days 100% Free Trial", "Everything in Monthly", "Exclusive sanctuary themes", "Priority AI response pipeline", "Lifetime recovery badges"].map(item => (
+                      {["3 Days 100% Free Trial", "Everything in Monthly", "Exclusive healing themes", "Priority response pipeline", "Lifetime recovery badges"].map(item => (
                         <li key={item} className="flex items-center gap-4 font-sans text-base lg:text-lg font-bold text-white/90">
                           <Check className="w-6 h-6 text-brand shrink-0" strokeWidth={3.5} />
                           {item}
@@ -567,7 +567,7 @@ export default function LandingPage() {
                         <div className="font-heading text-6xl mb-1">$39<span className="text-xl text-white/35">/yr</span></div>
                         <p className="font-mono text-[10px] text-brand mb-5 pb-4 border-b-4 border-white/15">🎁 3 Days Free · Then $3.25/mo</p>
                         <ul className="space-y-3 mb-8">
-                          {["🎁 3-Day Free Trial", "Everything in Monthly", "Exclusive themes", "Priority AI responses"].map(item => (
+                          {["🎁 3-Day Free Trial", "Everything in Monthly", "Exclusive themes", "Priority responses"].map(item => (
                             <li key={item} className="flex items-center gap-3 font-sans text-sm font-bold text-white/90">
                               <Check className="w-5 h-5 text-brand shrink-0" strokeWidth={3} />
                               {item}

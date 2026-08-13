@@ -37,11 +37,11 @@ const PLANS = {
 };
 
 const PRO_FEATURES = [
-  { icon: MessageSquare, label: 'Unlimited AI Closure Sessions', color: 'text-purple' },
+  { icon: MessageSquare, label: 'Unlimited Closure Sessions', color: 'text-purple' },
   { icon: Zap, label: 'Advanced Memory Bank Search', color: 'text-brand' },
   { icon: Heart, label: 'Full Emotional Pattern Insights', color: 'text-accent' },
-  { icon: Shield, label: 'Priority AI Response Pipeline', color: 'text-blue' },
-  { icon: Star, label: 'Custom Sanctuary Themes', color: 'text-positive' },
+  { icon: Shield, label: 'Priority Response Pipeline', color: 'text-blue' },
+  { icon: Star, label: 'Custom App Themes', color: 'text-positive' },
   { icon: Crown, label: 'All Future Features — Forever', color: 'text-purple' },
 ];
 
@@ -179,7 +179,7 @@ export function PricingClient() {
           <div className="inline-flex items-center gap-2 bg-white border-3 border-ink px-4 py-1.5 brutalist-shadow-sm mb-6">
             <Crown className="w-4 h-4 text-purple" />
             <span className="font-mono text-xs font-bold uppercase tracking-widest">
-              {isPro ? 'Pro Access Active ✓' : 'Unlock Your Full Sanctuary'}
+              {isPro ? 'Pro Access Active ✓' : 'Unlock Your Full Space'}
             </span>
           </div>
 
@@ -190,7 +190,7 @@ export function PricingClient() {
             </span>
           </h1>
           <p className="text-ink/70 text-base sm:text-lg font-sans max-w-xl mx-auto leading-relaxed mt-4">
-            Try annual with 3 days free, or subscribe monthly with no trial. Unlimited AI closure sessions, memory bank search, and emotional insights.
+            Try annual with 3 days free, or subscribe monthly with no trial. Unlimited closure sessions, memory bank search, and emotional insights.
           </p>
         </div>
 

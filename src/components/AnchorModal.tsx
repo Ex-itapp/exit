@@ -91,7 +91,7 @@ export function AnchorModal({ onClose }: AnchorModalProps) {
             }}
           >
             <MessageSquare className="w-5 h-5 mr-2" />
-            Talk to AI Therapist
+            Talk to Companion
           </Button>
           <Button
             className="flex-1 h-14 text-base bg-positive hover:bg-positive/90 text-ink"

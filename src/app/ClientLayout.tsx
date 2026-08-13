@@ -36,7 +36,7 @@ export function ClientLayout({ children }: { children: ReactNode }) {
     return (
       <div className="min-h-screen bg-bg flex items-center justify-center p-4">
         <div className="border-4 border-ink bg-white p-6 brutalist-shadow text-center">
-          <p className="font-mono font-bold text-sm tracking-widest uppercase text-ink">VERIFYING SANCTUARY ACCESS...</p>
+          <p className="font-mono font-bold text-sm tracking-widest uppercase text-ink">PREPARING YOUR SPACE...</p>
         </div>
       </div>
     );

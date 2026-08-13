@@ -72,8 +72,8 @@ export default function AccountPage() {
       {/* Header */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b-4 border-ink pb-6">
         <div>
-          <h1 className="text-4xl md:text-5xl font-heading tracking-tighter uppercase">ACCOUNT HUB</h1>
-          <p className="font-mono text-ink/70 mt-2 text-sm md:text-base">YOUR HEALING PREFERENCES, CLOUD SYNC & SANCTUARY SETTINGS.</p>
+          <h1 className="font-heading text-4xl uppercase tracking-tight font-black">Account</h1>
+          <p className="font-mono text-ink/70 mt-2 text-sm md:text-base">YOUR HEALING PREFERENCES, CLOUD SYNC & PERSONAL SETTINGS.</p>
         </div>
         <div className="flex items-center gap-2 bg-ink text-bg px-4 py-2 border-2 border-ink">
           <User className="w-5 h-5 text-brand" />

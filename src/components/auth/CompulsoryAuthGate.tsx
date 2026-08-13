@@ -93,7 +93,7 @@ export function CompulsoryAuthGate() {
             <Lock className="w-6 h-6 text-ink" />
           </div>
           <span className="font-mono text-[10px] font-bold uppercase tracking-widest bg-ink text-bg px-2.5 py-1">
-            Compulsory Sanctuary Gate
+            Compulsory Access Gate
           </span>
           <h1 className="text-3xl font-heading uppercase tracking-tight mt-1">AUTHENTICATION REQUIRED</h1>
           <p className="font-sans text-xs sm:text-sm text-ink/80 leading-relaxed">

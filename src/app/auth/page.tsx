@@ -42,9 +42,9 @@ export default function AuthPage() {
               <LogIn className="w-5 h-5 text-ink" />
             </div>
             <div>
-              <span className="font-mono text-[10px] uppercase font-bold text-ink/50 tracking-widest">
-                Sanctuary Access
-              </span>
+              <h2 className="text-2xl md:text-3xl font-heading uppercase font-black tracking-tight leading-none">
+                Your Safe Space
+              </h2>
               <h1 className="font-heading text-2xl sm:text-3xl uppercase tracking-tight">
                 Sign In to EX-it
               </h1>

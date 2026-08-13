@@ -152,7 +152,7 @@ function SuccessPageContent() {
           You&apos;re In. 💛
         </h1>
         <p className="font-sans text-sm text-ink/60 leading-relaxed mb-10">
-          Welcome to EX-it Pro. Your sanctuary has been fully unlocked — unlimited sessions, insights, and support are ready for you.
+          Welcome to EX-it Pro. Your healing space has been fully unlocked — unlimited sessions, insights, and support are ready for you.
         </p>
 
         {/* Plan details */}
@@ -175,7 +175,7 @@ function SuccessPageContent() {
           href="/"
           className="block w-full py-4 px-6 bg-brand border-3 border-ink brutalist-shadow font-mono text-sm font-bold uppercase tracking-widest hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all text-center"
         >
-          Enter My Sanctuary →
+          Enter My Space →
         </Link>
 
         <p className="mt-8 font-mono text-[10px] text-ink/30 uppercase tracking-widest">

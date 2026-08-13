@@ -79,7 +79,7 @@ export default function DashboardPage() {
           <div className="flex items-center gap-2 mb-0.5">
             <span className="w-2 h-2 bg-brand border border-ink block animate-pulse" />
             <span className="font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-ink/60">
-              Sanctuary • Day {streakDays}
+              Healing • Day {streakDays}
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-heading tracking-tighter uppercase font-black">
@@ -283,7 +283,7 @@ export default function DashboardPage() {
               <span className="font-heading text-xs uppercase font-black block group-hover:text-purple transition-colors truncate">
                 Healing Companion
               </span>
-              <span className="font-mono text-[9px] text-ink/50 block truncate">24/7 AI listener</span>
+              <span className="font-mono text-[9px] text-ink/50 block truncate">24/7 listener</span>
             </div>
           </button>
 
@@ -296,7 +296,7 @@ export default function DashboardPage() {
             </div>
             <div className="min-w-0 flex-1">
               <span className="font-heading text-xs uppercase font-black block group-hover:text-ink transition-colors truncate">
-                AI Ex Simulator
+                Ex Simulator
               </span>
               <span className="font-mono text-[9px] text-ink/50 block truncate">Practice what you&apos;d say</span>
             </div>

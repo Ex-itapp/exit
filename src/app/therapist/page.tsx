@@ -114,7 +114,7 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
 
   const sendMessage = async () => {
     if (!inputText.trim() || isLoading || isCrisis) return;
-    if (!isPro) { setShowProGate("AI Therapist"); return; }
+    if (!isPro) { setShowProGate("Healing Companion"); return; }
     
     const userMessage: Message = { role: 'user', parts: [{ text: inputText }] };
     const updatedMessages = [...messages, userMessage];

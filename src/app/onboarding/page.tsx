@@ -120,7 +120,7 @@ export default function OnboardingPage() {
                     You made the brave choice.
                   </h1>
                   <p className="font-sans text-base text-ink/70 leading-relaxed">
-                    EX-it is your private sanctuary to heal, process, and rebuild — without ever texting them back.
+                    EX-it is your private space to heal, process, and rebuild — without ever texting them back.
                     Takes 2 minutes to set up. Completely private. No judgement.
                   </p>
                 </div>
@@ -130,7 +130,7 @@ export default function OnboardingPage() {
                   onClick={() => setStep(2)}
                   className="w-full h-14 bg-ink text-bg font-mono font-bold uppercase text-sm tracking-widest flex items-center justify-center gap-2 hover:opacity-90 transition-opacity brutalist-shadow"
                 >
-                  Let&apos;s Build Your Sanctuary <ArrowRight className="w-4 h-4" />
+                  Let&apos;s Build Your Safe Space <ArrowRight className="w-4 h-4" />
                 </button>
               </motion.div>
             )}
@@ -329,8 +329,8 @@ export default function OnboardingPage() {
                     "🔥 Healing streak counter",
                     "🚩 Red flag logbook",
                     "📖 Private diary & mood tracking",
-                    "🤖 AI healing companion (24/7)",
-                    "💬 AI Ex Simulator — say what you need to say",
+                    "🤖 Healing companion (24/7)",
+                    "💬 Ex Simulator — say what you need to say",
                   ].map((item) => (
                     <div key={item} className="flex items-center gap-2">
                       <span className="font-mono text-xs text-ink/80">{item}</span>
@@ -365,7 +365,7 @@ export default function OnboardingPage() {
                 {/* Header */}
                 <div className="text-center space-y-1">
                   <div className="inline-block bg-brand border-2 border-ink px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-widest mb-1 shadow-[2px_2px_0px_0px_#111]">
-                    🎉 Your sanctuary is ready, {name.trim().split(" ")[0] || "friend"}!
+                    🎉 Your space is ready, {name.trim().split(" ")[0] || "friend"}!
                   </div>
                   <h2 className="font-heading text-2xl sm:text-3xl uppercase tracking-tight leading-none">
                     Invest in your healing
@@ -423,8 +423,8 @@ export default function OnboardingPage() {
                   <div className="p-3 space-y-2 bg-white">
                     {[
                       "🔥 Unlimited streak tracking",
-                      "🤖 AI Companion — unlimited chats",
-                      "💬 AI Ex Simulator — closure without contact",
+                      "🤖 Healing Companion — unlimited chats",
+                      "💬 Ex Simulator — closure without contact",
                       "🚩 Unlimited red flag logging & analytics",
                       "🔒 End-to-end encrypted, strictly private",
                     ].map((f) => (
