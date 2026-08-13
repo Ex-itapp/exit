@@ -82,7 +82,10 @@ export function usePushNotifications() {
         body: JSON.stringify({ subscription: sub })
       });
       
-      if (!res.ok) throw new Error("Failed to save subscription");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(`Failed to save subscription: ${errorData.details || errorData.error || res.statusText}`);
+      }
 
       setSubscription(sub);
       setLoading(false);
