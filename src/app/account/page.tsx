@@ -71,44 +71,44 @@ export default function AccountPage() {
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-150 pb-24 max-w-2xl mx-auto px-4">
-      {/* Minimal Header */}
-      <header className="flex flex-col gap-1 pb-4 border-b border-ink/10 mt-4">
-        <h1 className="font-heading text-3xl text-ink">Settings</h1>
-        <p className="font-sans text-ink/50 text-sm">Manage your profile, notifications, and subscription.</p>
+      {/* Header */}
+      <header className="flex flex-col gap-1 pb-4 border-b-2 border-ink mt-4">
+        <h1 className="font-heading text-4xl uppercase tracking-tight font-black text-ink">Account</h1>
+        <p className="font-mono text-ink/70 text-xs sm:text-sm uppercase tracking-wider">Your preferences & settings.</p>
       </header>
 
       {/* Profile Section */}
       <section className="space-y-4">
-        <h2 className="font-sans font-bold text-xs tracking-wider text-ink/40 uppercase">Profile</h2>
+        <h2 className="font-mono font-bold text-xs tracking-widest text-ink/50 uppercase">Profile Settings</h2>
         
-        <div className="bg-white rounded-xl border border-ink/10 overflow-hidden divide-y divide-ink/10">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-2">
-            <label className="font-sans text-sm font-medium text-ink w-1/3">Display Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="flex-1 bg-transparent border-none text-right font-sans text-sm text-ink/80 focus:outline-none focus:ring-0 p-0"
-              placeholder="Your name"
-            />
+        <div className="bg-white border-2 sm:border-3 border-ink brutalist-shadow-sm p-4 sm:p-6 space-y-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="space-y-2">
+              <label className="font-mono text-xs font-bold uppercase tracking-wider block">Display Name</label>
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="h-12 font-medium border-2 border-ink bg-bg focus-visible:ring-0 rounded-none"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="font-mono text-xs font-bold uppercase tracking-wider block">Day Zero</label>
+              <Input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="h-12 font-mono border-2 border-ink bg-bg focus-visible:ring-0 rounded-none"
+              />
+            </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-2">
-            <label className="font-sans text-sm font-medium text-ink w-1/3">Day Zero</label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="flex-1 bg-transparent border-none text-right font-sans text-sm text-ink/80 focus:outline-none focus:ring-0 p-0"
-            />
-          </div>
-
-          <div className="flex flex-col p-4 gap-3">
-            <label className="font-sans text-sm font-medium text-ink">Primary Goal</label>
+          <div className="space-y-2">
+            <label className="font-mono text-xs font-bold uppercase tracking-wider block">Primary Goal</label>
             <select
               value={goal}
               onChange={(e) => setGoal(e.target.value)}
-              className="w-full bg-ink/5 border-none rounded-lg p-3 font-sans text-sm text-ink focus:outline-none"
+              className="w-full h-12 px-4 bg-bg border-2 border-ink font-sans font-medium text-ink focus:outline-none rounded-none"
             >
               {goals.map((g) => (
                 <option key={g} value={g}>{g}</option>
@@ -116,46 +116,46 @@ export default function AccountPage() {
             </select>
           </div>
 
-          <div className="flex flex-col p-4 gap-3">
-            <label className="font-sans text-sm font-medium text-ink">Your Anchor (Why you left)</label>
-            <textarea
+          <div className="space-y-2">
+            <label className="font-mono text-xs font-bold uppercase tracking-wider block">Your Anchor</label>
+            <Textarea
               value={anchor}
               onChange={(e) => setAnchor(e.target.value)}
-              className="w-full bg-ink/5 border-none rounded-lg p-3 font-sans text-sm text-ink focus:outline-none min-h-[80px] resize-none"
+              className="min-h-[100px] font-medium border-2 border-ink bg-bg p-3 focus-visible:ring-0 rounded-none resize-none"
               placeholder="I deserve peace..."
             />
           </div>
-        </div>
 
-        <button 
-          onClick={handleSave}
-          className={cn(
-            "w-full py-3.5 rounded-xl font-sans font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2",
-            isSaved ? "bg-positive text-ink" : "bg-ink text-white hover:bg-ink/90"
-          )}
-        >
-          {isSaved ? <><CheckCircle2 className="w-4 h-4" /> Saved</> : "Save Profile"}
-        </button>
+          <Button 
+            className={cn(
+              "w-full h-12 text-sm uppercase tracking-wider font-bold transition-all border-2 border-ink brutalist-shadow-sm rounded-none",
+              isSaved ? "bg-positive text-ink hover:bg-positive" : "bg-ink text-white hover:bg-ink/90"
+            )}
+            onClick={handleSave}
+          >
+            {isSaved ? <><CheckCircle2 className="w-4 h-4 mr-2 inline" /> Saved Successfully</> : "Save Profile"}
+          </Button>
+        </div>
       </section>
 
       {/* Notifications Section */}
       {isSupported && (
         <section className="space-y-4">
-          <h2 className="font-sans font-bold text-xs tracking-wider text-ink/40 uppercase">Notifications</h2>
+          <h2 className="font-mono font-bold text-xs tracking-widest text-ink/50 uppercase">Push Notifications</h2>
           
-          <div className="bg-white rounded-xl border border-ink/10 overflow-hidden">
-            <div className="flex items-center justify-between p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center">
-                  <Bell className="w-4 h-4 text-brand" />
+          <div className="bg-white border-2 sm:border-3 border-ink brutalist-shadow-sm">
+            <div className="p-4 sm:p-5 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 border-2 border-ink bg-brand flex items-center justify-center shrink-0">
+                  <Bell className="w-5 h-5 text-ink" />
                 </div>
                 <div>
-                  <p className="font-sans text-sm font-medium text-ink">Push Notifications</p>
-                  <p className="font-sans text-xs text-ink/50">Daily check-ins & milestones</p>
+                  <p className="font-heading uppercase text-sm sm:text-base font-black text-ink leading-tight">Daily Reminders</p>
+                  <p className="font-mono text-[10px] sm:text-xs text-ink/60">Receive check-in nudges</p>
                 </div>
               </div>
               
-              {/* Minimal Toggle Switch */}
+              {/* Brutalist Toggle */}
               <button
                 onClick={async () => {
                    if (subscription) {
@@ -166,22 +166,22 @@ export default function AccountPage() {
                 }}
                 disabled={pushLoading || permission === 'denied'}
                 className={cn(
-                  "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed",
-                  subscription ? "bg-brand" : "bg-ink/20"
+                  "relative h-8 w-14 border-2 border-ink flex items-center p-1 transition-colors duration-200 cursor-pointer disabled:opacity-50",
+                  subscription ? "bg-positive" : "bg-ink/10"
                 )}
               >
-                <span
+                <div
                   className={cn(
-                    "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-                    subscription ? "translate-x-5" : "translate-x-0"
+                    "w-5 h-5 bg-white border-2 border-ink transform transition-transform duration-200",
+                    subscription ? "translate-x-6" : "translate-x-0"
                   )}
                 />
               </button>
             </div>
             
             {permission === 'denied' && (
-              <div className="p-3 bg-danger/10 text-danger text-xs px-4 border-t border-danger/10 flex items-center gap-2">
-                <AlertTriangle className="w-3.5 h-3.5" /> Blocked in browser settings
+              <div className="p-3 bg-danger border-t-2 border-ink text-white font-mono text-xs px-4 flex items-center gap-2 uppercase tracking-wide">
+                <AlertTriangle className="w-4 h-4" /> Blocked in browser
               </div>
             )}
           </div>
@@ -190,80 +190,82 @@ export default function AccountPage() {
 
       {/* Subscription Section */}
       <section className="space-y-4">
-        <h2 className="font-sans font-bold text-xs tracking-wider text-ink/40 uppercase">Subscription</h2>
+        <h2 className="font-mono font-bold text-xs tracking-widest text-ink/50 uppercase">Subscription</h2>
         
-        <div className="bg-white rounded-xl border border-ink/10 overflow-hidden p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={cn("w-8 h-8 rounded-full flex items-center justify-center", isPro ? "bg-positive/10" : "bg-ink/5")}>
-              <CreditCard className={cn("w-4 h-4", isPro ? "text-positive" : "text-ink/40")} />
+        <div className="bg-white border-2 sm:border-3 border-ink brutalist-shadow-sm p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className={cn("w-10 h-10 border-2 border-ink flex items-center justify-center shrink-0", isPro ? "bg-positive text-ink" : "bg-ink/5 text-ink/40")}>
+              <CreditCard className="w-5 h-5" />
             </div>
             <div>
-              <p className="font-sans text-sm font-medium text-ink">{isPro ? "Pro Plan Active" : "Free Plan"}</p>
+              <p className="font-heading text-sm sm:text-base uppercase font-black tracking-tight">{isPro ? "Pro Active" : "Free Plan"}</p>
               {isPro && daysRemaining !== null && (
-                <p className="font-sans text-xs text-ink/50">{daysRemaining} days remaining</p>
+                <p className="font-mono text-[10px] sm:text-xs text-ink/60">{daysRemaining} days left</p>
               )}
             </div>
           </div>
           {!isPro && (
-            <button 
+            <Button 
               onClick={() => router.push('/pricing')}
-              className="text-xs font-medium text-brand bg-brand/10 px-3 py-1.5 rounded-full hover:bg-brand/20 transition-colors"
+              className="h-9 px-4 text-xs font-mono font-bold uppercase border-2 border-ink bg-brand text-ink hover:bg-brand/90 brutalist-shadow-sm rounded-none"
             >
               Upgrade
-            </button>
+            </Button>
           )}
         </div>
       </section>
 
-      {/* Danger Zone */}
-      <section className="space-y-4 pt-6 border-t border-ink/10">
+      {/* Danger Zone & Session */}
+      <section className="space-y-3 pt-4 border-t-2 border-ink border-dashed">
         <button 
           onClick={handleSignOut}
-          className="w-full p-4 rounded-xl border border-ink/10 bg-white text-ink font-sans text-sm font-medium flex items-center justify-between hover:bg-ink/5 transition-colors"
+          className="w-full p-4 border-2 border-ink bg-white text-ink font-mono text-sm font-bold uppercase tracking-wider flex items-center justify-between hover:bg-ink/5 transition-colors brutalist-shadow-sm"
         >
-          <span className="flex items-center gap-2"><LogOut className="w-4 h-4 text-ink/50" /> Sign Out</span>
+          <span className="flex items-center gap-3"><LogOut className="w-5 h-5" /> Sign Out</span>
         </button>
 
         <button 
           onClick={handleReset}
-          className="w-full p-4 rounded-xl border border-danger/20 bg-danger/5 text-danger font-sans text-sm font-medium flex items-center justify-between hover:bg-danger/10 transition-colors"
+          className="w-full p-4 border-2 border-danger bg-danger/5 text-danger font-mono text-sm font-bold uppercase tracking-wider flex items-center justify-between hover:bg-danger/10 transition-colors brutalist-shadow-sm"
         >
-          <span className="flex items-center gap-2"><RefreshCcw className="w-4 h-4" /> Reset Account Data</span>
+          <span className="flex items-center gap-3"><RefreshCcw className="w-5 h-5" /> Reset Data</span>
         </button>
       </section>
 
       {/* CUSTOM UI ACCOUNT RESET MODAL */}
       {showResetModal && (
-        <div className="fixed inset-0 z-50 bg-ink/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-6 space-y-6 text-ink shadow-2xl relative">
-            <div className="w-12 h-12 rounded-full bg-danger/10 flex items-center justify-center mb-4">
-              <AlertTriangle className="w-6 h-6 text-danger" />
-            </div>
-            
-            <div>
-              <h3 className="font-sans font-bold text-lg text-ink">Reset all data?</h3>
-              <p className="font-sans text-sm text-ink/60 mt-2">
-                This will permanently delete your diary entries, red flags, and streak. You cannot undo this action.
-              </p>
+        <div className="fixed inset-0 z-50 bg-ink/90 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white border-4 border-ink brutalist-shadow max-w-sm w-full p-6 sm:p-8 space-y-6 text-ink relative shadow-2xl">
+            <div className="flex items-center gap-3 border-b-4 border-ink pb-4 text-danger">
+              <AlertTriangle className="w-8 h-8 shrink-0 animate-bounce" />
+              <div>
+                <span className="font-mono text-[10px] uppercase font-bold bg-danger text-white px-2 py-0.5">Danger Action</span>
+                <h3 className="font-heading text-xl uppercase mt-1 leading-none">RESET DATA?</h3>
+              </div>
             </div>
 
-            <div className="flex flex-col gap-2 pt-2">
-              <button
+            <p className="font-sans text-sm font-medium leading-relaxed">
+              This will permanently delete your diary entries, red flags, and streak. You cannot undo this action.
+            </p>
+
+            <div className="flex flex-col gap-3 pt-2">
+              <Button
+                variant="danger"
                 onClick={async () => {
                   setIsResetting(true);
                   await resetAccount();
                 }}
                 disabled={isResetting}
-                className="w-full py-3 rounded-xl bg-danger text-white font-sans text-sm font-medium hover:bg-danger/90 transition-colors disabled:opacity-50"
+                className="w-full h-12 font-mono uppercase text-xs font-bold border-2 border-ink rounded-none disabled:opacity-50"
               >
                 {isResetting ? "Wiping Data..." : "Delete everything"}
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setShowResetModal(false)}
-                className="w-full py-3 rounded-xl bg-ink/5 text-ink font-sans text-sm font-medium hover:bg-ink/10 transition-colors"
+                className="w-full h-12 bg-white text-ink border-2 border-ink font-mono uppercase font-bold text-xs hover:bg-ink/5 rounded-none"
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           </div>
         </div>
