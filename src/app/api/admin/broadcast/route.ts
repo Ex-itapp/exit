@@ -24,7 +24,11 @@ export async function POST(req: Request) {
       .from('push_subscriptions')
       .select('*');
 
-    if (error || !subscriptions || subscriptions.length === 0) {
+    if (error) {
+      return NextResponse.json({ error: 'Supabase select error', details: error.message }, { status: 500 });
+    }
+    
+    if (!subscriptions || subscriptions.length === 0) {
       return NextResponse.json({ error: 'No subscriptions found in the database.' }, { status: 404 });
     }
 
