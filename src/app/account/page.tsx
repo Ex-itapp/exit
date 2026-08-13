@@ -176,7 +176,7 @@ export default function AccountPage() {
             <p className="font-sans text-sm md:text-base text-ink/80">
               Get notified when it's time for your daily check-in, or when you reach a new healing milestone.
             </p>
-            {permission === 'granted' ? (
+            {permission === 'granted' && subscription ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-2 font-mono text-sm font-bold text-positive">
                   <CheckCircle2 className="w-5 h-5" /> Notifications Enabled

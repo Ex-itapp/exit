@@ -66,8 +66,8 @@ export async function POST(req: Request) {
       failed: failCount,
       total: subscriptions.length 
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Broadcast push error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error', details: error.message || String(error) }, { status: 500 });
   }
 }
