@@ -14,7 +14,8 @@ export default function FlagEntryPage() {
   const { allFlags, archivedFlags, archiveFlag, unarchiveFlag, deleteFlag } = useFlags();
   
   const [flag, setFlag] = useState<Flag | null>(null);
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const exportRef = useRef<HTMLDivElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
   const [isArchived, setIsArchived] = useState(false);
 
   useEffect(() => {
@@ -57,11 +58,33 @@ export default function FlagEntryPage() {
   const textColor = "#111111"; // Ink
   const cardColor = "#F5EFE6"; // Offwhite
 
+  const handleExport = async () => {
+    if (!exportRef.current) return;
+    setIsExporting(true);
+    try {
+      const domtoimage = (await import('dom-to-image-more')).default;
+      const dataUrl = await domtoimage.toPng(exportRef.current, {
+        quality: 1,
+        bgcolor: bgColor,
+        style: { transform: 'scale(1)', transformOrigin: 'top left' }
+      });
+      const link = document.createElement('a');
+      link.download = `exit_flag_${flag.id}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-300" style={{ backgroundColor: bgColor, color: cardColor }}>
       
-      {/* Header */}
-      <header className="px-4 py-6 sm:px-8 flex items-center justify-between z-10 sticky top-0" style={{ borderBottom: `4px solid ${cardColor}`, backgroundColor: bgColor }}>
+      <div ref={exportRef} className="flex-1 flex flex-col w-full relative bg-inherit text-inherit">
+        {/* Header */}
+        <header className="px-4 py-6 sm:px-8 flex items-center justify-between z-10 sticky top-0" style={{ borderBottom: `4px solid ${cardColor}`, backgroundColor: bgColor }}>
         <button 
           onClick={() => router.push("/diary")}
           className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-widest hover:opacity-70 transition-opacity"
@@ -111,16 +134,22 @@ export default function FlagEntryPage() {
           </div>
         </div>
       </main>
+      </div>
 
       {/* Action Footer */}
       <footer className="px-4 py-6 sm:px-8 border-t-4 flex flex-col sm:flex-row items-center justify-between gap-4 sticky bottom-0 z-10" style={{ borderColor: cardColor, backgroundColor: bgColor }}>
-        <div className="flex w-full sm:w-auto gap-3">
+        <div className="flex w-full sm:w-auto gap-3 items-center">
           <Button 
-            onClick={() => setIsShareModalOpen(true)}
+            onClick={handleExport}
+            disabled={isExporting}
             className="flex-1 sm:flex-none h-14 px-8 brutalist-shadow-sm border-2 rounded-none hover:-translate-y-1 transition-transform"
             style={{ backgroundColor: cardColor, color: textColor, borderColor: cardColor }}
           >
-            <Share2 className="w-5 h-5 mr-2" /> SHARE FLAG
+            {isExporting ? (
+               <><div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin mr-2"></div> EXPORTING...</>
+            ) : (
+               <><Share2 className="w-5 h-5 mr-2" /> EXPORT FLAG</>
+            )}
           </Button>
           <Button 
             onClick={handleArchiveToggle}
@@ -144,20 +173,6 @@ export default function FlagEntryPage() {
           <Trash2 className="w-5 h-5 mr-2" /> PERMANENT DELETE
         </Button>
       </footer>
-
-      {isShareModalOpen && (
-        <ShareModal 
-          isOpen={isShareModalOpen} 
-          onClose={() => setIsShareModalOpen(false)}
-          entry={{
-            type: 'flag',
-            id: flag.id,
-            content: flag.content,
-            createdAt: flag.createdAt,
-            tags: [flag.category]
-          }}
-        />
-      )}
     </div>
   );
 }

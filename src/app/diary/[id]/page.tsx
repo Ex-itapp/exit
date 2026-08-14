@@ -14,8 +14,9 @@ export default function DiaryEntryPage() {
   const router = useRouter();
   const { allEntries, archivedEntries, archiveEntry, unarchiveEntry, deleteEntry } = useDiary();
   
-  const [entry, setEntry] = useState<DiaryEntry | null>(null);
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const exportRef = useRef<HTMLDivElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const [customBg, setCustomBg] = useState<string | null>(null);
   const [isArchived, setIsArchived] = useState(false);
 
   useEffect(() => {
@@ -55,14 +56,37 @@ export default function DiaryEntryPage() {
   }).toUpperCase();
 
   const primaryMood = entry.moods?.[0] || 'DEFAULT';
-  const bgColor = getMoodColor(primaryMood);
-  const textColor = (bgColor === '#111111' || bgColor === '#8A2BE2') ? '#F5EFE6' : '#111111';
+  const defaultBgColor = getMoodColor(primaryMood);
+  const bgColor = customBg || defaultBgColor;
+  const textColor = (bgColor.toLowerCase() === '#111111' || bgColor.toLowerCase() === '#8a2be2' || bgColor.toLowerCase() === '#ff3366' || bgColor.toLowerCase() === '#000000') ? '#F5EFE6' : '#111111';
+
+  const handleExport = async () => {
+    if (!exportRef.current) return;
+    setIsExporting(true);
+    try {
+      const domtoimage = (await import('dom-to-image-more')).default;
+      const dataUrl = await domtoimage.toPng(exportRef.current, {
+        quality: 1,
+        bgcolor: bgColor,
+        style: { transform: 'scale(1)', transformOrigin: 'top left' }
+      });
+      const link = document.createElement('a');
+      link.download = `exit_diary_${entry.id}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen w-full flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-300" style={{ backgroundColor: bgColor, color: textColor }}>
       
-      {/* Header */}
-      <header className="px-4 py-6 sm:px-8 flex items-center justify-between z-10 sticky top-0" style={{ borderBottom: `4px solid ${textColor}`, backgroundColor: bgColor }}>
+      <div ref={exportRef} className="flex-1 flex flex-col w-full relative bg-inherit text-inherit">
+        {/* Header */}
+        <header className="px-4 py-6 sm:px-8 flex items-center justify-between z-10 sticky top-0" style={{ borderBottom: `4px solid ${textColor}`, backgroundColor: bgColor }}>
         <button 
           onClick={() => router.push("/diary")}
           className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-widest hover:opacity-70 transition-opacity"
@@ -122,17 +146,33 @@ export default function DiaryEntryPage() {
           </div>
         </div>
       </main>
+      </div>
 
       {/* Action Footer */}
       <footer className="px-4 py-6 sm:px-8 border-t-4 flex flex-col sm:flex-row items-center justify-between gap-4 sticky bottom-0 z-10" style={{ borderColor: textColor, backgroundColor: bgColor }}>
-        <div className="flex w-full sm:w-auto gap-3">
+        <div className="flex w-full sm:w-auto gap-3 items-center">
           <Button 
-            onClick={() => setIsShareModalOpen(true)}
+            onClick={handleExport}
+            disabled={isExporting}
             className="flex-1 sm:flex-none h-14 px-8 brutalist-shadow-sm border-2 rounded-none hover:-translate-y-1 transition-transform"
             style={{ backgroundColor: textColor, color: bgColor, borderColor: textColor }}
           >
-            <Share2 className="w-5 h-5 mr-2" /> SHARE ENTRY
+            {isExporting ? (
+               <><div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin mr-2"></div> EXPORTING...</>
+            ) : (
+               <><Share2 className="w-5 h-5 mr-2" /> EXPORT ENTRY</>
+            )}
           </Button>
+          <div className="flex items-center justify-center border-2 px-3 h-14" style={{ borderColor: textColor, backgroundColor: 'transparent' }}>
+            <span className="font-mono text-xs font-bold uppercase mr-2 opacity-70">BG Color</span>
+            <input 
+              type="color" 
+              value={bgColor} 
+              onChange={(e) => setCustomBg(e.target.value)}
+              className="w-6 h-6 rounded-full cursor-pointer p-0 border-none"
+              style={{ backgroundColor: 'transparent' }}
+            />
+          </div>
           <Button 
             onClick={handleArchiveToggle}
             variant="outline"
@@ -155,21 +195,6 @@ export default function DiaryEntryPage() {
           <Trash2 className="w-5 h-5 mr-2" /> PERMANENT DELETE
         </Button>
       </footer>
-
-      {isShareModalOpen && (
-        <ShareModal 
-          isOpen={isShareModalOpen} 
-          onClose={() => setIsShareModalOpen(false)}
-          entry={{
-            type: 'diary',
-            id: entry.id,
-            content: entry.content,
-            createdAt: entry.createdAt,
-            tags: entry.moods,
-            isUnsent: entry.isUnsent
-          }}
-        />
-      )}
     </div>
   );
 }
