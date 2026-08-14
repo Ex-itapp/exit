@@ -40,48 +40,52 @@ export default function Diary() {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-150 pb-20 max-w-[1200px] mx-auto w-full">
-      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b-4 border-ink pb-6">
-        <div>
+      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b-4 border-ink pb-6 relative">
+        <div className="z-10">
           <h1 className="text-4xl md:text-5xl font-heading tracking-tighter">LOGBOOK</h1>
-          <p className="font-mono text-ink/70 mt-2 text-sm md:text-base uppercase tracking-widest">
-            {activeTab === 'diary' && 'Your week, unfiltered.'}
-            {activeTab === 'flags' && 'Write it down so you don\'t forget.'}
-            {activeTab === 'archive' && 'Soft-deleted records.'}
-          </p>
+          <div className="h-6 mt-2">
+            <p className="font-mono text-ink/70 text-sm md:text-base uppercase tracking-widest whitespace-nowrap">
+              {activeTab === 'diary' && 'Your week, unfiltered.'}
+              {activeTab === 'flags' && 'Write it down so you don\'t forget.'}
+              {activeTab === 'archive' && 'Soft-deleted records.'}
+            </p>
+          </div>
         </div>
         
-        {/* Tab Switcher */}
-        <div className="flex bg-white border-3 border-ink p-1 brutalist-shadow-sm self-start sm:self-auto overflow-x-auto">
-          <button
-            onClick={() => setActiveTab('diary')}
-            className={cn(
-              "px-4 py-2 font-mono text-xs font-bold uppercase transition-colors flex items-center gap-2 whitespace-nowrap",
-              activeTab === 'diary' ? "bg-ink text-bg" : "hover:bg-bg"
-            )}
-          >
-            <PenLine className="w-4 h-4" /> Diary
-          </button>
-          <button
-            onClick={() => setActiveTab('flags')}
-            className={cn(
-              "px-4 py-2 font-mono text-xs font-bold uppercase transition-colors flex items-center gap-2 whitespace-nowrap",
-              activeTab === 'flags' ? "bg-accent text-bg" : "hover:bg-bg"
-            )}
-          >
-            <FlagIcon className="w-4 h-4" /> Flags
-          </button>
-          <button
-            onClick={() => setActiveTab('archive')}
-            className={cn(
-              "px-4 py-2 font-mono text-xs font-bold uppercase transition-colors flex items-center gap-2 whitespace-nowrap",
-              activeTab === 'archive' ? "bg-ink text-bg opacity-70" : "hover:bg-bg"
-            )}
-          >
-            <Archive className="w-4 h-4" /> Archive
-          </button>
+        {/* Tab Switcher - Absolutely centered on desktop, normal flow on mobile */}
+        <div className="static sm:absolute sm:left-1/2 sm:-translate-x-1/2 sm:bottom-6 z-10 flex w-full sm:w-auto justify-start sm:justify-center overflow-x-auto pb-2 sm:pb-0">
+          <div className="flex bg-white border-3 border-ink p-1 brutalist-shadow-sm shrink-0">
+            <button
+              onClick={() => setActiveTab('diary')}
+              className={cn(
+                "px-4 py-2 font-mono text-xs font-bold uppercase transition-colors flex items-center gap-2 whitespace-nowrap",
+                activeTab === 'diary' ? "bg-ink text-bg" : "hover:bg-bg"
+              )}
+            >
+              <PenLine className="w-4 h-4" /> Diary
+            </button>
+            <button
+              onClick={() => setActiveTab('flags')}
+              className={cn(
+                "px-4 py-2 font-mono text-xs font-bold uppercase transition-colors flex items-center gap-2 whitespace-nowrap",
+                activeTab === 'flags' ? "bg-accent text-bg" : "hover:bg-bg"
+              )}
+            >
+              <FlagIcon className="w-4 h-4" /> Flags
+            </button>
+            <button
+              onClick={() => setActiveTab('archive')}
+              className={cn(
+                "px-4 py-2 font-mono text-xs font-bold uppercase transition-colors flex items-center gap-2 whitespace-nowrap",
+                activeTab === 'archive' ? "bg-ink text-bg opacity-70" : "hover:bg-bg"
+              )}
+            >
+              <Archive className="w-4 h-4" /> Archive
+            </button>
+          </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 z-10 w-full sm:w-auto justify-start sm:justify-end min-h-[40px]">
           {activeTab === 'diary' && (
             <Button onClick={() => navigate.push('/diary/new')} className="brutalist-shadow-sm group h-10 px-4 shrink-0">
               <PenLine className="w-4 h-4 mr-2 group-hover:animate-pulse" />
