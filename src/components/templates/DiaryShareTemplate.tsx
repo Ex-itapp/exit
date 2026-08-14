@@ -33,11 +33,10 @@ export function DiaryShareTemplate({ data }: { data: any }) {
           bottom: '-20%',
           display: 'flex',
           flexWrap: 'wrap',
-          justifyContent: 'space-evenly',
+          justifyContent: 'space-around',
           alignItems: 'center',
           gap: '80px',
           opacity: 0.15,
-          zIndex: 0,
           pointerEvents: 'none',
           transform: 'rotate(-10deg)'
         }}>
@@ -49,7 +48,7 @@ export function DiaryShareTemplate({ data }: { data: any }) {
         </div>
       )}
       {/* Header */}
-      <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center', zIndex: 10, borderBottom: `8px solid ${textColor}`, paddingBottom: '48px' }}>
+      <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center', borderBottom: `8px solid ${textColor}`, paddingBottom: '48px' }}>
         <span style={{ fontSize: '48px', fontWeight: 'bold', fontFamily: 'monospace', letterSpacing: '2px', opacity: 0.7 }}>
           {date}
         </span>
@@ -82,8 +81,7 @@ export function DiaryShareTemplate({ data }: { data: any }) {
           lineHeight: 1.2,
           letterSpacing: '-0.02em',
           textAlign: 'center',
-          margin: 0,
-          zIndex: 10
+          margin: 0
         }}>
           {content}
         </p>
@@ -94,7 +92,6 @@ export function DiaryShareTemplate({ data }: { data: any }) {
         display: 'flex',
         width: '100%',
         justifyContent: 'center',
-        zIndex: 10,
         paddingBottom: '48px'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', border: `8px solid ${textColor}`, backgroundColor: finalBgColor, padding: '32px 64px', boxShadow: `16px 16px 0px ${textColor}` }}>
