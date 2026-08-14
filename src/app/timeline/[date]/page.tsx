@@ -32,8 +32,10 @@ export default function DailyDetail({ params }: { params: Promise<{ date: string
   const dailyEvents = useMemo(() => {
     const [y, m, d] = dateStr.split('-').map(Number);
     return events.filter(e => {
-      const eDate = new Date(e.timestamp);
-      return eDate.getDate() === d && eDate.getMonth() === (m - 1) && eDate.getFullYear() === y;
+      // e.timestamp is already a Date object
+      return e.timestamp.getDate() === d && 
+             e.timestamp.getMonth() === (m - 1) && 
+             e.timestamp.getFullYear() === y;
     });
   }, [events, dateStr]);
 
@@ -45,52 +47,52 @@ export default function DailyDetail({ params }: { params: Promise<{ date: string
     if (event.type === 'mood') {
       const data = event.data;
       return (
-        <Card key={event.id} className="border-l-8 border-l-blue bg-blue/5">
-          <CardContent className="p-4 flex items-center justify-between">
+        <div key={event.id} className="border-3 border-ink bg-blue/10 brutalist-shadow-sm hover:-translate-y-0.5 transition-transform p-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <span className="text-4xl">{data.emoji}</span>
+              <span className="text-4xl leading-none">{data.emoji}</span>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <Badge variant="outline" className="bg-white">Mood Logged</Badge>
+                  <span className="font-mono text-[10px] bg-blue text-ink font-bold uppercase px-2 py-0.5 border border-ink">Mood Logged</span>
                 </div>
-                {data.note && <p className="font-sans text-sm italic opacity-80 mt-1">"{data.note}"</p>}
+                {data.note && <p className="font-sans text-sm font-medium text-ink/90 mt-1">"{data.note}"</p>}
               </div>
             </div>
-            <span className="font-mono text-xs opacity-50 shrink-0">{formatTime(event.timestamp)}</span>
-          </CardContent>
-        </Card>
+            <span className="font-mono text-[10px] font-bold text-ink/50 uppercase shrink-0">{formatTime(event.timestamp)}</span>
+          </div>
+        </div>
       );
     }
 
     if (event.type === 'checkin') {
       const data = event.data;
       return (
-        <Card key={event.id} className="border-l-8 border-l-positive bg-positive/5">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 mb-2">
+        <div key={event.id} className="border-3 border-ink bg-positive/10 brutalist-shadow-sm hover:-translate-y-0.5 transition-transform p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
               <CheckCircle className="w-4 h-4 text-positive" />
-              <Badge variant="positive">Daily Check-in</Badge>
-              <span className="font-mono text-xs opacity-50 ml-auto">{formatTime(event.timestamp)}</span>
+              <span className="font-mono text-[10px] bg-positive text-ink font-bold uppercase px-2 py-0.5 border border-ink">Daily Check-in</span>
             </div>
-            <p className="text-base">{data.content}</p>
-          </CardContent>
-        </Card>
+            <span className="font-mono text-[10px] font-bold text-ink/50 uppercase shrink-0">{formatTime(event.timestamp)}</span>
+          </div>
+          <p className="font-sans text-sm sm:text-base font-medium text-ink/90 leading-relaxed">"{data.content}"</p>
+        </div>
       );
     }
     
     if (event.type === 'flag') {
       const data = event.data;
       return (
-        <Card key={event.id} className="border-l-8 border-l-purple bg-purple/5">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 mb-2">
+        <div key={event.id} className="border-3 border-ink bg-purple/10 brutalist-shadow-sm hover:-translate-y-0.5 transition-transform p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
               <Flag className="w-4 h-4 text-purple" />
-              <Badge variant="accent" className="bg-purple text-ink border-ink">{data.category}</Badge>
-              <span className="font-mono text-xs opacity-50 ml-auto">{formatTime(event.timestamp)}</span>
+              <span className="font-mono text-[10px] bg-purple text-white font-bold uppercase px-2 py-0.5 border border-ink">{data.category}</span>
             </div>
-            <p className="text-base font-medium">{data.content}</p>
-          </CardContent>
-        </Card>
+            <span className="font-mono text-[10px] font-bold text-ink/50 uppercase shrink-0">{formatTime(event.timestamp)}</span>
+          </div>
+          <p className="font-sans text-sm sm:text-base font-medium text-ink/90 leading-relaxed">"{data.content}"</p>
+        </div>
       );
     }
 
@@ -98,26 +100,26 @@ export default function DailyDetail({ params }: { params: Promise<{ date: string
       const data = event.data;
       const isUnsent = data.isUnsent;
       return (
-        <Card key={event.id} className={`border-l-8 ${isUnsent ? 'border-l-accent bg-accent/10' : 'border-l-brand bg-brand/5'}`}>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 mb-2">
+        <div key={event.id} className={`border-3 border-ink ${isUnsent ? 'bg-accent/10' : 'bg-brand/10'} brutalist-shadow-sm hover:-translate-y-0.5 transition-transform p-4`}>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2 flex-wrap">
               {isUnsent ? (
                 <>
                   <Lock className="w-4 h-4 text-accent" />
-                  <Badge variant="accent">Unsent Message</Badge>
+                  <span className="font-mono text-[10px] bg-accent text-white font-bold uppercase px-2 py-0.5 border border-ink">Unsent Message</span>
                 </>
               ) : (
                 <>
                   <BookOpen className="w-4 h-4 text-brand" />
-                  <Badge variant="outline">Diary Entry</Badge>
-                  {data.moods?.map((m: string) => <Badge key={m} variant="outline" className="text-[10px] py-0">{m}</Badge>)}
+                  <span className="font-mono text-[10px] bg-brand text-ink font-bold uppercase px-2 py-0.5 border border-ink">Diary Entry</span>
+                  {data.moods?.map((m: string) => <span key={m} className="font-mono text-[10px] bg-white text-ink font-bold uppercase px-1.5 py-0.5 border border-ink">{m}</span>)}
                 </>
               )}
-              <span className="font-mono text-xs opacity-50 ml-auto">{formatTime(event.timestamp)}</span>
             </div>
-            <p className={`text-base ${isUnsent ? 'italic text-accent font-medium' : ''}`}>{data.content}</p>
-          </CardContent>
-        </Card>
+            <span className="font-mono text-[10px] font-bold text-ink/50 uppercase shrink-0">{formatTime(event.timestamp)}</span>
+          </div>
+          <p className={`font-sans text-sm sm:text-base leading-relaxed ${isUnsent ? 'italic text-accent font-medium' : 'font-medium text-ink/90'}`}>"{data.content}"</p>
+        </div>
       );
     }
 
@@ -142,14 +144,12 @@ export default function DailyDetail({ params }: { params: Promise<{ date: string
       <div className="space-y-4 pt-4 border-t-4 border-ink">
         {dailyEvents.length === 0 ? (
           <div className="text-center py-16 border-4 border-dashed border-ink/20 opacity-50">
-            <p className="font-mono">NO ACTIVITY LOGGED ON THIS DATE.</p>
+            <p className="font-mono font-bold tracking-widest uppercase text-sm">No activity logged on this date.</p>
           </div>
         ) : (
-          <div className="relative space-y-4 before:absolute before:inset-0 before:ml-4 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-1 before:bg-ink/10 pl-8 md:pl-0">
+          <div className="flex flex-col gap-4">
             {dailyEvents.map(event => (
-              <div key={event.id} className="relative z-10">
-                {/* Timeline node dot */}
-                <div className="absolute -left-[30px] md:left-1/2 md:-ml-2 top-4 w-4 h-4 rounded-full border-4 border-ink bg-bg hidden md:block"></div>
+              <div key={event.id} className="w-full">
                 {renderEvent(event)}
               </div>
             ))}
