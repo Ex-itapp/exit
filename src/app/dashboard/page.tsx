@@ -257,33 +257,10 @@ export default function DashboardPage() {
       {/* ── CORE HEALING TOOLS GRID ── */}
       <motion.div variants={itemVariants} className="space-y-2">
         <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-ink/50 block px-1">
-          Quick Healing Tools
+          Your Recovery Kit
         </span>
 
         <div className="grid grid-cols-2 gap-2.5">
-          <button
-            onClick={() => navigate.push('/flags/new')}
-            className="bg-white hover:bg-accent/10 border-2 sm:border-3 border-ink brutalist-shadow-sm p-3 sm:p-4 text-left transition-all flex items-center gap-3 group"
-          >
-            <div className="w-10 h-10 bg-accent text-white border-2 border-ink flex items-center justify-center shrink-0">
-              <Flag className="w-5 h-5" />
-            </div>
-            <span className="font-heading text-sm uppercase font-black group-hover:text-accent transition-colors">
-              Log Red Flag
-            </span>
-          </button>
-
-          <button
-            onClick={() => navigate.push('/diary/new')}
-            className="bg-white hover:bg-emerald-400/10 border-2 sm:border-3 border-ink brutalist-shadow-sm p-3 sm:p-4 text-left transition-all flex items-center gap-3 group"
-          >
-            <div className="w-10 h-10 bg-emerald-400 text-white border-2 border-ink flex items-center justify-center shrink-0">
-              <Book className="w-5 h-5" />
-            </div>
-            <span className="font-heading text-sm uppercase font-black group-hover:text-emerald-500 transition-colors">
-              New Diary
-            </span>
-          </button>
 
           <button
             onClick={() => navigate.push('/therapist')}
