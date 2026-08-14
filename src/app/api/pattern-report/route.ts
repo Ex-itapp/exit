@@ -95,6 +95,8 @@ Ensure the output is strictly valid JSON matching the schema format:
 
     // Fallback logic for model selection
     let result;
+    const apiKey = process.env.GEMINI_API_KEY || '';
+    
     try {
       const model = genAI.getGenerativeModel({
         model: "gemini-1.5-flash",
@@ -103,11 +105,35 @@ Ensure the output is strictly valid JSON matching the schema format:
       result = await model.generateContent(prompt);
     } catch (e: any) {
       if (e.message?.includes('404') || e.message?.includes('not found')) {
-        console.warn("gemini-1.5-flash not found, falling back to gemini-1.5-pro");
+        console.warn("gemini-1.5-flash not found. Fetching available models...");
+        
+        // Fetch list of available models for this specific API key
+        const modelsRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+        const modelsData = await modelsRes.json();
+        
+        if (!modelsRes.ok) {
+          throw new Error("Failed to list models: " + JSON.stringify(modelsData));
+        }
+
+        // Find the first valid gemini model that supports generateContent
+        const validModel = modelsData.models?.find((m: any) => 
+          m.name.includes('gemini') && 
+          m.supportedGenerationMethods?.includes('generateContent')
+        );
+
+        if (!validModel) {
+          throw new Error("No Gemini models found for this API key. Available: " + JSON.stringify(modelsData.models?.map((m:any) => m.name)));
+        }
+
+        console.log(`Using fallback model: ${validModel.name}`);
+        // validModel.name is in format "models/gemini-pro", getGenerativeModel expects "gemini-pro"
+        const cleanModelName = validModel.name.replace('models/', '');
+        
         const fallbackModel = genAI.getGenerativeModel({
-          model: "gemini-1.5-pro",
+          model: cleanModelName,
           generationConfig: { responseMimeType: "application/json" },
         });
+        
         result = await fallbackModel.generateContent(prompt);
       } else {
         throw e;
