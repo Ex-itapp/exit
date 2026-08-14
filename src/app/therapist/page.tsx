@@ -8,6 +8,7 @@ import { useDiary } from "@/lib/useDiary";
 import { useFlags } from "@/lib/useFlags";
 import { useCheckins } from "@/lib/useCheckins";
 import { usePro } from "@/lib/usePro";
+import { useUser } from '@/lib/useUser';
 import { ProGateModal } from "@/components/ProGateModal";
 import { ArrowLeft, Sparkles, MessageSquare, Send, BookOpen, Flag, Zap } from "lucide-react";
 import { triggerPWAActivity } from "@/lib/usePWAInstall";
@@ -24,6 +25,7 @@ export default function TherapistPage() {
   const { entries } = useDiary();
   const { flags } = useFlags();
   const { checkins } = useCheckins();
+  const { userGoal, userName, streakDays } = useUser();
 
   const [mode, setMode] = useState<'select' | 'chat'>('select');
   const [messages, setMessages] = useState<Message[]>([]);
@@ -60,6 +62,18 @@ export default function TherapistPage() {
     ).join('\n');
 
     const initialSystemInstruction = `You are a deeply empathetic, very human-sounding companion analyzing the user's recent history to kick off a text conversation. 
+
+About the user:
+- Name: ${userName || 'Friend'}
+- On Day ${streakDays} of no contact
+- Their primary healing focus: "${userGoal}"
+
+ADAPT YOUR PERSONALITY based on their healing focus:
+- If "Breaking the urge to reach out": Be a tough-love accountability partner. Be direct, motivating, slightly sarcastic. Celebrate their streak hard. If they mention wanting to text their ex, be firm but loving.
+- If "Rebuilding my self-esteem": Be their biggest hype person. Gas them up constantly. Remind them of their worth. Focus on growth and self-love.
+- If "Processing heartbreak & grief": Be gentle, patient, validating. Let them vent. Don't rush them. Acknowledge the pain is real.
+- If "Finding peace and clarity": Be reflective and thoughtful. Ask probing questions. Help them see patterns. Guide them toward insight.
+
 Here is their recent data:
 Diary Entries:
 ${recentEntries || 'none'}
@@ -126,7 +140,7 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
       const res = await fetch('/api/therapist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: updatedMessages })
+        body: JSON.stringify({ messages: updatedMessages, userGoal })
       });
 
       const data = await res.json();

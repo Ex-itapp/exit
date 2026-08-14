@@ -13,7 +13,42 @@ import { CalendarTile } from "@/components/CalendarTile";
 import { Badge } from "@/components/ui/Badge";
 
 export default function Streak() {
-  const { streakDays, breakupDate, userAnchor, appMode, setAppMode } = useUser();
+  const { streakDays, breakupDate, userAnchor, userGoal, appMode, setAppMode } = useUser();
+
+  const getGoalIntervention = () => {
+    switch (userGoal) {
+      case "Breaking the urge to reach out":
+        return {
+          header: "YOU'VE BEEN FIGHTING THIS URGE.",
+          message: `You chose accountability. You chose to break the cycle. ${streakDays} days of pure willpower — texting them won't give you closure, it'll restart the addiction. You are stronger than a moment of weakness.`,
+          color: "bg-accent/20",
+          cta: "Stay Accountable"
+        };
+      case "Rebuilding my self-esteem":
+        return {
+          header: "YOU'RE WORTH MORE THAN THIS.",
+          message: `You chose to rebuild yourself. Every one of these ${streakDays} days, you proved that you don't need their validation to feel whole. Going back now means letting them define your worth again. You define it.`,
+          color: "bg-purple/20",
+          cta: "I Know My Worth"
+        };
+      case "Processing heartbreak & grief":
+        return {
+          header: "THE GRIEF IS REAL. BUT SO IS YOUR HEALING.",
+          message: `You gave yourself permission to feel everything — and you've survived ${streakDays} days of it. The pain doesn't disappear by going back. It just resets the clock on your healing. Let yourself grieve forward, not backward.`,
+          color: "bg-blue/20",
+          cta: "Keep Healing"
+        };
+      default: // Finding peace and clarity
+        return {
+          header: "YOU WERE SEARCHING FOR CLARITY.",
+          message: `You chose to understand what happened — and ${streakDays} days later, you have more clarity than the day you started. Reaching out now muddies everything you've learned. The answers are inside you, not in their replies.`,
+          color: "bg-brand/20",
+          cta: "Stay Clear"
+        };
+    }
+  };
+
+  const goalIntervention = getGoalIntervention();
   const { entries } = useDiary();
   const { flags } = useFlags();
   const { checkins } = useCheckins();
@@ -178,8 +213,13 @@ export default function Streak() {
             {/* Modal Scrollable Body: The Evidence Vault */}
             <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 bg-white custom-scrollbar">
               
-              <div className="bg-brand/20 border-3 border-ink p-4 text-ink font-sans text-sm sm:text-base font-medium leading-relaxed">
-                You are about to reset <strong className="font-bold">{streakDays} days</strong> of no-contact progress. Whether you're experiencing a moment of weakness or already reached out, <strong className="underline">read your own words below</strong> before making any decision.
+              <div className={`${goalIntervention.color} border-3 border-ink p-5 text-ink space-y-2`}>
+                <div className="font-heading text-lg sm:text-xl uppercase tracking-tight leading-none">
+                  {goalIntervention.header}
+                </div>
+                <p className="font-sans text-sm sm:text-base font-medium leading-relaxed">
+                  {goalIntervention.message}
+                </p>
               </div>
 
               {/* 1. Grounding Anchor */}
@@ -297,7 +337,7 @@ export default function Streak() {
                 className="w-full h-14 bg-positive hover:bg-positive/90 text-ink border-4 border-ink brutalist-shadow text-sm sm:text-base font-heading font-black uppercase tracking-tight flex items-center justify-center gap-2 hover:-translate-y-0.5 transition-all"
               >
                 <CheckCircle2 className="w-5 h-5 shrink-0" />
-                <span>I Stayed Strong (Keep My {streakDays}-Day Streak) 🛡️</span>
+                <span>{goalIntervention.cta} (Keep My {streakDays}-Day Streak) 🛡️</span>
               </Button>
 
               <button

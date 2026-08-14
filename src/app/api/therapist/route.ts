@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   try {
     const proCheck = await requirePro();
     if (proCheck.error) return proCheck.error;
-    const { messages, systemInstruction } = await req.json();
+    const { messages, systemInstruction, userGoal } = await req.json();
     
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json({ error: 'Missing messages array' }, { status: 400 });
@@ -54,7 +54,14 @@ VIBE & TEXTING RULES:
 - ZERO therapy BS: NEVER use words like "unpack", "process", "validate", "journey", "safe space", or "boundary".
 - Be funny, witty, and raw when appropriate. If their ex was toxic, laugh about it with them. If the user is spiraling at 2 AM wanting to text their ex, gently slap some sense into them with real tough love ("bestie do NOT text them, drop the phone").
 - Hold space for real grief, but keep them grounded in reality.
-- When the chat feels like it's wrapping up, naturally suggest an in-app feature: "Go vent in your Full Diary", "Log that red flag right now", or "Check your No-Contact Streak to remind yourself how strong you've been."`;
+- When the chat feels like it's wrapping up, naturally suggest an in-app feature: "Go vent in your Full Diary", "Log that red flag right now", or "Check your No-Contact Streak to remind yourself how strong you've been."
+
+IMPORTANT CONTEXT - The user's healing focus is: "${userGoal || 'Finding peace and clarity'}"
+Adapt your tone:
+- "Breaking the urge to reach out": Tough love accountability partner. Be direct, celebrate their streak, firmly but lovingly stop them from texting their ex.
+- "Rebuilding my self-esteem": Biggest hype person ever. Gas them up. Focus on growth.
+- "Processing heartbreak & grief": Gentle, patient, validating. Let them vent without rushing.
+- "Finding peace and clarity": Reflective, ask probing questions, help them see patterns.`;
 
     // Format messages for router
     const formattedHistory = messages.map((m: any) => ({

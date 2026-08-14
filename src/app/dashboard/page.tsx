@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Textarea } from "@/components/ui/Textarea";
-import { Zap, MessageSquare, Anchor, Sparkles, ShieldAlert, Send, Flame, Award, Flag, Book } from "lucide-react";
+import { Zap, MessageSquare, Anchor, Sparkles, ShieldAlert, Send, Flame, Award, Flag, Book, Map } from "lucide-react";
 import { useCheckins } from "@/lib/useCheckins";
 import { useUser } from "@/lib/useUser";
 import { useFlags } from "@/lib/useFlags";
@@ -318,6 +318,21 @@ export default function DashboardPage() {
                 Ex Simulator
               </span>
               <span className="font-mono text-[9px] text-ink/50 block truncate">Practice what you&apos;d say</span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => navigate.push('/roadmap')}
+            className="bg-white hover:bg-positive/10 border-2 sm:border-3 border-ink brutalist-shadow-sm p-3.5 text-left transition-all flex items-center gap-3 group col-span-2"
+          >
+            <div className="w-9 h-9 bg-positive text-ink border-2 border-ink flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <Map className="w-4 h-4" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <span className="font-heading text-xs uppercase font-black block group-hover:text-positive transition-colors truncate">
+                Healing Roadmap
+              </span>
+              <span className="font-mono text-[9px] text-ink/50 block truncate">Your personalized journey</span>
             </div>
           </button>
         </div>
