@@ -5,7 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import { useFlags, Flag } from "@/lib/useFlags";
 import { Button } from "@/components/ui/Button";
 import { ArrowLeft, Share2, Archive, ArchiveRestore, Trash2, Flag as FlagIcon } from "lucide-react";
-import { ShareModal } from "@/components/ShareModal";
 import { cn } from "@/lib/utils";
 
 export default function FlagEntryPage() {
@@ -82,9 +81,69 @@ export default function FlagEntryPage() {
   return (
     <div className="min-h-screen w-full flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-300" style={{ backgroundColor: bgColor, color: cardColor }}>
       
-      <div ref={exportRef} className="flex-1 flex flex-col w-full relative bg-inherit text-inherit">
+      {/* Off-screen Export Node (Perfect 1080x1920 / 9:16) */}
+      <div 
+        ref={exportRef} 
+        className="fixed pointer-events-none flex flex-col overflow-hidden"
+        style={{ 
+          top: '-9999px', 
+          left: '-9999px', 
+          width: '1080px', 
+          height: '1920px', 
+          backgroundColor: bgColor, 
+          color: cardColor,
+          padding: '96px',
+          fontFamily: 'var(--font-inter)'
+        }}
+      >
         {/* Header */}
-        <header className="px-4 py-6 sm:px-8 flex items-center justify-between z-10 sticky top-0" style={{ borderBottom: `4px solid ${cardColor}`, backgroundColor: bgColor }}>
+        <div className="flex w-full justify-between items-center z-10 pb-12" style={{ borderBottom: `8px solid ${cardColor}` }}>
+          <span className="text-[48px] font-bold font-mono tracking-[2px] opacity-70">
+            {dateStr}
+          </span>
+          <div className="flex items-center gap-4">
+             <FlagIcon className="w-12 h-12" />
+             <span className="text-[48px] font-bold font-mono uppercase tracking-[4px]">
+               {flag.category}
+             </span>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col items-center justify-center relative w-full">
+          {/* Subtle Watermark */}
+          <div 
+            className="absolute pointer-events-none font-bold opacity-10"
+            style={{ fontSize: '200px', lineHeight: 0.8, letterSpacing: '-0.05em', whiteSpace: 'nowrap', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-5deg)', zIndex: 0 }}
+          >
+            RED FLAG
+          </div>
+
+          <div className="relative z-10 w-[90%] text-center bg-white p-16 border-[12px] brutalist-shadow-lg" style={{ borderColor: textColor, color: textColor, boxShadow: `24px 24px 0px ${textColor}` }}>
+            <div className="flex justify-center mb-12">
+               <div className="w-24 h-24 rounded-full flex items-center justify-center" style={{ backgroundColor: bgColor, color: cardColor }}>
+                 <FlagIcon className="w-12 h-12" />
+               </div>
+            </div>
+            <p className="text-[80px] font-serif leading-[1.2] font-medium tracking-tight" style={{ wordWrap: 'break-word' }}>
+              {flag.content}
+            </p>
+          </div>
+        </div>
+
+        {/* Footer Branding */}
+        <div className="w-full flex justify-center pb-12 z-10 mt-12">
+          <div className="flex items-center px-16 py-8 border-[8px]" style={{ borderColor: cardColor, backgroundColor: bgColor, boxShadow: `16px 16px 0px ${cardColor}` }}>
+             <div className="w-12 h-12 border-[8px] mr-8 -rotate-12" style={{ backgroundColor: '#FEFF9C', borderColor: '#111111' }} />
+             <span className="text-[64px] font-black tracking-[8px] uppercase font-sans">
+               EX-IT.
+             </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Visible Header */}
+      <header className="px-4 py-6 sm:px-8 flex items-center justify-between z-10 sticky top-0" style={{ borderBottom: `4px solid ${cardColor}`, backgroundColor: bgColor }}>
         <button 
           onClick={() => router.push("/diary")}
           className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-widest hover:opacity-70 transition-opacity"
@@ -134,7 +193,6 @@ export default function FlagEntryPage() {
           </div>
         </div>
       </main>
-      </div>
 
       {/* Action Footer */}
       <footer className="px-4 py-6 sm:px-8 border-t-4 flex flex-col sm:flex-row items-center justify-between gap-4 sticky bottom-0 z-10" style={{ borderColor: cardColor, backgroundColor: bgColor }}>

@@ -5,8 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useDiary, DiaryEntry } from "@/lib/useDiary";
 import { Button } from "@/components/ui/Button";
 import { ArrowLeft, Share2, Archive, ArchiveRestore, Trash2 } from "lucide-react";
-import { ShareModal } from "@/components/ShareModal";
-import { getMoodColor, getMoodTailwind } from "@/lib/visualSystem";
+import { getMoodColor, getMoodTailwind, getMoodEmoji } from "@/lib/visualSystem";
 import { cn } from "@/lib/utils";
 
 export default function DiaryEntryPage() {
@@ -85,9 +84,75 @@ export default function DiaryEntryPage() {
   return (
     <div className="min-h-screen w-full flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-300" style={{ backgroundColor: bgColor, color: textColor }}>
       
-      <div ref={exportRef} className="flex-1 flex flex-col w-full relative bg-inherit text-inherit">
+      {/* Off-screen Export Node (Perfect 1080x1920 / 9:16) */}
+      <div 
+        ref={exportRef} 
+        className="fixed pointer-events-none flex flex-col overflow-hidden"
+        style={{ 
+          top: '-9999px', 
+          left: '-9999px', 
+          width: '1080px', 
+          height: '1920px', 
+          backgroundColor: bgColor, 
+          color: textColor,
+          padding: '96px',
+          fontFamily: 'var(--font-inter)'
+        }}
+      >
+        {/* Emoji Pattern Background */}
+        {primaryMood !== 'DEFAULT' && (
+          <div className="absolute flex flex-wrap justify-evenly items-center opacity-15 pointer-events-none -rotate-12" style={{ top: '-20%', left: '-20%', right: '-20%', bottom: '-20%', gap: '80px', zIndex: 0 }}>
+            {Array.from({ length: 60 }).map((_, i) => (
+              <span key={i} className="text-[140px]">
+                {getMoodEmoji(primaryMood)}
+              </span>
+            ))}
+          </div>
+        )}
+
         {/* Header */}
-        <header className="px-4 py-6 sm:px-8 flex items-center justify-between z-10 sticky top-0" style={{ borderBottom: `4px solid ${textColor}`, backgroundColor: bgColor }}>
+        <div className="flex w-full justify-between items-center z-10 pb-12" style={{ borderBottom: `8px solid ${textColor}` }}>
+          <span className="text-[48px] font-bold font-mono tracking-[2px] opacity-70">
+            {dateStr}
+          </span>
+          {primaryMood !== 'DEFAULT' && (
+             <div className="flex items-center justify-center px-12 py-6 rounded-full border-[8px] bg-transparent" style={{ borderColor: textColor, color: textColor }}>
+               <span className="text-[48px] font-bold font-mono uppercase tracking-[4px]">
+                 {primaryMood}
+               </span>
+             </div>
+          )}
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col items-center justify-center relative w-full">
+          {/* Subtle Watermark */}
+          {primaryMood !== 'DEFAULT' && (
+            <div 
+              className="absolute pointer-events-none opacity-5 font-bold"
+              style={{ fontSize: '300px', lineHeight: 0.8, letterSpacing: '-0.05em', whiteSpace: 'nowrap', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-5deg)', zIndex: 0 }}
+            >
+              {primaryMood}
+            </div>
+          )}
+          <p className="text-[100px] font-serif leading-[1.2] font-medium tracking-tight text-center z-10 w-full px-12" style={{ wordWrap: 'break-word' }}>
+            {entry.content}
+          </p>
+        </div>
+
+        {/* Footer Branding */}
+        <div className="w-full flex justify-center pb-12 z-10 mt-12">
+          <div className="flex items-center px-16 py-8 border-[8px]" style={{ borderColor: textColor, backgroundColor: bgColor, boxShadow: `16px 16px 0px ${textColor}` }}>
+             <div className="w-12 h-12 border-[8px] mr-8 -rotate-12" style={{ backgroundColor: '#FEFF9C', borderColor: '#111111' }} />
+             <span className="text-[64px] font-black tracking-[8px] uppercase font-sans">
+               EX-IT.
+             </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Visible Header */}
+      <header className="px-4 py-6 sm:px-8 flex items-center justify-between z-10 sticky top-0" style={{ borderBottom: `4px solid ${textColor}`, backgroundColor: bgColor }}>
         <button 
           onClick={() => router.push("/diary")}
           className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-widest hover:opacity-70 transition-opacity"
@@ -147,7 +212,6 @@ export default function DiaryEntryPage() {
           </div>
         </div>
       </main>
-      </div>
 
       {/* Action Footer */}
       <footer className="px-4 py-6 sm:px-8 border-t-4 flex flex-col sm:flex-row items-center justify-between gap-4 sticky bottom-0 z-10" style={{ borderColor: textColor, backgroundColor: bgColor }}>
