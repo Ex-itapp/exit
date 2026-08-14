@@ -14,6 +14,7 @@ export default function DiaryEntryPage() {
   const router = useRouter();
   const { allEntries, archivedEntries, archiveEntry, unarchiveEntry, deleteEntry } = useDiary();
   
+  const [entry, setEntry] = useState<DiaryEntry | null>(null);
   const exportRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [customBg, setCustomBg] = useState<string | null>(null);
