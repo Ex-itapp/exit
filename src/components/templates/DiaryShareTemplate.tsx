@@ -2,10 +2,11 @@ import React from 'react';
 import { getMoodColor } from '@/lib/visualSystem';
 
 export function DiaryShareTemplate({ data }: { data: any }) {
-  const { content, date, mood } = data;
+  const { content, date, mood, tag, bgColor } = data;
   
-  // The background of the whole image is the mood color
-  const bgColor = getMoodColor(mood);
+  const finalBgColor = bgColor || getMoodColor(mood);
+  const isDarkBg = finalBgColor.toLowerCase() === '#111111' || finalBgColor.toLowerCase() === '#8a2be2' || finalBgColor.toLowerCase() === '#ff3366' || finalBgColor.toLowerCase() === '#000000';
+  const textColor = isDarkBg ? '#F5EFE6' : '#111111';
 
   return (
     <div
@@ -14,80 +15,89 @@ export function DiaryShareTemplate({ data }: { data: any }) {
         flexDirection: 'column',
         width: '100%',
         height: '100%',
-        backgroundColor: bgColor,
-        alignItems: 'center',
-        justifyContent: 'center',
+        backgroundColor: finalBgColor,
+        color: textColor,
         fontFamily: 'Inter',
         position: 'relative',
         padding: '64px'
       }}
     >
-      {/* Background Pattern / Texture (subtle stripes using linear gradient) */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundImage: 'linear-gradient(45deg, rgba(0,0,0,0.05) 25%, transparent 25%, transparent 50%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.05) 75%, transparent 75%, transparent)',
-        backgroundSize: '32px 32px',
-        opacity: 0.5,
-      }} />
-
-      {/* The Sticky Note */}
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: '#FEFF9C', // classic sticky note yellow
-        padding: '64px',
-        width: '80%',
-        minHeight: '60%',
-        boxShadow: '16px 16px 0px rgba(0,0,0,0.2)', // hard brutalist shadow for the note
-        transform: 'rotate(-3deg)',
-        zIndex: 10,
-        justifyContent: 'space-between'
-      }}>
-        <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', marginBottom: '48px', opacity: 0.6 }}>
-          <span style={{ fontSize: '24px', fontWeight: 'bold', fontFamily: 'monospace', textTransform: 'uppercase' }}>{mood}</span>
-          <span style={{ fontSize: '24px', fontWeight: 'bold', fontFamily: 'monospace' }}>{date}</span>
+      {/* Subtle Watermark - Only show if mood is genuinely selected */}
+      {mood && mood.toLowerCase() !== 'default' && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%) rotate(-5deg)',
+          fontSize: '30vw',
+          lineHeight: 0.8,
+          letterSpacing: '-0.05em',
+          whiteSpace: 'nowrap',
+          fontWeight: 'bold',
+          opacity: 0.05,
+          zIndex: 0,
+          pointerEvents: 'none'
+        }}>
+          {mood.toUpperCase()}
         </div>
+      )}
 
-        <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <p style={{ 
-            fontSize: content.length > 100 ? '48px' : '64px', 
-            fontWeight: '600', 
-            fontFamily: 'serif',
-            fontStyle: 'italic',
-            lineHeight: 1.3,
-            color: '#111111',
-            textAlign: 'center',
-            margin: 0
-          }}>
-            {content}
-          </p>
-        </div>
+      {/* Header */}
+      <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center', zIndex: 10, borderBottom: `4px solid ${textColor}`, paddingBottom: '32px' }}>
+        <span style={{ fontSize: '32px', fontWeight: 'bold', fontFamily: 'monospace', letterSpacing: '2px', opacity: 0.7 }}>
+          {date}
+        </span>
+        
+        {/* Top Right Mood Circle */}
+        {mood && mood.toLowerCase() !== 'default' && (
+           <div style={{
+             display: 'flex',
+             alignItems: 'center',
+             justifyContent: 'center',
+             width: '160px',
+             height: '160px',
+             border: `6px solid ${textColor}`,
+             borderRadius: '999px',
+             backgroundColor: 'transparent',
+             color: textColor
+           }}>
+             <span style={{ fontSize: '24px', fontWeight: 'bold', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '2px', textAlign: 'center', lineHeight: 1.1 }}>
+               {mood}
+             </span>
+           </div>
+        )}
       </div>
 
-      {/* Simple Branding at the bottom */}
+      {/* Main Content */}
+      <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center', padding: '64px' }}>
+        <p style={{ 
+          fontSize: content.length > 80 ? '64px' : '96px', 
+          fontWeight: '500', 
+          fontFamily: 'serif',
+          lineHeight: 1.2,
+          letterSpacing: '-0.02em',
+          textAlign: 'center',
+          margin: 0,
+          zIndex: 10
+        }}>
+          {content}
+        </p>
+      </div>
+
+      {/* Footer Branding */}
       <div style={{
-        position: 'absolute',
-        bottom: '64px',
         display: 'flex',
         width: '100%',
         justifyContent: 'center',
-        zIndex: 10
+        zIndex: 10,
+        paddingBottom: '32px'
       }}>
-        <span style={{ 
-          fontSize: '32px', 
-          fontWeight: '900', 
-          letterSpacing: '4px', 
-          color: '#111111', 
-          backgroundColor: '#F5EFE6',
-          padding: '12px 24px',
-          boxShadow: '8px 8px 0px rgba(0,0,0,1)'
-        }}>
-          EX-IT.
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', border: `4px solid ${textColor}`, backgroundColor: finalBgColor, padding: '16px 32px', boxShadow: `8px 8px 0px ${textColor}` }}>
+          <div style={{ width: '24px', height: '24px', backgroundColor: '#FEFF9C', border: '4px solid #111111', marginRight: '16px', transform: 'rotate(-10deg)' }} />
+          <span style={{ fontSize: '32px', fontWeight: '900', letterSpacing: '4px', textTransform: 'uppercase' }}>
+            EX-IT.
+          </span>
+        </div>
       </div>
     </div>
   );

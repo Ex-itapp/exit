@@ -3,6 +3,7 @@ import domtoimage from "dom-to-image-more";
 import { X, Download, Lock, Flag as FlagIcon } from "lucide-react";
 import { Button } from "./ui/Button";
 import { Badge } from "./ui/Badge";
+import { getMoodColor } from "@/lib/visualSystem";
 
 export interface ShareEntryData {
   type: 'diary' | 'flag';
@@ -22,6 +23,7 @@ export function ShareModal({ entry, onClose }: ShareModalProps) {
   const exportRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [ogUrl, setOgUrl] = useState<string | null>(null);
+  const [bgColor, setBgColor] = useState(() => entry ? getMoodColor(entry.tags[0] || 'DEFAULT') : '#F5EFE6');
 
   if (!entry) return null;
 
@@ -37,7 +39,8 @@ export function ShareModal({ entry, onClose }: ShareModalProps) {
             content: entry.content,
             date: formatTime(entry.createdAt),
             mood: entry.tags[0] || 'default',
-            tag: entry.type === 'flag' ? 'Red Flag' : entry.isUnsent ? 'Unsent' : 'Diary'
+            tag: entry.type === 'flag' ? 'Red Flag' : entry.isUnsent ? 'Unsent' : 'Diary',
+            bgColor: bgColor
           }
         })
       });
@@ -86,6 +89,17 @@ export function ShareModal({ entry, onClose }: ShareModalProps) {
               <p className="font-mono text-sm opacity-80">
                 Generate a beautifully formatted typography card of your entry, perfect for Instagram Stories.
               </p>
+              
+              <div className="w-full flex items-center justify-between border-2 border-ink p-3 mt-4">
+                <span className="font-mono text-xs font-bold uppercase">Background</span>
+                <input 
+                  type="color" 
+                  value={bgColor} 
+                  onChange={(e) => setBgColor(e.target.value)}
+                  className="w-8 h-8 rounded-full border-2 border-ink cursor-pointer p-0 overflow-hidden"
+                />
+              </div>
+
               <Button 
                 onClick={handleGenerate}
                 disabled={isDownloading}

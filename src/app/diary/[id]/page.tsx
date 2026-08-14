@@ -69,37 +69,41 @@ export default function DiaryEntryPage() {
         >
           <ArrowLeft className="w-5 h-5" /> Back to Logbook
         </button>
-        <div className="font-mono text-sm font-bold opacity-70">
-          {dateStr}
+        <div className="flex items-center gap-4">
+          <div className="font-mono text-sm font-bold opacity-70">
+            {dateStr}
+          </div>
+          {primaryMood !== 'DEFAULT' && (
+            <div 
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center border-4"
+              style={{ borderColor: textColor, color: textColor, backgroundColor: 'transparent' }}
+            >
+              <span className="font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest text-center leading-tight px-1">
+                {primaryMood}
+              </span>
+            </div>
+          )}
         </div>
       </header>
 
       {/* Main Content - Full Page Layout */}
       <main className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 md:p-24 relative overflow-hidden">
-        {/* Subtle Watermark */}
-        <div 
-          className="absolute pointer-events-none opacity-5 font-bold"
-          style={{ fontSize: '30vw', lineHeight: 0.8, letterSpacing: '-0.05em', whiteSpace: 'nowrap', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-5deg)', zIndex: 0 }}
-        >
-          {primaryMood}
-        </div>
+        {/* Subtle Watermark - Only show if mood is genuinely selected */}
+        {primaryMood !== 'DEFAULT' && (
+          <div 
+            className="absolute pointer-events-none opacity-5 font-bold"
+            style={{ fontSize: '30vw', lineHeight: 0.8, letterSpacing: '-0.05em', whiteSpace: 'nowrap', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-5deg)', zIndex: 0 }}
+          >
+            {primaryMood}
+          </div>
+        )}
 
         <div className="relative z-10 max-w-4xl w-full text-center space-y-12">
-          <span className="text-[8rem] sm:text-[12rem] font-serif leading-[0] opacity-30 block -mb-16">"</span>
           <p className="text-3xl sm:text-5xl md:text-6xl font-serif leading-tight sm:leading-tight md:leading-tight font-medium tracking-tight">
             {entry.content}
           </p>
           
           <div className="flex flex-wrap items-center justify-center gap-3 pt-12">
-            {entry.moods.map(mood => (
-              <span 
-                key={mood} 
-                className="px-6 py-2 rounded-full font-mono text-xs sm:text-sm font-bold uppercase tracking-widest"
-                style={{ border: `2px solid ${textColor}`, color: textColor }}
-              >
-                {mood}
-              </span>
-            ))}
             {entry.isUnsent && (
               <span 
                 className="px-6 py-2 rounded-full font-mono text-xs sm:text-sm font-bold uppercase tracking-widest"
