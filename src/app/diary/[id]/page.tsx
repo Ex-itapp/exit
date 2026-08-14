@@ -128,10 +128,9 @@ export default function DiaryEntryPage() {
         </div>
 
         {/* Footer Branding */}
-        <div className="w-full flex justify-center pb-12 z-10 mt-12">
-          <div className="flex items-center px-16 py-8 border-[8px]" style={{ borderColor: textColor, backgroundColor: bgColor, boxShadow: `16px 16px 0px ${textColor}` }}>
-             <div className="w-12 h-12 border-[8px] mr-8 -rotate-12" style={{ backgroundColor: '#FEFF9C', borderColor: '#111111' }} />
-             <span className="text-[64px] font-black tracking-[8px] uppercase font-sans">
+        <div className="w-full flex justify-center mt-auto z-10">
+          <div className="flex items-center px-10 py-4 border-[4px]" style={{ borderColor: textColor, backgroundColor: bgColor }}>
+             <span className="text-[40px] font-black tracking-[8px] uppercase font-sans">
                EX-IT.
              </span>
           </div>
