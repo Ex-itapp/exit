@@ -99,28 +99,15 @@ export default function DiaryEntryPage() {
           fontFamily: 'var(--font-inter)'
         }}
       >
-        {/* Emoji Pattern Background */}
-        {primaryMood !== 'DEFAULT' && (
-          <div className="absolute flex flex-wrap justify-evenly items-center opacity-15 pointer-events-none -rotate-12" style={{ top: '-20%', left: '-20%', right: '-20%', bottom: '-20%', gap: '80px', zIndex: 0 }}>
-            {Array.from({ length: 60 }).map((_, i) => (
-              <span key={i} className="text-[140px]">
-                {getMoodEmoji(primaryMood)}
-              </span>
-            ))}
-          </div>
-        )}
-
         {/* Header */}
-        <div className="flex w-full justify-between items-center z-10 pb-12" style={{ borderBottom: `8px solid ${textColor}` }}>
-          <span className="text-[48px] font-bold font-mono tracking-[2px] opacity-70">
+        <div className="flex w-full justify-between items-center z-10 pb-8" style={{ borderBottom: `4px solid ${textColor}` }}>
+          <span className="text-[32px] font-mono opacity-50 uppercase tracking-widest">
             {dateStr}
           </span>
           {primaryMood !== 'DEFAULT' && (
-             <div className="flex items-center justify-center px-12 py-6 rounded-full border-[8px] bg-transparent" style={{ borderColor: textColor, color: textColor }}>
-               <span className="text-[48px] font-bold font-mono uppercase tracking-[4px]">
-                 {primaryMood}
-               </span>
-             </div>
+             <span className="text-[32px] font-mono opacity-50 uppercase tracking-widest">
+               {primaryMood}
+             </span>
           )}
         </div>
 
@@ -152,26 +139,20 @@ export default function DiaryEntryPage() {
       </div>
 
       {/* Visible Header */}
-      <header className="px-4 py-6 sm:px-8 flex items-center justify-between z-10 sticky top-0" style={{ borderBottom: `4px solid ${textColor}`, backgroundColor: bgColor }}>
+      <header className="px-4 py-6 sm:px-8 flex items-center justify-between z-10 sticky top-0" style={{ borderBottom: `2px solid ${textColor}`, backgroundColor: bgColor }}>
         <button 
           onClick={() => router.push("/diary")}
           className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-widest hover:opacity-70 transition-opacity"
         >
-          <ArrowLeft className="w-5 h-5" /> Back to Logbook
+          <ArrowLeft className="w-4 h-4" /> Back
         </button>
-        <div className="flex items-center gap-4">
-          <div className="font-mono text-sm font-bold opacity-70">
-            {dateStr}
-          </div>
+        <div className="flex items-center gap-3 font-mono text-xs font-bold opacity-50 tracking-widest uppercase">
+          <span>{dateStr}</span>
           {primaryMood !== 'DEFAULT' && (
-            <div 
-              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center border-4"
-              style={{ borderColor: textColor, color: textColor, backgroundColor: 'transparent' }}
-            >
-              <span className="font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest text-center leading-tight px-1">
-                {primaryMood}
-              </span>
-            </div>
+            <>
+              <span>•</span>
+              <span>{primaryMood}</span>
+            </>
           )}
         </div>
       </header>

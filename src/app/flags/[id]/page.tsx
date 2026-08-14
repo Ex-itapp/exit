@@ -97,13 +97,13 @@ export default function FlagEntryPage() {
         }}
       >
         {/* Header */}
-        <div className="flex w-full justify-between items-center z-10 pb-12" style={{ borderBottom: `8px solid ${cardColor}` }}>
-          <span className="text-[48px] font-bold font-mono tracking-[2px] opacity-70">
+        <div className="flex w-full justify-between items-center z-10 pb-8" style={{ borderBottom: `4px solid ${cardColor}` }}>
+          <span className="text-[32px] font-mono opacity-50 uppercase tracking-widest">
             {dateStr}
           </span>
-          <div className="flex items-center gap-4">
-             <FlagIcon className="w-12 h-12" />
-             <span className="text-[48px] font-bold font-mono uppercase tracking-[4px]">
+          <div className="flex items-center gap-4 opacity-50">
+             <FlagIcon className="w-8 h-8" />
+             <span className="text-[32px] font-mono uppercase tracking-widest">
                {flag.category}
              </span>
           </div>
@@ -143,16 +143,20 @@ export default function FlagEntryPage() {
       </div>
 
       {/* Visible Header */}
-      <header className="px-4 py-6 sm:px-8 flex items-center justify-between z-10 sticky top-0" style={{ borderBottom: `4px solid ${cardColor}`, backgroundColor: bgColor }}>
+      <header className="px-4 py-6 sm:px-8 flex items-center justify-between z-10 sticky top-0" style={{ borderBottom: `2px solid ${cardColor}`, backgroundColor: bgColor }}>
         <button 
           onClick={() => router.push("/diary")}
           className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-widest hover:opacity-70 transition-opacity"
         >
-          <ArrowLeft className="w-5 h-5" /> Back to Logbook
+          <ArrowLeft className="w-4 h-4" /> Back
         </button>
-        <div className="font-mono text-sm font-bold opacity-70 flex items-center gap-2">
-          <FlagIcon className="w-4 h-4" />
-          {dateStr}
+        <div className="flex items-center gap-3 font-mono text-xs font-bold opacity-50 tracking-widest uppercase">
+          <span>{dateStr}</span>
+          <span>•</span>
+          <div className="flex items-center gap-1">
+            <FlagIcon className="w-3 h-3" />
+            <span>{flag.category}</span>
+          </div>
         </div>
       </header>
 
