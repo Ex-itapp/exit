@@ -2,7 +2,7 @@ import React from 'react';
 import { getMoodColor } from '@/lib/visualSystem';
 
 export function DiaryShareTemplate({ data }: { data: any }) {
-  const { content, date, mood, tag, bgColor } = data;
+  const { content, date, mood, bgColor } = data;
   
   const finalBgColor = bgColor || getMoodColor(mood);
   const isDarkBg = finalBgColor.toLowerCase() === '#111111' || finalBgColor.toLowerCase() === '#8a2be2' || finalBgColor.toLowerCase() === '#ff3366' || finalBgColor.toLowerCase() === '#000000';
@@ -19,49 +19,28 @@ export function DiaryShareTemplate({ data }: { data: any }) {
         color: textColor,
         fontFamily: 'Inter',
         position: 'relative',
-        padding: '64px'
+        padding: '96px'
       }}
     >
-      {/* Subtle Watermark - Only show if mood is genuinely selected */}
-      {mood && mood.toLowerCase() !== 'default' && (
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%) rotate(-5deg)',
-          fontSize: '30vw',
-          lineHeight: 0.8,
-          letterSpacing: '-0.05em',
-          whiteSpace: 'nowrap',
-          fontWeight: 'bold',
-          opacity: 0.05,
-          zIndex: 0,
-          pointerEvents: 'none'
-        }}>
-          {mood.toUpperCase()}
-        </div>
-      )}
-
       {/* Header */}
-      <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center', zIndex: 10, borderBottom: `4px solid ${textColor}`, paddingBottom: '32px' }}>
-        <span style={{ fontSize: '32px', fontWeight: 'bold', fontFamily: 'monospace', letterSpacing: '2px', opacity: 0.7 }}>
+      <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center', zIndex: 10, borderBottom: `8px solid ${textColor}`, paddingBottom: '48px' }}>
+        <span style={{ fontSize: '48px', fontWeight: 'bold', fontFamily: 'monospace', letterSpacing: '2px', opacity: 0.7 }}>
           {date}
         </span>
         
-        {/* Top Right Mood Circle */}
+        {/* Top Right Mood Pill */}
         {mood && mood.toLowerCase() !== 'default' && (
            <div style={{
              display: 'flex',
              alignItems: 'center',
              justifyContent: 'center',
-             width: '160px',
-             height: '160px',
-             border: `6px solid ${textColor}`,
+             padding: '24px 48px',
+             border: `8px solid ${textColor}`,
              borderRadius: '999px',
              backgroundColor: 'transparent',
              color: textColor
            }}>
-             <span style={{ fontSize: '24px', fontWeight: 'bold', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '2px', textAlign: 'center', lineHeight: 1.1 }}>
+             <span style={{ fontSize: '48px', fontWeight: 'bold', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '4px' }}>
                {mood}
              </span>
            </div>
@@ -71,7 +50,7 @@ export function DiaryShareTemplate({ data }: { data: any }) {
       {/* Main Content */}
       <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center', padding: '64px' }}>
         <p style={{ 
-          fontSize: content.length > 80 ? '64px' : '96px', 
+          fontSize: content.length > 80 ? '80px' : '120px', 
           fontWeight: '500', 
           fontFamily: 'serif',
           lineHeight: 1.2,
@@ -90,11 +69,11 @@ export function DiaryShareTemplate({ data }: { data: any }) {
         width: '100%',
         justifyContent: 'center',
         zIndex: 10,
-        paddingBottom: '32px'
+        paddingBottom: '48px'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', border: `4px solid ${textColor}`, backgroundColor: finalBgColor, padding: '16px 32px', boxShadow: `8px 8px 0px ${textColor}` }}>
-          <div style={{ width: '24px', height: '24px', backgroundColor: '#FEFF9C', border: '4px solid #111111', marginRight: '16px', transform: 'rotate(-10deg)' }} />
-          <span style={{ fontSize: '32px', fontWeight: '900', letterSpacing: '4px', textTransform: 'uppercase' }}>
+        <div style={{ display: 'flex', alignItems: 'center', border: `8px solid ${textColor}`, backgroundColor: finalBgColor, padding: '32px 64px', boxShadow: `16px 16px 0px ${textColor}` }}>
+          <div style={{ width: '48px', height: '48px', backgroundColor: '#FEFF9C', border: '8px solid #111111', marginRight: '32px', transform: 'rotate(-10deg)' }} />
+          <span style={{ fontSize: '64px', fontWeight: '900', letterSpacing: '8px', textTransform: 'uppercase' }}>
             EX-IT.
           </span>
         </div>
