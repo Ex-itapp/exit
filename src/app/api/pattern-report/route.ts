@@ -70,13 +70,6 @@ export async function POST(req: Request) {
   try {
     const { diary_entries_current, diary_entries_comparison, red_flags_current } = await req.json();
 
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-      generationConfig: {
-        responseMimeType: "application/json",
-      },
-    });
-
     const prompt = `
 System: You are analyzing personal diary and red-flag log data for a breakup-recovery app's periodic recap feature. Output ONLY valid JSON matching this exact schema — no prose, no markdown, no explanation outside the JSON.
 
@@ -100,7 +93,27 @@ Ensure the output is strictly valid JSON matching the schema format:
 }
 `;
 
-    const result = await model.generateContent(prompt);
+    // Fallback logic for model selection
+    let result;
+    try {
+      const model = genAI.getGenerativeModel({
+        model: "gemini-1.5-flash",
+        generationConfig: { responseMimeType: "application/json" },
+      });
+      result = await model.generateContent(prompt);
+    } catch (e: any) {
+      if (e.message?.includes('404') || e.message?.includes('not found')) {
+        console.warn("gemini-1.5-flash not found, falling back to gemini-1.5-pro");
+        const fallbackModel = genAI.getGenerativeModel({
+          model: "gemini-1.5-pro",
+          generationConfig: { responseMimeType: "application/json" },
+        });
+        result = await fallbackModel.generateContent(prompt);
+      } else {
+        throw e;
+      }
+    }
+
     const response = await result.response;
     const text = response.text();
     
