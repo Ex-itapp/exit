@@ -104,8 +104,11 @@ Ensure the output is strictly valid JSON matching the schema format:
       });
       result = await model.generateContent(prompt);
     } catch (e: any) {
-      if (e.message?.includes('404') || e.message?.includes('not found')) {
-        console.warn("gemini-1.5-flash not found. Fetching available models...");
+      let errorMsg = e.message?.toLowerCase() || '';
+      const isModelError = errorMsg.includes('404') || errorMsg.includes('not found') || errorMsg.includes('503') || errorMsg.includes('500') || errorMsg.includes('unavailable') || errorMsg.includes('overloaded');
+
+      if (isModelError) {
+        console.warn(`Primary model failed (${e.message}). Fetching available models for fallback...`);
         
         // Fetch list of available models for this specific API key
         const modelsRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
@@ -115,28 +118,45 @@ Ensure the output is strictly valid JSON matching the schema format:
           throw new Error("Failed to list models: " + JSON.stringify(modelsData));
         }
 
-        // Find the first valid gemini model that supports generateContent and is not an experimental/deprecated 2.5 model
-        const validModel = modelsData.models?.find((m: any) => 
+        // Get all valid gemini models that support text generation
+        const validModels = modelsData.models?.filter((m: any) => 
           m.name.includes('gemini') && 
           !m.name.includes('2.5') &&
           !m.name.includes('vision') &&
           m.supportedGenerationMethods?.includes('generateContent')
         );
 
-        if (!validModel) {
+        if (!validModels || validModels.length === 0) {
           throw new Error("No Gemini models found for this API key. Available: " + JSON.stringify(modelsData.models?.map((m:any) => m.name)));
         }
 
-        console.log(`Using fallback model: ${validModel.name}`);
-        // validModel.name is in format "models/gemini-pro", getGenerativeModel expects "gemini-pro"
-        const cleanModelName = validModel.name.replace('models/', '');
+        // Try models one by one until one succeeds
+        let lastError = e;
+        for (const m of validModels) {
+          try {
+            const cleanModelName = m.name.replace('models/', '');
+            // skip the one that just failed to save time (Google aliases 1.5-flash to flash-latest sometimes)
+            if (errorMsg.includes(cleanModelName.toLowerCase())) continue;
+            
+            console.log(`Trying fallback model: ${cleanModelName}`);
+            const fallbackModel = genAI.getGenerativeModel({
+              model: cleanModelName,
+              generationConfig: { responseMimeType: "application/json" },
+            });
+            
+            result = await fallbackModel.generateContent(prompt);
+            console.log(`Success with fallback model: ${cleanModelName}`);
+            lastError = null;
+            break;
+          } catch (fallbackErr: any) {
+            console.warn(`Fallback ${m.name} failed:`, fallbackErr.message);
+            lastError = fallbackErr;
+          }
+        }
         
-        const fallbackModel = genAI.getGenerativeModel({
-          model: cleanModelName,
-          generationConfig: { responseMimeType: "application/json" },
-        });
-        
-        result = await fallbackModel.generateContent(prompt);
+        if (lastError) {
+          throw lastError; // if we exhausted all models and none worked
+        }
       } else {
         throw e;
       }
