@@ -75,11 +75,11 @@ export function PatternReportDiary({ data }: { data: any }) {
         {headline}
       </h1>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '48px' }}>
-        <span style={{ fontSize: '24px', fontWeight: 'bold', textTransform: 'uppercase', opacity: 0.7 }}>Moods Detected</span>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
-          {mood_breakdown?.map((m: any) => (
-            <div key={m.mood} style={{ display: 'flex', backgroundColor: '#111111', color: '#FFF', padding: '8px 24px', borderRadius: '99px', fontSize: '24px', fontWeight: 'bold', textTransform: 'uppercase' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '48px' }}>
+        <span style={{ fontSize: '24px', fontWeight: 'bold', textTransform: 'uppercase', opacity: 0.7, marginBottom: '16px' }}>Moods Detected</span>
+        <div style={{ display: 'flex', flexDirection: 'row' }}>
+          {mood_breakdown?.slice(0, 3).map((m: any) => (
+            <div key={m.mood} style={{ display: 'flex', backgroundColor: '#111111', color: '#FFF', padding: '8px 24px', borderRadius: '99px', fontSize: '24px', fontWeight: 'bold', textTransform: 'uppercase', marginRight: '16px' }}>
               {m.mood} ({m.count})
             </div>
           ))}
@@ -144,9 +144,9 @@ export function PatternReportRedFlags({ data }: { data: any }) {
         <span style={{ fontSize: '64px', fontWeight: '900', textTransform: 'uppercase' }}>{top_pattern}</span>
       </div>
 
-      <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', marginBottom: '48px' }}>
-        {pattern_counts?.map((p: any) => (
-          <div key={p.category} style={{ display: 'flex', borderBottom: '4px solid #F5EFE6', paddingBottom: '8px', fontSize: '28px', fontWeight: 'bold', textTransform: 'uppercase' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '48px' }}>
+        {pattern_counts?.slice(0, 3).map((p: any) => (
+          <div key={p.category} style={{ display: 'flex', borderBottom: '4px solid #F5EFE6', paddingBottom: '8px', marginBottom: '16px', fontSize: '28px', fontWeight: 'bold', textTransform: 'uppercase' }}>
             {p.category} <span style={{ marginLeft: '12px', opacity: 0.7 }}>x{p.count}</span>
           </div>
         ))}

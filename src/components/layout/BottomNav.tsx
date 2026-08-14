@@ -79,8 +79,9 @@ export function BottomNav() {
       }
 
       setReportImages(urls);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      alert("Failed to generate pattern report: " + e.message);
       // Fake fallback if API fails
       setReportImages([]); 
     } finally {

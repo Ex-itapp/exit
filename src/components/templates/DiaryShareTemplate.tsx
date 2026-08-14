@@ -37,9 +37,10 @@ export function DiaryShareTemplate({ data }: { data: any }) {
         </p>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '40px', gap: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '40px' }}>
         <div style={{
           display: 'flex',
+          marginRight: '16px',
           backgroundColor: bgColor,
           color: '#111111',
           padding: '12px 24px',
