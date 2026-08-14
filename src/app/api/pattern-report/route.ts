@@ -115,9 +115,11 @@ Ensure the output is strictly valid JSON matching the schema format:
           throw new Error("Failed to list models: " + JSON.stringify(modelsData));
         }
 
-        // Find the first valid gemini model that supports generateContent
+        // Find the first valid gemini model that supports generateContent and is not an experimental/deprecated 2.5 model
         const validModel = modelsData.models?.find((m: any) => 
           m.name.includes('gemini') && 
+          !m.name.includes('2.5') &&
+          !m.name.includes('vision') &&
           m.supportedGenerationMethods?.includes('generateContent')
         );
 
