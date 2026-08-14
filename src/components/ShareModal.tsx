@@ -21,26 +21,28 @@ interface ShareModalProps {
 export function ShareModal({ entry, onClose }: ShareModalProps) {
   const exportRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [ogUrl, setOgUrl] = useState<string | null>(null);
 
   if (!entry) return null;
 
-  const handleDownload = async () => {
-    if (!exportRef.current) return;
+  const handleGenerate = async () => {
     setIsDownloading(true);
-    
     try {
-      const bgColor = entry.type === 'flag' ? '#ffffff' : entry.isUnsent ? '#111111' : '#f4f1ea';
-      
-      const dataUrl = await domtoimage.toPng(exportRef.current, {
-        quality: 1,
-        scale: 3, // High resolution output
-        bgcolor: bgColor
+      const res = await fetch('/api/render-card', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          template: 'diary-share',
+          data: {
+            content: entry.content,
+            date: formatTime(entry.createdAt),
+            mood: entry.tags[0] || 'default',
+            tag: entry.type === 'flag' ? 'Red Flag' : entry.isUnsent ? 'Unsent' : 'Diary'
+          }
+        })
       });
-      
-      const link = document.createElement("a");
-      link.href = dataUrl;
-      link.download = `unsent_${entry.type}_${new Date().getTime()}.png`;
-      link.click();
+      const blob = await res.blob();
+      setOgUrl(URL.createObjectURL(blob));
     } catch (err) {
       console.error("Failed to generate image", err);
     } finally {
@@ -64,70 +66,42 @@ export function ShareModal({ entry, onClose }: ShareModalProps) {
         </button>
         
         <div className="p-4 md:p-6 overflow-y-auto custom-scrollbar flex-1 flex flex-col items-center">
-          {/* THE EXPORTABLE SQUARE */}
-          <div 
-            ref={exportRef}
-            className={`w-[320px] h-[320px] md:w-[360px] md:h-[360px] shrink-0 p-6 flex flex-col relative overflow-hidden ${
-              entry.type === 'flag' 
-                ? 'bg-white border-4 border-accent shadow-[8px_8px_0_#FF3366]' 
-                : entry.isUnsent 
-                  ? 'bg-ink text-bg border-4 border-ink' 
-                  : 'bg-bg border-4 border-ink shadow-[8px_8px_0_#111111]'
-            }`}
-          >
-            {/* Background Pattern for standard diary entries */}
-            {entry.type === 'diary' && !entry.isUnsent && (
-              <div className="absolute inset-0 opacity-5 pointer-events-none" 
-                   style={{ backgroundImage: 'radial-gradient(#111111 1.5px, transparent 1.5px)', backgroundSize: '16px 16px' }} />
-            )}
-            
-            {/* Header / Tags */}
-            <div className="flex justify-between items-start mb-4 relative z-10">
-              <div className="flex flex-wrap gap-2">
-                {entry.isUnsent ? (
-                  <Badge variant="accent" className="border-bg bg-accent text-bg font-bold">
-                    <Lock className="w-3 h-3 mr-1 inline-block" /> Sealed
-                  </Badge>
-                ) : entry.type === 'flag' ? (
-                  <Badge variant="accent" className="font-bold text-[10px] uppercase tracking-widest">{entry.tags[0]}</Badge>
+          {ogUrl ? (
+            <div className="w-full">
+              <img src={ogUrl} alt="Diary Share Card" className="w-full h-auto border-4 border-ink brutalist-shadow-sm mb-6" />
+              <a 
+                href={ogUrl} 
+                download={`exit_${entry.type}_${new Date().getTime()}.png`}
+                className="w-full flex items-center justify-center gap-2 h-14 bg-brand text-ink border-4 border-ink font-heading uppercase text-sm brutalist-shadow-sm hover:-translate-y-1 transition-transform"
+              >
+                <Download className="w-5 h-5" /> Save Image
+              </a>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center text-center space-y-6">
+              <div className="w-24 h-24 bg-ink text-white rounded-full flex items-center justify-center border-4 border-ink mb-4">
+                {entry.type === 'flag' ? <FlagIcon className="w-10 h-10" /> : <Lock className="w-10 h-10" />}
+              </div>
+              <h3 className="font-heading text-2xl uppercase tracking-tighter">Ready to Share?</h3>
+              <p className="font-mono text-sm opacity-80">
+                Generate a beautifully formatted typography card of your entry, perfect for Instagram Stories.
+              </p>
+              <Button 
+                onClick={handleGenerate}
+                disabled={isDownloading}
+                className="w-full h-14 font-heading text-lg tracking-widest uppercase bg-ink text-bg hover:bg-ink/80 border-0 flex items-center gap-2 group"
+              >
+                {isDownloading ? (
+                  "Generating..."
                 ) : (
-                  entry.tags.map(mood => (
-                    <Badge key={mood} variant="outline" className={`border-ink bg-white/80 font-bold text-[10px]`}>
-                      {mood}
-                    </Badge>
-                  ))
+                  <>
+                    <Download className="w-5 h-5 group-hover:-translate-y-1 transition-transform" />
+                    Generate Card
+                  </>
                 )}
-              </div>
+              </Button>
             </div>
-
-            {/* Content */}
-            <p className={`flex-1 overflow-hidden relative z-10 text-base md:text-lg leading-relaxed whitespace-pre-wrap ${
-              entry.isUnsent ? 'font-mono italic opacity-90' : 'font-medium'
-            } ${entry.type === 'flag' ? 'text-ink' : ''}`}>
-              {entry.content.length > 250 ? entry.content.substring(0, 250) + "..." : entry.content}
-            </p>
-
-            {/* Footer / Branding */}
-            <div className="mt-4 pt-4 border-t-[3px] opacity-40 flex justify-between items-center relative z-10 border-current">
-              <span className="font-mono text-[10px] font-bold tracking-widest uppercase">
-                {formatTime(entry.createdAt)}
-              </span>
-              <div className="flex items-center gap-1 font-heading text-lg tracking-tighter">
-                EX-it. {entry.type === 'flag' ? <FlagIcon className="w-3 h-3 inline" /> : '#'}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="p-4 border-t-4 border-ink bg-white">
-          <Button 
-            className="w-full h-12 text-lg brutalist-shadow-sm group bg-brand hover:bg-brand/90 text-ink border-ink"
-            onClick={handleDownload}
-            disabled={isDownloading}
-          >
-            <Download className={`w-5 h-5 mr-2 ${isDownloading ? 'animate-bounce' : 'group-hover:-translate-y-1 transition-transform'}`} />
-            {isDownloading ? 'GENERATING POST...' : 'DOWNLOAD & SHARE'}
-          </Button>
+          )}
         </div>
       </div>
     </div>

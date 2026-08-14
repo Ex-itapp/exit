@@ -1,6 +1,8 @@
 import { ImageResponse } from '@vercel/og';
 import { NextRequest } from 'next/server';
 import { PatternReportOverview, PatternReportDiary, PatternReportRedFlags } from '@/components/templates/PatternReportTemplates';
+import { CertificateTemplate } from '@/components/templates/CertificateTemplates';
+import { DiaryShareTemplate } from '@/components/templates/DiaryShareTemplate';
 import React from 'react';
 
 export const runtime = 'edge';
@@ -22,6 +24,16 @@ export async function POST(req: NextRequest) {
         break;
       case 'pattern-report-3':
         element = <PatternReportRedFlags data={data} />;
+        break;
+      case 'certificate':
+        element = <CertificateTemplate data={data} />;
+        width = 1080;
+        height = 1080;
+        break;
+      case 'diary-share':
+        element = <DiaryShareTemplate data={data} />;
+        width = 1080;
+        height = 1080;
         break;
       default:
         return new Response('Template not found', { status: 404 });

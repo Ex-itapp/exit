@@ -11,12 +11,42 @@ export default function RewardsPage() {
   const { badges, unlockedCount, totalCount } = useRewards();
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [selectedBadge, setSelectedBadge] = useState<RewardBadge | null>(null);
+  const [certUrl, setCertUrl] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const categories = ["All", "Milestones", "Streaks", "Diary", "Insights"];
 
   const filteredBadges = selectedCategory === "All"
     ? badges
     : badges.filter(b => b.category === selectedCategory);
+
+  const handleGenerateCertificate = async () => {
+    if (!selectedBadge) return;
+    setIsGenerating(true);
+    try {
+      const res = await fetch('/api/render-card', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          template: 'certificate',
+          data: {
+            title: selectedBadge.title,
+            date: new Date().toLocaleDateString(),
+            stat: selectedBadge.progressText,
+            caseNumber: `EX-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`,
+            streakType: selectedBadge.id === 'thirty_days' ? '30_day' : 
+                        selectedBadge.id === 'ninety_days' ? '90_day' : 'milestone'
+          }
+        })
+      });
+      const blob = await res.blob();
+      setCertUrl(URL.createObjectURL(blob));
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-150 pb-24">
@@ -72,8 +102,11 @@ export default function RewardsPage() {
         <div className="fixed inset-0 z-50 bg-ink/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="bg-bg border-4 border-ink brutalist-shadow max-w-md w-full p-6 relative animate-in zoom-in-95 duration-200">
             <button
-              onClick={() => setSelectedBadge(null)}
-              className="absolute top-4 right-4 p-2 border-2 border-ink bg-white hover:bg-black/10 transition-colors"
+              onClick={() => {
+                setSelectedBadge(null);
+                setCertUrl(null);
+              }}
+              className="absolute top-4 right-4 p-2 border-2 border-ink bg-white hover:bg-black/10 transition-colors z-10"
             >
               <X className="w-5 h-5" />
             </button>
@@ -106,12 +139,37 @@ export default function RewardsPage() {
                 </span>
               </div>
 
-              <Button
-                className="w-full h-12 text-base mt-4"
-                onClick={() => setSelectedBadge(null)}
-              >
-                {selectedBadge.isUnlocked ? "Keep Going" : "Got It"}
-              </Button>
+              {certUrl ? (
+                <div className="w-full mt-4">
+                  <img src={certUrl} alt="Certificate" className="w-full h-auto border-4 border-ink brutalist-shadow-sm mb-4" />
+                  <a href={certUrl} download={`ex-it-certificate-${selectedBadge.id}.png`} className="w-full flex items-center justify-center h-12 bg-ink text-white font-heading uppercase text-sm border-2 border-ink hover:bg-ink/80 transition-colors">
+                    Save to Device
+                  </a>
+                </div>
+              ) : (
+                <div className="w-full space-y-3 mt-4">
+                  {selectedBadge.isUnlocked && (
+                    <Button
+                      className="w-full h-12 text-base flex items-center gap-2 justify-center"
+                      onClick={handleGenerateCertificate}
+                      disabled={isGenerating}
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      {isGenerating ? "Generating..." : "Generate Certificate"}
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    className="w-full h-12 text-base border-2 border-ink"
+                    onClick={() => {
+                      setSelectedBadge(null);
+                      setCertUrl(null);
+                    }}
+                  >
+                    {selectedBadge.isUnlocked ? "Close" : "Got It"}
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
