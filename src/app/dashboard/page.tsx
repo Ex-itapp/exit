@@ -260,80 +260,77 @@ export default function DashboardPage() {
           Quick Healing Tools
         </span>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        <div className="grid grid-cols-2 gap-2.5">
           <button
             onClick={() => navigate.push('/flags/new')}
-            className="bg-white hover:bg-accent/10 border-2 sm:border-3 border-ink brutalist-shadow-sm p-3.5 text-left transition-all flex items-center gap-3 group"
+            className="bg-white hover:bg-accent/10 border-2 sm:border-3 border-ink brutalist-shadow-sm p-3 sm:p-4 text-left transition-all flex items-center gap-3 group"
           >
-            <div className="w-9 h-9 bg-accent text-white border-2 border-ink flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-              <Flag className="w-4 h-4" />
+            <div className="w-10 h-10 bg-accent text-white border-2 border-ink flex items-center justify-center shrink-0">
+              <Flag className="w-5 h-5" />
             </div>
-            <div className="min-w-0 flex-1">
-              <span className="font-heading text-xs uppercase font-black block group-hover:text-accent transition-colors truncate">
-                Log Red Flag
-              </span>
-              <span className="font-mono text-[9px] text-ink/50 block truncate">Log toxic incident</span>
-            </div>
+            <span className="font-heading text-sm uppercase font-black group-hover:text-accent transition-colors">
+              Log Red Flag
+            </span>
           </button>
 
           <button
             onClick={() => navigate.push('/diary/new')}
-            className="bg-white hover:bg-emerald-50 border-2 sm:border-3 border-ink brutalist-shadow-sm p-3.5 text-left transition-all flex items-center gap-3 group"
+            className="bg-white hover:bg-emerald-400/10 border-2 sm:border-3 border-ink brutalist-shadow-sm p-3 sm:p-4 text-left transition-all flex items-center gap-3 group"
           >
-            <div className="w-9 h-9 bg-emerald-400 text-white border-2 border-ink flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-              <Book className="w-4 h-4" />
+            <div className="w-10 h-10 bg-emerald-400 text-white border-2 border-ink flex items-center justify-center shrink-0">
+              <Book className="w-5 h-5" />
             </div>
-            <div className="min-w-0 flex-1">
-              <span className="font-heading text-xs uppercase font-black block group-hover:text-emerald-600 transition-colors truncate">
-                New Diary
-              </span>
-              <span className="font-mono text-[9px] text-ink/50 block truncate">Write how you feel</span>
-            </div>
+            <span className="font-heading text-sm uppercase font-black group-hover:text-emerald-500 transition-colors">
+              New Diary
+            </span>
           </button>
 
           <button
             onClick={() => navigate.push('/therapist')}
-            className="bg-white hover:bg-purple/10 border-2 sm:border-3 border-ink brutalist-shadow-sm p-3.5 text-left transition-all flex items-center gap-3 group"
+            className="bg-white hover:bg-purple/10 border-2 sm:border-3 border-ink brutalist-shadow-sm p-3 sm:p-4 text-left transition-all flex items-center gap-3 group"
           >
-            <div className="w-9 h-9 bg-purple text-ink border-2 border-ink flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-              <Zap className="w-4 h-4" />
+            <div className="w-10 h-10 bg-purple text-ink border-2 border-ink flex items-center justify-center shrink-0">
+              <Zap className="w-5 h-5" />
             </div>
-            <div className="min-w-0 flex-1">
-              <span className="font-heading text-xs uppercase font-black block group-hover:text-purple transition-colors truncate">
-                Healing Companion
-              </span>
-              <span className="font-mono text-[9px] text-ink/50 block truncate">24/7 listener</span>
-            </div>
+            <span className="font-heading text-sm uppercase font-black group-hover:text-purple transition-colors">
+              Companion
+            </span>
           </button>
 
           <button
             onClick={() => navigate.push('/closure')}
-            className="bg-white hover:bg-brand/10 border-2 sm:border-3 border-ink brutalist-shadow-sm p-3.5 text-left transition-all flex items-center gap-3 group"
+            className="bg-white hover:bg-brand/10 border-2 sm:border-3 border-ink brutalist-shadow-sm p-3 sm:p-4 text-left transition-all flex items-center gap-3 group"
           >
-            <div className="w-9 h-9 bg-brand text-ink border-2 border-ink flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-              <MessageSquare className="w-4 h-4" />
+            <div className="w-10 h-10 bg-brand text-ink border-2 border-ink flex items-center justify-center shrink-0">
+              <MessageSquare className="w-5 h-5" />
             </div>
-            <div className="min-w-0 flex-1">
-              <span className="font-heading text-xs uppercase font-black block group-hover:text-ink transition-colors truncate">
-                Ex Simulator
-              </span>
-              <span className="font-mono text-[9px] text-ink/50 block truncate">Practice what you&apos;d say</span>
-            </div>
+            <span className="font-heading text-sm uppercase font-black group-hover:text-brand transition-colors">
+              Ex Simulator
+            </span>
           </button>
 
           <button
             onClick={() => navigate.push('/roadmap')}
-            className="bg-white hover:bg-positive/10 border-2 sm:border-3 border-ink brutalist-shadow-sm p-3.5 text-left transition-all flex items-center gap-3 group col-span-2"
+            className="bg-white hover:bg-positive/10 border-2 sm:border-3 border-ink brutalist-shadow-sm p-3 sm:p-4 text-left transition-all flex items-center gap-3 group"
           >
-            <div className="w-9 h-9 bg-positive text-ink border-2 border-ink flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-              <Map className="w-4 h-4" />
+            <div className="w-10 h-10 bg-positive text-ink border-2 border-ink flex items-center justify-center shrink-0">
+              <Map className="w-5 h-5" />
             </div>
-            <div className="min-w-0 flex-1">
-              <span className="font-heading text-xs uppercase font-black block group-hover:text-positive transition-colors truncate">
-                Healing Roadmap
-              </span>
-              <span className="font-mono text-[9px] text-ink/50 block truncate">Your personalized journey</span>
+            <span className="font-heading text-sm uppercase font-black group-hover:text-positive transition-colors">
+              Roadmap
+            </span>
+          </button>
+
+          <button
+            onClick={() => navigate.push('/rewards')}
+            className="bg-white hover:bg-blue-500/10 border-2 sm:border-3 border-ink brutalist-shadow-sm p-3 sm:p-4 text-left transition-all flex items-center gap-3 group"
+          >
+            <div className="w-10 h-10 bg-blue-500 text-white border-2 border-ink flex items-center justify-center shrink-0">
+              <Award className="w-5 h-5" />
             </div>
+            <span className="font-heading text-sm uppercase font-black group-hover:text-blue-500 transition-colors">
+              Rewards
+            </span>
           </button>
         </div>
       </motion.div>

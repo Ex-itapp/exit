@@ -183,37 +183,25 @@ export default function Streak() {
         </CardContent>
       </Card>
 
-      {/* CUSTOM UI INTERVENTION & EVIDENCE VAULT MODAL */}
+      {/* CUSTOM UI INTERVENTION MODAL */}
       {showResetModal && (
-        <div className="fixed inset-0 z-50 bg-ink/90 backdrop-blur-md flex flex-col items-center justify-center p-2 sm:p-4 md:p-6 overflow-y-auto animate-in fade-in duration-200">
-          <div className="bg-bg border-4 border-ink brutalist-shadow max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden my-auto shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-ink/90 backdrop-blur-md flex items-end sm:items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-bg border-4 border-ink brutalist-shadow max-w-md w-full flex flex-col relative my-auto">
             
-            {/* Modal Header */}
-            <div className="bg-danger text-white p-4 sm:p-6 border-b-4 border-ink flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-3">
-                <AlertTriangle className="w-8 h-8 text-white shrink-0 animate-bounce" />
-                <div>
-                  <span className="font-mono text-[10px] sm:text-xs font-bold uppercase bg-ink text-white px-2 py-0.5 tracking-widest">
-                    Urge Intercept Active
-                  </span>
-                  <h2 className="font-heading text-xl sm:text-2xl md:text-3xl uppercase tracking-tighter mt-1">
-                    WAIT! BEFORE YOU RESET YOUR STREAK... 🛑
-                  </h2>
-                </div>
-              </div>
-              <button 
-                onClick={() => setShowResetModal(false)}
-                className="p-1.5 bg-ink text-white hover:bg-white hover:text-ink border-2 border-white transition-colors shrink-0"
-                title="Close"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
+            {/* Close Button */}
+            <button 
+              onClick={() => setShowResetModal(false)}
+              className="absolute -top-3 -right-3 z-10 p-1.5 bg-bg text-ink border-2 border-ink hover:bg-ink hover:text-white transition-colors brutalist-shadow-sm rounded-none"
+              title="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
 
-            {/* Modal Scrollable Body: The Evidence Vault */}
-            <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 bg-white custom-scrollbar">
+            {/* Modal Body */}
+            <div className="p-6 space-y-6">
               
-              <div className={`${goalIntervention.color} border-3 border-ink p-5 text-ink space-y-2`}>
+              {/* Goal Intervention */}
+              <div className={`${goalIntervention.color} border-3 border-ink p-4 text-ink space-y-2`}>
                 <div className="font-heading text-lg sm:text-xl uppercase tracking-tight leading-none">
                   {goalIntervention.header}
                 </div>
@@ -222,119 +210,19 @@ export default function Streak() {
                 </p>
               </div>
 
-              {/* 1. Grounding Anchor */}
-              <div className="border-4 border-ink bg-bg p-5 brutalist-shadow-sm space-y-2">
-                <div className="flex items-center gap-2 text-brand bg-ink px-3 py-1 w-fit font-mono text-xs font-bold uppercase">
-                  <Anchor className="w-4 h-4" />
-                  <span>Your Exact Reason For Leaving</span>
-                </div>
-                <p className="font-heading text-lg sm:text-xl md:text-2xl text-ink uppercase tracking-tight pt-2">
+              {/* Anchor Quote */}
+              <div className="text-center px-2">
+                <p className="font-heading text-xl sm:text-2xl text-ink uppercase tracking-tight">
                   "{userAnchor || 'I deserve someone who chooses me without hesitation and treats me with absolute respect.'}"
                 </p>
               </div>
-
-              {/* 2. Logged Red Flags Archive */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between border-b-3 border-ink pb-2">
-                  <div className="flex items-center gap-2 font-heading text-lg sm:text-xl uppercase">
-                    <ShieldAlert className="w-5 h-5 text-purple" />
-                    <span>Your Red Flags Archive</span>
-                  </div>
-                  <Badge variant="accent" className="font-mono text-xs border-2 border-ink">
-                    {flags.length} Logged
-                  </Badge>
-                </div>
-
-                {flags.length === 0 ? (
-                  <p className="font-mono text-xs text-ink/60 italic p-4 border-2 border-dashed border-ink/40 bg-bg text-center">
-                    No red flags logged yet — remember that peace and consistency are worth protecting above all.
-                  </p>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-1">
-                    {flags.map((flag) => (
-                      <div key={flag.id} className="bg-purple/10 border-3 border-ink p-3.5 space-y-1.5 flex flex-col justify-between">
-                        <div className="flex justify-between items-start gap-2">
-                          <span className="font-mono text-[10px] font-bold uppercase bg-purple text-ink px-2 py-0.5 border border-ink">
-                            {flag.category}
-                          </span>
-                          <span className="font-mono text-[9px] text-ink/50">
-                            {new Date(flag.createdAt).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <p className="font-sans text-xs sm:text-sm font-medium text-ink pt-1 leading-normal">
-                          "{flag.content}"
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* 3. Past Diary & Check-ins */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between border-b-3 border-ink pb-2">
-                  <div className="flex items-center gap-2 font-heading text-lg sm:text-xl uppercase">
-                    <BookOpen className="w-5 h-5 text-blue" />
-                    <span>Your Past Diary & Check-in Logs</span>
-                  </div>
-                  <span className="font-mono text-xs text-ink/70">
-                    Showing recent entries
-                  </span>
-                </div>
-
-                {entries.length === 0 && checkins.length === 0 ? (
-                  <p className="font-mono text-xs text-ink/60 italic p-4 border-2 border-dashed border-ink/40 bg-bg text-center">
-                    No diary entries yet — stay grounded in your current strength.
-                  </p>
-                ) : (
-                  <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
-                    {entries.slice(0, 3).map((entry) => (
-                      <div key={entry.id} className="bg-bg border-2 border-ink p-3 space-y-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-mono text-[10px] bg-ink text-bg px-2 py-0.5 font-bold uppercase">
-                            Diary Log
-                          </span>
-                          {entry.moods.map((m) => (
-                            <span key={m} className="font-mono text-[10px] bg-white text-ink border border-ink px-1.5 py-0.5">
-                              {m}
-                            </span>
-                          ))}
-                          <span className="font-mono text-[9px] text-ink/50 ml-auto">
-                            {new Date(entry.createdAt).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <p className="font-sans text-xs sm:text-sm text-ink/90 italic pt-1">
-                          "{entry.content}"
-                        </p>
-                      </div>
-                    ))}
-
-                    {checkins.slice(0, 3).map((chk) => (
-                      <div key={chk.id} className="bg-blue/10 border-2 border-ink p-3 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <span className="font-mono text-[10px] bg-blue text-ink font-bold uppercase px-2 py-0.5 border border-ink">
-                            Daily Check-in
-                          </span>
-                          <span className="font-mono text-[9px] text-ink/50">
-                            {new Date(chk.createdAt).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <p className="font-sans text-xs sm:text-sm text-ink font-medium pt-1">
-                          "{chk.content}"
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
             </div>
 
-            {/* Modal Footer Actions (Custom UI Buttons, Zero Browser Dialogs!) */}
-            <div className="bg-bg p-4 sm:p-6 border-t-4 border-ink flex flex-col gap-3 shrink-0">
+            {/* Actions */}
+            <div className="p-6 pt-0 flex flex-col gap-4">
               <Button
                 onClick={handleStayedStrong}
-                className="w-full h-14 bg-positive hover:bg-positive/90 text-ink border-4 border-ink brutalist-shadow text-sm sm:text-base font-heading font-black uppercase tracking-tight flex items-center justify-center gap-2 hover:-translate-y-0.5 transition-all"
+                className="w-full h-14 bg-positive hover:bg-positive/90 text-ink border-4 border-ink brutalist-shadow-sm hover:brutalist-shadow text-sm sm:text-base font-heading font-black uppercase tracking-tight flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5"
               >
                 <CheckCircle2 className="w-5 h-5 shrink-0" />
                 <span>{goalIntervention.cta} (Keep My {streakDays}-Day Streak) 🛡️</span>
@@ -342,12 +230,11 @@ export default function Streak() {
 
               <button
                 onClick={handleConfirmReset}
-                className="w-full py-2.5 text-center font-mono text-xs font-bold uppercase text-danger hover:bg-danger/10 transition-colors border-2 border-transparent hover:border-danger/30 rounded"
+                className="w-full py-3 text-center font-mono text-xs sm:text-sm font-bold uppercase text-danger hover:bg-danger/10 transition-colors border-2 border-danger/30 hover:border-danger border-dashed bg-bg"
               >
-                I actually broke no-contact — confirm reset to Day 0
+                I broke no-contact — reset to Day 0
               </button>
             </div>
-
           </div>
         </div>
       )}
