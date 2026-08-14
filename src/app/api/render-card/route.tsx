@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
       case 'diary-share':
         element = <DiaryShareTemplate data={data} />;
         width = 1080;
-        height = 1080;
+        height = 1920;
         break;
       default:
         return new Response('Template not found', { status: 404 });

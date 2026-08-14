@@ -1,10 +1,12 @@
 import React from 'react';
-import { getMoodColor, getMoodTailwind } from '@/lib/visualSystem';
+import { getMoodColor } from '@/lib/visualSystem';
 
 export function DiaryShareTemplate({ data }: { data: any }) {
   const { content, date, mood, tag } = data;
   
   const bgColor = getMoodColor(mood);
+  // Ensure readable contrast on dark backgrounds (ink, purple)
+  const textColor = (bgColor === '#111111' || bgColor === '#8A2BE2') ? '#F5EFE6' : '#111111';
 
   return (
     <div
@@ -14,58 +16,76 @@ export function DiaryShareTemplate({ data }: { data: any }) {
         padding: '64px',
         width: '100%',
         height: '100%',
-        backgroundColor: '#F5EFE6', // bg
-        color: '#111111', // ink
+        backgroundColor: bgColor,
+        color: textColor,
         fontFamily: 'Inter',
-        border: `32px solid ${bgColor}`
+        border: `32px solid ${textColor}`,
+        justifyContent: 'space-between',
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px' }}>
-        <span style={{ fontSize: '24px', fontWeight: '900', letterSpacing: '2px', color: bgColor }}>EX-IT. DIARY</span>
-        <span style={{ fontSize: '24px', fontWeight: 'bold', fontFamily: 'monospace' }}>{date}</span>
+      {/* Top Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <span style={{ fontSize: '64px', fontWeight: '900', letterSpacing: '-2px', textTransform: 'uppercase', lineHeight: 1 }}>EX-IT.</span>
+          <span style={{ fontSize: '28px', fontWeight: 'bold', fontFamily: 'monospace', opacity: 0.7 }}>LOGBOOK ENTRY</span>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', fontFamily: 'monospace' }}>
+          <span style={{ fontSize: '24px', opacity: 0.7 }}>DATE</span>
+          <span style={{ fontSize: '32px', fontWeight: 'bold' }}>{date}</span>
+        </div>
       </div>
 
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      {/* Main Content Area */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center' }}>
+        <span style={{ fontSize: '180px', fontFamily: 'serif', lineHeight: 0.5, color: textColor, opacity: 0.3, marginBottom: '40px' }}>"</span>
         <p style={{ 
-          fontSize: content.length > 100 ? '48px' : '72px', 
-          fontWeight: 'bold', 
-          lineHeight: 1.3,
-          fontStyle: 'italic',
-          textAlign: 'center'
+          fontSize: content.length > 150 ? '56px' : '80px', 
+          fontWeight: '500', 
+          fontFamily: 'serif',
+          lineHeight: 1.15,
+          letterSpacing: '-2px'
         }}>
-          "{content}"
+          {content}
         </p>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '40px' }}>
-        <div style={{
-          display: 'flex',
-          marginRight: '16px',
-          backgroundColor: bgColor,
-          color: '#111111',
-          padding: '12px 24px',
-          borderRadius: '99px',
-          border: '4px solid #111111',
-          fontSize: '24px',
-          fontWeight: 'bold',
-          textTransform: 'uppercase'
-        }}>
-          MOOD: {mood}
-        </div>
-        {tag && (
-          <div style={{
-            display: 'flex',
-            backgroundColor: '#111111',
-            color: '#F5EFE6',
-            padding: '12px 24px',
-            borderRadius: '99px',
-            fontSize: '24px',
-            fontWeight: 'bold',
-            textTransform: 'uppercase'
-          }}>
-            {tag}
+      {/* Bottom Footer */}
+      <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+        <div style={{ width: '100%', height: '8px', backgroundColor: textColor, marginBottom: '40px', opacity: 0.2 }} />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ fontSize: '24px', fontWeight: 'bold', fontFamily: 'monospace', opacity: 0.7, marginBottom: '16px' }}>MOOD / TAGS</span>
+            <div style={{ display: 'flex' }}>
+              <div style={{
+                display: 'flex',
+                backgroundColor: textColor,
+                color: bgColor,
+                padding: '16px 32px',
+                borderRadius: '999px',
+                fontSize: '28px',
+                fontWeight: '900',
+                textTransform: 'uppercase',
+                marginRight: '16px'
+              }}>
+                {mood}
+              </div>
+              {tag && (
+                <div style={{
+                  display: 'flex',
+                  border: `4px solid ${textColor}`,
+                  color: textColor,
+                  padding: '16px 32px',
+                  borderRadius: '999px',
+                  fontSize: '28px',
+                  fontWeight: '900',
+                  textTransform: 'uppercase'
+                }}>
+                  {tag}
+                </div>
+              )}
+            </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
