@@ -1,0 +1,163 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useFlags, Flag } from "@/lib/useFlags";
+import { Button } from "@/components/ui/Button";
+import { ArrowLeft, Share2, Archive, ArchiveRestore, Trash2, Flag as FlagIcon } from "lucide-react";
+import { ShareModal } from "@/components/ShareModal";
+import { cn } from "@/lib/utils";
+
+export default function FlagEntryPage() {
+  const { id } = useParams();
+  const router = useRouter();
+  const { allFlags, archivedFlags, archiveFlag, unarchiveFlag, deleteFlag } = useFlags();
+  
+  const [flag, setFlag] = useState<Flag | null>(null);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isArchived, setIsArchived] = useState(false);
+
+  useEffect(() => {
+    if (id && allFlags.length > 0) {
+      const found = allFlags.find((f) => f.id === id);
+      if (found) {
+        setFlag(found);
+        setIsArchived(archivedFlags.some(f => f.id === id));
+      } else {
+        router.push("/diary");
+      }
+    }
+  }, [id, allFlags, archivedFlags, router]);
+
+  if (!flag) return null;
+
+  const handleArchiveToggle = () => {
+    if (isArchived) {
+      unarchiveFlag(flag.id);
+    } else {
+      archiveFlag(flag.id);
+      router.push("/diary");
+    }
+  };
+
+  const handleDelete = () => {
+    if (confirm("Are you sure you want to permanently delete this flag? This cannot be undone.")) {
+      deleteFlag(flag.id);
+      router.push("/diary");
+    }
+  };
+
+  const dateStr = new Date(flag.createdAt).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric"
+  }).toUpperCase();
+
+  const bgColor = "#FF3366"; // Standard accent color for flags
+  const textColor = "#111111"; // Ink
+  const cardColor = "#F5EFE6"; // Offwhite
+
+  return (
+    <div className="min-h-screen w-full flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-300" style={{ backgroundColor: bgColor, color: cardColor }}>
+      
+      {/* Header */}
+      <header className="px-4 py-6 sm:px-8 flex items-center justify-between z-10 sticky top-0" style={{ borderBottom: `4px solid ${cardColor}`, backgroundColor: bgColor }}>
+        <button 
+          onClick={() => router.push("/diary")}
+          className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-widest hover:opacity-70 transition-opacity"
+        >
+          <ArrowLeft className="w-5 h-5" /> Back to Logbook
+        </button>
+        <div className="font-mono text-sm font-bold opacity-70 flex items-center gap-2">
+          <FlagIcon className="w-4 h-4" />
+          {dateStr}
+        </div>
+      </header>
+
+      {/* Main Content - Full Page Layout */}
+      <main className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 md:p-24 relative overflow-hidden">
+        {/* Subtle Watermark */}
+        <div 
+          className="absolute pointer-events-none font-bold opacity-10"
+          style={{ fontSize: '20vw', lineHeight: 0.8, letterSpacing: '-0.05em', whiteSpace: 'nowrap', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-5deg)', zIndex: 0 }}
+        >
+          RED FLAG
+        </div>
+
+        <div className="relative z-10 max-w-4xl w-full text-center space-y-12 bg-white p-12 sm:p-20 border-8 brutalist-shadow-lg" style={{ borderColor: textColor, color: textColor }}>
+          <div className="flex justify-center mb-8">
+             <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: bgColor, color: cardColor }}>
+               <FlagIcon className="w-8 h-8" />
+             </div>
+          </div>
+          <p className="text-3xl sm:text-5xl md:text-6xl font-serif leading-tight sm:leading-tight md:leading-tight font-medium tracking-tight">
+            {flag.content}
+          </p>
+          
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-12">
+            <span 
+              className="px-6 py-2 rounded-full font-mono text-xs sm:text-sm font-bold uppercase tracking-widest"
+              style={{ backgroundColor: textColor, color: cardColor }}
+            >
+              CATEGORY: {flag.category}
+            </span>
+            {isArchived && (
+              <span 
+                className="px-6 py-2 rounded-full font-mono text-xs sm:text-sm font-bold uppercase tracking-widest bg-destructive text-white"
+              >
+                ARCHIVED
+              </span>
+            )}
+          </div>
+        </div>
+      </main>
+
+      {/* Action Footer */}
+      <footer className="px-4 py-6 sm:px-8 border-t-4 flex flex-col sm:flex-row items-center justify-between gap-4 sticky bottom-0 z-10" style={{ borderColor: cardColor, backgroundColor: bgColor }}>
+        <div className="flex w-full sm:w-auto gap-3">
+          <Button 
+            onClick={() => setIsShareModalOpen(true)}
+            className="flex-1 sm:flex-none h-14 px-8 brutalist-shadow-sm border-2 rounded-none hover:-translate-y-1 transition-transform"
+            style={{ backgroundColor: cardColor, color: textColor, borderColor: cardColor }}
+          >
+            <Share2 className="w-5 h-5 mr-2" /> SHARE FLAG
+          </Button>
+          <Button 
+            onClick={handleArchiveToggle}
+            variant="outline"
+            className="flex-1 sm:flex-none h-14 px-6 border-2 rounded-none hover:-translate-y-1 transition-transform"
+            style={{ borderColor: cardColor, color: cardColor, backgroundColor: 'transparent' }}
+          >
+            {isArchived ? (
+              <><ArchiveRestore className="w-5 h-5 mr-2" /> UNARCHIVE</>
+            ) : (
+              <><Archive className="w-5 h-5 mr-2" /> ARCHIVE</>
+            )}
+          </Button>
+        </div>
+        
+        <Button 
+          onClick={handleDelete}
+          variant="destructive"
+          className="w-full sm:w-auto h-14 px-6 border-2 border-transparent rounded-none hover:border-destructive bg-transparent hover:bg-destructive/10 text-white"
+        >
+          <Trash2 className="w-5 h-5 mr-2" /> PERMANENT DELETE
+        </Button>
+      </footer>
+
+      {isShareModalOpen && (
+        <ShareModal 
+          isOpen={isShareModalOpen} 
+          onClose={() => setIsShareModalOpen(false)}
+          entry={{
+            type: 'flag',
+            id: flag.id,
+            content: flag.content,
+            createdAt: flag.createdAt,
+            tags: [flag.category]
+          }}
+        />
+      )}
+    </div>
+  );
+}

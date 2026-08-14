@@ -11,15 +11,20 @@ export interface Flag {
 }
 
 const STORAGE_KEY = 'unsent_flags_clean';
+const ARCHIVE_KEY = 'unsent_flags_archived_ids';
 
 export function useFlags() {
   const [flags, setFlags] = useState<Flag[]>([]);
+  const [archivedIds, setArchivedIds] = useState<string[]>([]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) try { setFlags(JSON.parse(saved)); } catch (e) {}
+
+    const savedArchives = localStorage.getItem(ARCHIVE_KEY);
+    if (savedArchives) try { setArchivedIds(JSON.parse(savedArchives)); } catch (e) {}
 
     async function syncDB() {
       const { data: { session } } = await supabase.auth.getSession();
@@ -72,5 +77,28 @@ export function useFlags() {
     }
   };
 
-  return { flags, addFlag, deleteFlag };
+  const archiveFlag = (id: string) => {
+    const newArchives = [...new Set([...archivedIds, id])];
+    setArchivedIds(newArchives);
+    localStorage.setItem(ARCHIVE_KEY, JSON.stringify(newArchives));
+  };
+
+  const unarchiveFlag = (id: string) => {
+    const newArchives = archivedIds.filter(aId => aId !== id);
+    setArchivedIds(newArchives);
+    localStorage.setItem(ARCHIVE_KEY, JSON.stringify(newArchives));
+  };
+
+  const activeFlags = flags.filter(f => !archivedIds.includes(f.id));
+  const archivedFlags = flags.filter(f => archivedIds.includes(f.id));
+
+  return { 
+    flags: activeFlags, 
+    allFlags: flags,
+    archivedFlags, 
+    addFlag, 
+    deleteFlag,
+    archiveFlag,
+    unarchiveFlag
+  };
 }
