@@ -62,7 +62,8 @@ export function BottomNav() {
       });
       const data = await dataRes.json();
 
-      if (!data.page1_overview) throw new Error("Invalid format");
+      if (data.error) throw new Error("Backend Error: " + data.error);
+      if (!data.page1_overview) throw new Error("Invalid format received from AI: " + JSON.stringify(data).substring(0, 50));
 
       // 2. Render 3 images via POST to Vercel OG
       const templates = ['pattern-report-1', 'pattern-report-2', 'pattern-report-3'];
