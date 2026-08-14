@@ -24,6 +24,17 @@ export const MOOD_TAILWIND: Record<string, string> = {
   default: 'bg-brand text-ink',
 };
 
+export const MOOD_EMOJIS: Record<string, string> = {
+  sad: '🌧️',
+  angry: '🔥',
+  relieved: '🍃',
+  numb: '🌫️',
+  nostalgic: '📼',
+  hopeful: '✨',
+  spiraling: '🌀',
+  default: '💭',
+};
+
 export const FLAG_COLORS: Record<string, string> = {
   'love bombing': '#FF3366',
   'gaslighting': '#9D4EDD',
@@ -45,4 +56,9 @@ export function getMoodTailwind(mood: string): string {
 
 export function getFlagColor(category: string): string {
   return FLAG_COLORS[category.toLowerCase()] || FLAG_COLORS.default;
+}
+
+export function getMoodEmoji(mood: string): string {
+  if (!mood) return MOOD_EMOJIS.default;
+  return MOOD_EMOJIS[mood.toLowerCase()] || MOOD_EMOJIS.default;
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { getMoodColor } from '@/lib/visualSystem';
+import { getMoodColor, getMoodEmoji } from '@/lib/visualSystem';
 
 export function DiaryShareTemplate({ data }: { data: any }) {
   const { content, date, mood, bgColor } = data;
@@ -19,9 +19,35 @@ export function DiaryShareTemplate({ data }: { data: any }) {
         color: textColor,
         fontFamily: 'Inter',
         position: 'relative',
-        padding: '96px'
+        padding: '96px',
+        overflow: 'hidden'
       }}
     >
+      {/* Emoji Pattern Background */}
+      {mood && mood.toLowerCase() !== 'default' && (
+        <div style={{
+          position: 'absolute',
+          top: '-20%',
+          left: '-20%',
+          right: '-20%',
+          bottom: '-20%',
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'space-evenly',
+          alignItems: 'center',
+          gap: '80px',
+          opacity: 0.15,
+          zIndex: 0,
+          pointerEvents: 'none',
+          transform: 'rotate(-10deg)'
+        }}>
+          {Array.from({ length: 60 }).map((_, i) => (
+            <span key={i} style={{ fontSize: '140px' }}>
+              {getMoodEmoji(mood)}
+            </span>
+          ))}
+        </div>
+      )}
       {/* Header */}
       <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center', zIndex: 10, borderBottom: `8px solid ${textColor}`, paddingBottom: '48px' }}>
         <span style={{ fontSize: '48px', fontWeight: 'bold', fontFamily: 'monospace', letterSpacing: '2px', opacity: 0.7 }}>
