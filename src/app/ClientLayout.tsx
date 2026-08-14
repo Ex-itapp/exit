@@ -99,6 +99,21 @@ export function ClientLayout({ children }: { children: ReactNode }) {
   //   return <CompulsoryAuthGate />;
   // }
 
+  const hasCustomBackButton = [
+    '/dashboard', 
+    '/onboarding', 
+    '/auth',
+    '/pricing',
+    '/roadmap',
+    '/therapist',
+    '/closure',
+    '/diary/new',
+    '/flags/new',
+    '/privacy',
+    '/tos',
+    '/support'
+  ].includes(pathname) || pathname?.startsWith('/timeline/');
+
   // Public pages
   if (isPublicPage) {
     return (
@@ -114,7 +129,16 @@ export function ClientLayout({ children }: { children: ReactNode }) {
         {/* Clean, Minimal Floating Logo Header */}
         <header className="px-3 sm:px-4 md:px-8 pt-3 sm:pt-6 pb-2 flex items-center justify-between sticky top-0 z-40 bg-transparent pointer-events-none">
           <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto">
-
+            {!hasCustomBackButton && (
+              <button
+                onClick={() => router.back()}
+                className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 h-9 sm:h-10 bg-white border-2 border-ink brutalist-shadow-sm hover:bg-ink hover:text-bg transition-colors font-mono text-xs font-bold uppercase shrink-0"
+                title="Go Back"
+              >
+                <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="inline">Back</span>
+              </button>
+            )}
             <div 
               className="flex items-center gap-1.5 sm:gap-2 bg-white px-2.5 sm:px-3 py-1 sm:py-1.5 border-2 border-ink brutalist-shadow-sm cursor-pointer hover:opacity-90 transition-opacity" 
               onClick={() => router.push('/dashboard')}
