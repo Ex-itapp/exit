@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { useUser } from "@/lib/useUser";
+import { supabase } from "@/lib/supabase";
 import { Shield, Sparkles, Heart, Compass, ArrowRight, ArrowLeft, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
@@ -22,12 +23,16 @@ export default function OnboardingPage() {
   const navigate = useRouter();
   const { completeOnboarding, hasCompletedOnboarding, isProfileSyncing } = useUser();
 
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+  const [acknowledgedTrial, setAcknowledgedTrial] = useState(false);
+
   useEffect(() => {
+    if (isCheckoutLoading) return; // Prevent redirect while checking out
     if (typeof window !== "undefined" && !isProfileSyncing &&
       (hasCompletedOnboarding || localStorage.getItem("unsent_onboarding_done_clean") === "true")) {
       navigate.push("/dashboard");
     }
-  }, [isProfileSyncing, hasCompletedOnboarding, navigate]);
+  }, [isProfileSyncing, hasCompletedOnboarding, navigate, isCheckoutLoading]);
 
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
@@ -44,7 +49,51 @@ export default function OnboardingPage() {
       "no_contact",
       new Date(breakupDate).toISOString()
     );
-    navigate.push(startTrial ? "/pricing" : "/dashboard");
+    if (!startTrial) {
+      navigate.push("/dashboard");
+    }
+  };
+
+  const handleCheckout = async () => {
+    setIsCheckoutLoading(true);
+    // 1. Save onboarding data first so it's persisted before redirecting
+    handleFinish(true);
+    
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      
+      const productId = billing === 'yearly' 
+        ? process.env.NEXT_PUBLIC_DODO_PRODUCT_YEARLY 
+        : process.env.NEXT_PUBLIC_DODO_PRODUCT_MONTHLY;
+        
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({
+          product_id: productId,
+          payment_type: 'subscription',
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.payment_link) {
+        window.location.href = data.payment_link;
+      } else if (res.status === 409 && data.code === 'ALREADY_PRO') {
+        alert('Your account already has Pro access!');
+        navigate.push('/dashboard');
+      } else {
+        alert(data.error || 'Failed to create checkout. Please try again.');
+        setIsCheckoutLoading(false);
+      }
+    } catch {
+      alert('Something went wrong. Please try again.');
+      setIsCheckoutLoading(false);
+    }
   };
 
   const progress = ((step - 1) / (TOTAL_STEPS - 1)) * 100;
@@ -438,13 +487,41 @@ export default function OnboardingPage() {
                   </div>
                 </div>
 
+                {/* Trial acknowledgment */}
+                {billing === 'yearly' && (
+                  <label className="flex items-start gap-3 p-3 border-2 border-ink mb-2 cursor-pointer hover:bg-ink/5 transition-colors text-left bg-white">
+                    <input
+                      type="checkbox"
+                      checked={acknowledgedTrial}
+                      onChange={(e) => setAcknowledgedTrial(e.target.checked)}
+                      className="mt-0.5 w-5 h-5 border-3 border-ink accent-accent shrink-0"
+                    />
+                    <span className="font-mono text-[10px] sm:text-xs font-bold leading-relaxed">
+                      I understand the first 3 days are free, then I will be <span className="text-accent underline">charged $39/year automatically</span>. Cancel anytime before the trial ends to avoid charges.
+                    </span>
+                  </label>
+                )}
+
                 {/* CTAs */}
                 <div className="space-y-2 mt-4">
                   <button
-                    onClick={() => handleFinish(true)}
-                    className="w-full h-12 bg-brand hover:bg-brand/90 text-ink font-heading font-black uppercase text-lg tracking-tight transition-colors flex items-center justify-center gap-2 brutalist-shadow border-4 border-ink"
+                    onClick={handleCheckout}
+                    disabled={isCheckoutLoading || (billing === 'yearly' && !acknowledgedTrial)}
+                    className="w-full h-12 bg-brand hover:bg-brand/90 text-ink font-heading font-black uppercase text-lg tracking-tight transition-colors flex items-center justify-center gap-2 brutalist-shadow border-4 border-ink disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {billing === "yearly" ? "Start 3-Day Free Trial" : "Subscribe & Heal"} <ArrowRight className="w-4 h-4" />
+                    {isCheckoutLoading ? (
+                      <>
+                        <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        Creating checkout...
+                      </>
+                    ) : (
+                      <>
+                        {billing === "yearly" ? "Start 3-Day Free Trial" : "Subscribe & Heal"} <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
                   </button>
                   <button
                     onClick={() => handleFinish(false)}
