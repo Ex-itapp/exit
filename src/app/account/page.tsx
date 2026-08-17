@@ -210,7 +210,15 @@ export default function AccountPage() {
             <Button 
               onClick={async () => {
                 try {
-                  const res = await fetch('/api/billing/portal', { method: 'POST' });
+                  const { data: { session } } = await supabase.auth.getSession();
+                  const token = session?.access_token;
+                  
+                  const res = await fetch('/api/billing/portal', { 
+                    method: 'POST',
+                    headers: {
+                      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                    }
+                  });
                   const data = await res.json();
                   if (data.url) window.location.href = data.url;
                   else alert(data.error || 'Failed to open billing portal');
