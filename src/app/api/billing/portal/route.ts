@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createServerSupabase, createAdminSupabase } from '../../../../lib/supabase-server';
 import { getDodoClient } from '../../../../lib/dodo';
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
     const supabase = await createServerSupabase();
 
