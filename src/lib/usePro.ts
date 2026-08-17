@@ -120,8 +120,14 @@ export function usePro() {
   const checkSubscription = useCallback(
     async (userId: string): Promise<SubscriptionCheckResult | null> => {
       try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session?.access_token;
+        
         const apiRes = await fetch(`/api/user?userId=${userId}&_t=${Date.now()}`, {
           cache: 'no-store',
+          headers: {
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          }
         });
         if (apiRes.ok) {
           const apiData = await apiRes.json();
