@@ -9,9 +9,12 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const queryUserId = searchParams.get('userId');
 
-    // Always authenticate via cookie session first
+    // Always authenticate via cookie session first, or fallback to Authorization header
     const supabase = await createServerSupabase();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const authHeader = request.headers.get('authorization');
+    const token = authHeader?.replace('Bearer ', '') || '';
+    const { data: { user }, error: authError } = token ? await supabase.auth.getUser(token) : await supabase.auth.getUser();
+    
     if (authError || !user) {
       return NextResponse.json({ user: null, isPro: false, paymentFailed: false });
     }

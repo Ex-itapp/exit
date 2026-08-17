@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, Suspense } from 'react';
 import Link from 'next/link';
 import { usePro } from '../../lib/usePro';
+import { supabase } from '../../lib/supabase';
 
 function SuccessPageContent() {
   const { isPro, subscriptionStatus, expiresAt, paymentFailed, refreshSubscription } = usePro();
@@ -25,7 +26,15 @@ function SuccessPageContent() {
   // Poll /api/user (admin, bypasses RLS) every 2s
   const pollServerStatus = useCallback(async () => {
     try {
-      const res = await fetch('/api/user', { cache: 'no-store' });
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      
+      const res = await fetch('/api/user', { 
+        cache: 'no-store',
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        }
+      });
       if (!res.ok) return false;
       const data = await res.json();
       if (data.isPro) {
