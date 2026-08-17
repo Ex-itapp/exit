@@ -206,7 +206,23 @@ export default function AccountPage() {
               )}
             </div>
           </div>
-          {!isPro && (
+          {isPro ? (
+            <Button 
+              onClick={async () => {
+                try {
+                  const res = await fetch('/api/billing/portal', { method: 'POST' });
+                  const data = await res.json();
+                  if (data.url) window.location.href = data.url;
+                  else alert(data.error || 'Failed to open billing portal');
+                } catch (e) {
+                  alert('Something went wrong.');
+                }
+              }}
+              className="h-9 px-4 text-xs font-mono font-bold uppercase border-2 border-ink bg-white text-ink hover:bg-ink/5 brutalist-shadow-sm rounded-none"
+            >
+              Manage
+            </Button>
+          ) : (
             <Button 
               onClick={() => router.push('/pricing')}
               className="h-9 px-4 text-xs font-mono font-bold uppercase border-2 border-ink bg-brand text-ink hover:bg-brand/90 brutalist-shadow-sm rounded-none"
