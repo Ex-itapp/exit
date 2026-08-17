@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/lib/useUser";
 import { useAuth } from "@/lib/useAuth";
+import { supabase } from "@/lib/supabase";
 import { usePro } from "@/lib/usePro";
 import { usePWAInstall, forceShowPWABanner } from "@/lib/usePWAInstall";
 import { Button } from "@/components/ui/Button";
