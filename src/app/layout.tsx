@@ -30,6 +30,8 @@ export default function RootLayout({
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-180.svg" />
         <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.svg" />
+      </head>
+      <body suppressHydrationWarning>
         <Script
           id="pwa-install-prompt"
           strategy="beforeInteractive"
@@ -77,8 +79,6 @@ export default function RootLayout({
             `
           }}
         />
-      </head>
-      <body suppressHydrationWarning>
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
