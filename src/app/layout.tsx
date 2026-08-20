@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import Script from 'next/script';
 import '../index.css';
 import { ClientLayout } from './ClientLayout';
 
@@ -29,7 +30,9 @@ export default function RootLayout({
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-180.svg" />
         <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.svg" />
-        <script
+        <Script
+          id="pwa-install-prompt"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               window.deferredPWAInstallPrompt = null;
@@ -40,7 +43,9 @@ export default function RootLayout({
             `
           }}
         />
-        <script
+        <Script
+          id="remove-bis-skin"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
