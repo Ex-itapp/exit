@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 
 export interface VoiceProfile {
+  response_time: string;
+  typing_quirks: string;
+  double_texting: string;
   capitalization: string;
   punctuation_habits: string;
   avg_message_length: string;
@@ -17,6 +20,9 @@ export interface VoiceProfile {
 }
 
 export interface TraitProfile {
+  flaws_or_toxic_traits: string;
+  breakup_context: string;
+  trigger_phrase: string;
   values: string;
   love_language: string;
   conflict_behavior: string;

@@ -60,6 +60,9 @@ export default function ClosurePage() {
   const [isAnalyzingVoice, setIsAnalyzingVoice] = useState(false);
   const [personLabel, setPersonLabel] = useState(profile?.label || "My Ex");
   const [voiceForm, setVoiceForm] = useState<VoiceProfile>(profile?.voice_profile || {
+    response_time: "",
+    typing_quirks: "",
+    double_texting: "",
     capitalization: "",
     punctuation_habits: "",
     avg_message_length: "",
@@ -73,6 +76,9 @@ export default function ClosurePage() {
   });
 
   const [traitForm, setTraitForm] = useState<TraitProfile>(profile?.trait_profile || {
+    flaws_or_toxic_traits: "",
+    breakup_context: "",
+    trigger_phrase: "",
     values: "",
     love_language: "",
     conflict_behavior: "",
@@ -670,9 +676,12 @@ export default function ClosurePage() {
                 )}
 
                 {isLoading && (
-                  <div className="flex items-center gap-2 text-ink/60 font-mono text-xs p-3 bg-white/60 border-2 border-ink/40 w-fit">
-                    <Sparkles className="w-4 h-4 animate-spin text-brand" />
-                    <span>Simulating voice via multi-provider router...</span>
+                  <div className="flex items-center gap-2 max-w-xs mr-auto items-start my-2">
+                    <div className="bg-white border-3 border-ink p-3 shadow-sm flex items-center gap-1.5">
+                      <span className="w-2 h-2 bg-ink rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                      <span className="w-2 h-2 bg-ink rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                      <span className="w-2 h-2 bg-ink rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                    </div>
                   </div>
                 )}
                 <div ref={messagesEndRef} />
@@ -815,16 +824,16 @@ export default function ClosurePage() {
               <div className="border-b-4 border-ink pb-6 flex items-center justify-between">
                 <div>
                   <span className="font-mono text-xs font-bold uppercase bg-brand text-ink px-2 py-0.5 border border-ink">
-                    Persona Profile Setup • Step {engineStep} of 4
+                    Persona Calibration • Stage {engineStep} of 5
                   </span>
-                  <h2 className="text-2xl sm:text-4xl font-heading uppercase mt-1">PERSONA PROFILE SETUP</h2>
+                  <h2 className="text-2xl sm:text-4xl font-heading uppercase mt-1">PERSONA CALIBRATION STAGE {engineStep}</h2>
                 </div>
                 <Sliders className="w-8 h-8 text-ink hidden sm:block" />
               </div>
 
               {/* Step Progress Bar */}
-              <div className="grid grid-cols-4 gap-2">
-                {[1, 2, 3, 4].map((step) => (
+              <div className="grid grid-cols-5 gap-2">
+                {[1, 2, 3, 4, 5].map((step) => (
                   <button
                     key={step}
                     onClick={() => setEngineStep(step)}
@@ -835,110 +844,158 @@ export default function ClosurePage() {
                 ))}
               </div>
 
-              {/* STEP 1: COMMUNICATION STYLE & NAMING */}
+              {/* STAGE 1: IDENTITY & RELATIONSHIP DYNAMICS */}
               {engineStep === 1 && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
                   <div className="flex items-center gap-2 font-heading text-xl sm:text-2xl uppercase border-b-2 border-ink/10 pb-2">
                     <Upload className="w-6 h-6 text-brand" />
-                    <span>Step 1: Communication Style & Naming</span>
+                    <span>Stage 1: Identity & Relationship Context</span>
                   </div>
                   <p className="font-sans text-sm sm:text-base text-ink/80 leading-relaxed">
-                    To make this space feel authentic and familiar, you can paste examples of their past messages or writing style. We will gently analyze their tone and patterns without keeping the raw text.
+                    Start with the basics of who they are to you.
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="font-mono text-xs font-bold uppercase block">Their Name or Initials</label>
+                      <label className="font-mono text-xs font-bold uppercase block">Their Name / Nickname</label>
                       <Input
                         value={personLabel}
                         onChange={(e) => setPersonLabel(e.target.value)}
-                        placeholder="e.g. Dad, S, Former Partner"
+                        placeholder="e.g. Alex, J, Ex-partner"
                         className="h-12 border-3 border-ink text-base bg-white font-sans font-bold"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <label className="font-mono text-xs font-bold uppercase block">Paste Past Message Examples (Optional)</label>
-                      <div className="flex gap-2">
-                        <Textarea
-                          value={sampleText}
-                          onChange={(e) => setSampleText(e.target.value)}
-                          placeholder="Paste a few old texts, emails, or messages here..."
-                          className="min-h-[80px] border-3 border-ink text-xs p-2 bg-white font-mono"
-                        />
-                      </div>
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        className="w-full bg-ink text-bg hover:bg-brand hover:text-ink transition-all font-mono text-xs uppercase"
-                        onClick={handleAnalyzeVoiceSamples}
-                        disabled={isAnalyzingVoice || !sampleText.trim()}
-                      >
-                        {isAnalyzingVoice ? <RefreshCw className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1 text-brand" />}
-                        {isAnalyzingVoice ? "Analyzing Style..." : "Analyze & Extract Communication Style"}
-                      </Button>
+                      <label className="font-mono text-xs font-bold uppercase block">Who were they to you?</label>
+                      <Input
+                        value={traitForm.relationship_context}
+                        onChange={(e) => setTraitForm({ ...traitForm, relationship_context: e.target.value })}
+                        placeholder="e.g. Ex-fiancé of 3 years, college partner, long-distance ex"
+                        className="h-12 border-3 border-ink text-base bg-white font-sans font-bold"
+                      />
                     </div>
                   </div>
 
-                  <div className="space-y-4 pt-4 border-t-2 border-ink/20">
-                    <h4 className="font-heading text-lg uppercase">Style Profile Settings</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <label className="font-mono text-[10px] font-bold uppercase opacity-70">Capitalization Habits</label>
-                        <Input
-                          value={voiceForm.capitalization}
-                          onChange={(e) => setVoiceForm({ ...voiceForm, capitalization: e.target.value })}
-                          placeholder="e.g. all lowercase, proper grammar, random CAPS"
-                          className="h-10 text-xs border-2 border-ink bg-white font-mono"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="font-mono text-[10px] font-bold uppercase opacity-70">Punctuation & Emojis</label>
-                        <Input
-                          value={voiceForm.punctuation_habits}
-                          onChange={(e) => setVoiceForm({ ...voiceForm, punctuation_habits: e.target.value })}
-                          placeholder="e.g. lots of ellipses..., exclamation marks, no periods"
-                          className="h-10 text-xs border-2 border-ink bg-white font-mono"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="font-mono text-[10px] font-bold uppercase opacity-70">Average Message Length</label>
-                        <Input
-                          value={voiceForm.avg_message_length}
-                          onChange={(e) => setVoiceForm({ ...voiceForm, avg_message_length: e.target.value })}
-                          placeholder="e.g. short 1-line replies, long paragraphs"
-                          className="h-10 text-xs border-2 border-ink bg-white font-mono"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="font-mono text-[10px] font-bold uppercase opacity-70">Common Words or Phrases</label>
-                        <Input
-                          value={voiceForm.common_words_phrases.join(', ')}
-                          onChange={(e) => setVoiceForm({ ...voiceForm, common_words_phrases: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
-                          placeholder="e.g. honestly, whatever, take care, tbh"
-                          className="h-10 text-xs border-2 border-ink bg-white font-mono"
-                        />
-                      </div>
-                    </div>
+                  <div className="space-y-2">
+                    <label className="font-mono text-xs font-bold uppercase block">Paste Raw Past Messages / Texts (Optional Auto-Analyze)</label>
+                    <Textarea
+                      value={sampleText}
+                      onChange={(e) => setSampleText(e.target.value)}
+                      placeholder="Paste a few old text messages or emails here..."
+                      className="min-h-[90px] border-3 border-ink text-xs p-3 bg-white font-mono"
+                    />
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="w-full bg-ink text-bg hover:bg-brand hover:text-ink transition-all font-mono text-xs uppercase"
+                      onClick={handleAnalyzeVoiceSamples}
+                      disabled={isAnalyzingVoice || !sampleText.trim()}
+                    >
+                      {isAnalyzingVoice ? <RefreshCw className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1 text-brand" />}
+                      {isAnalyzingVoice ? "Analyzing Text Syntax..." : "Analyze & Extract Communication Profile"}
+                    </Button>
                   </div>
 
                   <div className="flex justify-end pt-4">
                     <Button className="h-14 px-8 bg-brand hover:bg-brand/90 text-ink shadow-md font-bold uppercase" onClick={() => setEngineStep(2)}>
-                      Next Step: Tone & Behavior <ArrowRight className="w-4 h-4 ml-2" />
+                      Next Stage: Detailed Texting Style <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </div>
                 </motion.div>
               )}
 
-              {/* STEP 2: EMOTIONAL TONE & CONFLICT BEHAVIOR */}
+              {/* STAGE 2: DETAILED TEXTING STYLE & QUIRKS */}
               {engineStep === 2 && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
                   <div className="flex items-center gap-2 font-heading text-xl sm:text-2xl uppercase border-b-2 border-ink/10 pb-2">
-                    <Sliders className="w-6 h-6 text-brand" />
-                    <span>Step 2: Emotional Tone & Conflict Behavior</span>
+                    <MessageSquare className="w-6 h-6 text-brand" />
+                    <span>Stage 2: Detailed Texting Style & Quirks</span>
                   </div>
                   <p className="font-sans text-sm sm:text-base text-ink/80 leading-relaxed">
-                    How did they express affection, and how did they react when conversations became difficult or emotional?
+                    Capture the exact cadence of how they texted you.
+                  </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="font-mono text-xs font-bold uppercase opacity-80">Response Time Vibe</label>
+                      <Input
+                        value={voiceForm.response_time}
+                        onChange={(e) => setVoiceForm({ ...voiceForm, response_time: e.target.value })}
+                        placeholder="e.g. Instant replier, takes 6 hours, leaves on read"
+                        className="h-10 text-xs border-2 border-ink bg-white font-mono"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="font-mono text-xs font-bold uppercase opacity-80">Double Texting Habit</label>
+                      <Input
+                        value={voiceForm.double_texting}
+                        onChange={(e) => setVoiceForm({ ...voiceForm, double_texting: e.target.value })}
+                        placeholder="e.g. Spams 5 texts at once, never double texts"
+                        className="h-10 text-xs border-2 border-ink bg-white font-mono"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="font-mono text-xs font-bold uppercase opacity-80">Typing Quirks / Typos</label>
+                      <Input
+                        value={voiceForm.typing_quirks}
+                        onChange={(e) => setVoiceForm({ ...voiceForm, typing_quirks: e.target.value })}
+                        placeholder="e.g. Uses 'u' & 'r', bad autocorrect, lots of '???'"
+                        className="h-10 text-xs border-2 border-ink bg-white font-mono"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="font-mono text-xs font-bold uppercase opacity-80">Capitalization</label>
+                      <Input
+                        value={voiceForm.capitalization}
+                        onChange={(e) => setVoiceForm({ ...voiceForm, capitalization: e.target.value })}
+                        placeholder="e.g. all lowercase, proper punctuation"
+                        className="h-10 text-xs border-2 border-ink bg-white font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="font-mono text-xs font-bold uppercase opacity-80">Avg Message Length</label>
+                      <Input
+                        value={voiceForm.avg_message_length}
+                        onChange={(e) => setVoiceForm({ ...voiceForm, avg_message_length: e.target.value })}
+                        placeholder="e.g. 1 word replies ('k', 'yeah'), long essays"
+                        className="h-10 text-xs border-2 border-ink bg-white font-mono"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="font-mono text-xs font-bold uppercase opacity-80">Catchphrases / Slang</label>
+                      <Input
+                        value={voiceForm.common_words_phrases.join(', ')}
+                        onChange={(e) => setVoiceForm({ ...voiceForm, common_words_phrases: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
+                        placeholder="e.g. tbh, bro, honestly, I mean..."
+                        className="h-10 text-xs border-2 border-ink bg-white font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between pt-4">
+                    <Button variant="secondary" className="h-14 px-6 text-sm uppercase" onClick={() => setEngineStep(1)}>
+                      <ArrowLeft className="w-4 h-4 mr-2" /> Back
+                    </Button>
+                    <Button className="h-14 px-8 bg-brand hover:bg-brand/90 text-ink shadow-md font-bold uppercase" onClick={() => setEngineStep(3)}>
+                      Next Stage: Emotional Tone & Conflict <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* STAGE 3: EMOTIONAL TONE & CONFLICT BEHAVIOR */}
+              {engineStep === 3 && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+                  <div className="flex items-center gap-2 font-heading text-xl sm:text-2xl uppercase border-b-2 border-ink/10 pb-2">
+                    <Sliders className="w-6 h-6 text-brand" />
+                    <span>Stage 3: Emotional Tone & Conflict Behavior</span>
+                  </div>
+                  <p className="font-sans text-sm sm:text-base text-ink/80 leading-relaxed">
+                    How did they react when conversations became difficult or emotional?
                   </p>
 
                   <div className="space-y-4">
@@ -953,75 +1010,11 @@ export default function ClosurePage() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="font-mono text-xs font-bold uppercase block">When Affectionate or Kind</label>
-                      <Textarea
-                        value={voiceForm.tone_when_affectionate}
-                        onChange={(e) => setVoiceForm({ ...voiceForm, tone_when_affectionate: e.target.value })}
-                        placeholder="e.g. Uses nicknames, sends supportive reminders, very gentle..."
-                        className="min-h-[70px] border-3 border-ink text-sm p-3 bg-white"
-                      />
-                    </div>
-
-                    <div className="space-y-1">
                       <label className="font-mono text-xs font-bold uppercase block">Under Conflict or Emotional Stress</label>
                       <Textarea
                         value={voiceForm.tone_under_conflict}
                         onChange={(e) => setVoiceForm({ ...voiceForm, tone_under_conflict: e.target.value })}
-                        placeholder="e.g. Withdraws into silence, gets defensive, over-explains logically, changes the subject..."
-                        className="min-h-[70px] border-3 border-ink text-sm p-3 bg-white"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between pt-4">
-                    <Button variant="secondary" className="h-14 px-6 text-sm uppercase" onClick={() => setEngineStep(1)}>
-                      <ArrowLeft className="w-4 h-4 mr-2" /> Back
-                    </Button>
-                    <Button className="h-14 px-8 bg-brand hover:bg-brand/90 text-ink shadow-md font-bold uppercase" onClick={() => setEngineStep(3)}>
-                      Next Step: Relationship Dynamics <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* STEP 3: RELATIONSHIP DYNAMICS */}
-              {engineStep === 3 && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-                  <div className="flex items-center gap-2 font-heading text-xl sm:text-2xl uppercase border-b-2 border-ink/10 pb-2">
-                    <Heart className="w-6 h-6 text-brand" />
-                    <span>Step 3: Relationship Dynamics</span>
-                  </div>
-                  <p className="font-sans text-sm sm:text-base text-ink/80 leading-relaxed">
-                    Sharing a little context helps the conversation space understand the unspoken bond and emotional boundaries between you.
-                  </p>
-
-                  <div className="space-y-4">
-                    <div className="space-y-1">
-                      <label className="font-mono text-xs font-bold uppercase block">Who were they to you?</label>
-                      <Input
-                        value={traitForm.relationship_context}
-                        onChange={(e) => setTraitForm({ ...traitForm, relationship_context: e.target.value })}
-                        placeholder="e.g. My older brother, my college best friend, my parent..."
-                        className="h-12 border-3 border-ink text-sm bg-white font-sans"
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="font-mono text-xs font-bold uppercase block">What mattered most to them?</label>
-                      <Textarea
-                        value={traitForm.values}
-                        onChange={(e) => setTraitForm({ ...traitForm, values: e.target.value })}
-                        placeholder="e.g. Honesty, hard work, family tradition, personal independence..."
-                        className="min-h-[70px] border-3 border-ink text-sm p-3 bg-white"
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="font-mono text-xs font-bold uppercase block">Shared Humor or Jokes</label>
-                      <Textarea
-                        value={traitForm.humor_notes}
-                        onChange={(e) => setTraitForm({ ...traitForm, humor_notes: e.target.value })}
-                        placeholder="e.g. Dry sarcastic wit, dad jokes, self-deprecating humor..."
+                        placeholder="e.g. Withdraws into silence, gets defensive, turns things back on me..."
                         className="min-h-[70px] border-3 border-ink text-sm p-3 bg-white"
                       />
                     </div>
@@ -1032,62 +1025,52 @@ export default function ClosurePage() {
                       <ArrowLeft className="w-4 h-4 mr-2" /> Back
                     </Button>
                     <Button className="h-14 px-8 bg-brand hover:bg-brand/90 text-ink shadow-md font-bold uppercase" onClick={() => setEngineStep(4)}>
-                      Next Step: Memory Vault <ArrowRight className="w-4 h-4 ml-2" />
+                      Next Stage: Flaws & Breakup Context <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </div>
                 </motion.div>
               )}
 
-              {/* STEP 4: ADD KEY MEMORIES */}
+              {/* STAGE 4: FLAWS, TOXIC TRAITS & BREAKUP CONTEXT */}
               {engineStep === 4 && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
                   <div className="flex items-center gap-2 font-heading text-xl sm:text-2xl uppercase border-b-2 border-ink/10 pb-2">
-                    <BrainCircuit className="w-6 h-6 text-positive" />
-                    <span>Step 4: Add A Key Memory</span>
+                    <AlertTriangle className="w-6 h-6 text-accent" />
+                    <span>Stage 4: Flaws, Toxic Traits & Breakup Context</span>
                   </div>
                   <p className="font-sans text-sm sm:text-base text-ink/80 leading-relaxed">
-                    You can add a specific memory, phrase, or topic that you might bring up. When you mention this during your conversation, they will remember and respond with awareness.
+                    Giving the simulator their flaws prevents it from sounding artificially polite or idealizing them.
                   </p>
 
-                  <div className="p-4 bg-bg border-3 border-ink space-y-4">
+                  <div className="space-y-4">
                     <div className="space-y-1">
-                      <label className="font-mono text-xs font-bold uppercase block">Memory or Unsaid Thought</label>
+                      <label className="font-mono text-xs font-bold uppercase block">Biggest Flaws or Toxic Traits</label>
                       <Textarea
-                        placeholder="e.g. Remember that rainy afternoon when we finally talked about moving to New York..."
-                        value={newMemContent}
-                        onChange={(e) => setNewMemContent(e.target.value)}
-                        className="min-h-[80px] border-2 border-ink bg-white text-sm p-3"
+                        value={traitForm.flaws_or_toxic_traits}
+                        onChange={(e) => setTraitForm({ ...traitForm, flaws_or_toxic_traits: e.target.value })}
+                        placeholder="e.g. Emotionally unavailable, gaslights when caught lying, always acts like the victim..."
+                        className="min-h-[70px] border-3 border-ink text-sm p-3 bg-white"
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="font-mono text-xs font-bold uppercase block">How did the relationship end?</label>
+                      <Textarea
+                        value={traitForm.breakup_context}
+                        onChange={(e) => setTraitForm({ ...traitForm, breakup_context: e.target.value })}
+                        placeholder="e.g. Ghosted after an argument, mutual breakup, they ended it out of nowhere..."
+                        className="min-h-[70px] border-3 border-ink text-sm p-3 bg-white"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="font-mono text-xs font-bold uppercase block">Trigger Phrase / Soft Spot (Optional)</label>
                       <Input
-                        placeholder="Tags: e.g. moving in, argument, future"
-                        value={newMemTags}
-                        onChange={(e) => setNewMemTags(e.target.value)}
-                        className="h-10 text-xs border-2 border-ink bg-white font-mono"
+                        value={traitForm.trigger_phrase}
+                        onChange={(e) => setTraitForm({ ...traitForm, trigger_phrase: e.target.value })}
+                        placeholder="e.g. Mentioning their ex, bringing up commitment, asking 'are you free'"
+                        className="h-12 border-3 border-ink text-sm bg-white font-sans"
                       />
-                      <select
-                        value={newMemWeight}
-                        onChange={(e: any) => setNewMemWeight(e.target.value)}
-                        className="w-full h-10 border-2 border-ink bg-white font-mono text-xs px-2"
-                      >
-                        <option value="hurt">💔 Hurt / Painful</option>
-                        <option value="fond">✨ Fond / Nostalgic</option>
-                        <option value="angry">🔥 Angry / Unresolved</option>
-                        <option value="confusing">❓ Confusing / Mixed</option>
-                      </select>
-                    </div>
-
-                    <div className="flex justify-end">
-                      <Button 
-                        size="sm"
-                        className="bg-purple text-ink text-xs font-bold uppercase"
-                        onClick={handleAddMemoryEntry}
-                        disabled={!newMemContent.trim()}
-                      >
-                        <Plus className="w-4 h-4 mr-1" /> Save Memory Now
-                      </Button>
                     </div>
                   </div>
 
@@ -1095,12 +1078,57 @@ export default function ClosurePage() {
                     <Button variant="secondary" className="h-14 px-6 text-sm uppercase" onClick={() => setEngineStep(3)}>
                       <ArrowLeft className="w-4 h-4 mr-2" /> Back
                     </Button>
+                    <Button className="h-14 px-8 bg-brand hover:bg-brand/90 text-ink shadow-md font-bold uppercase" onClick={() => setEngineStep(5)}>
+                      Generate Persona Report <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* STAGE 5: DETAILED PERSONA REPORT & ACTIVATION */}
+              {engineStep === 5 && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+                  <div className="flex items-center gap-2 font-heading text-xl sm:text-2xl uppercase border-b-2 border-ink/10 pb-2">
+                    <FileText className="w-6 h-6 text-brand" />
+                    <span>Stage 5: Persona Analysis & Calibration Report</span>
+                  </div>
+                  
+                  <div className="p-6 bg-bg border-4 border-ink space-y-4 font-mono text-xs">
+                    <div className="flex justify-between items-center border-b-2 border-ink pb-2">
+                      <span className="font-bold text-sm uppercase text-ink">TARGET PERSONA: {personLabel || "THEM"}</span>
+                      <span className="bg-positive/20 border border-positive px-2 py-0.5 text-[10px] font-bold uppercase text-ink">Calibrated 100%</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <span className="text-ink/60 uppercase block">Response Timing:</span>
+                        <span className="font-bold text-ink">{voiceForm.response_time || "Standard"}</span>
+                      </div>
+                      <div>
+                        <span className="text-ink/60 uppercase block">Capitalization:</span>
+                        <span className="font-bold text-ink">{voiceForm.capitalization || "Casual"}</span>
+                      </div>
+                      <div>
+                        <span className="text-ink/60 uppercase block">Conflict Stance:</span>
+                        <span className="font-bold text-ink">{voiceForm.tone_under_conflict || "Defensive"}</span>
+                      </div>
+                      <div>
+                        <span className="text-ink/60 uppercase block">Core Flaws:</span>
+                        <span className="font-bold text-ink">{traitForm.flaws_or_toxic_traits || "Guarded"}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between pt-4">
+                    <Button variant="secondary" className="h-14 px-6 text-sm uppercase" onClick={() => setEngineStep(4)}>
+                      <ArrowLeft className="w-4 h-4 mr-2" /> Back
+                    </Button>
                     <Button 
                       className="h-16 px-10 text-lg bg-brand hover:bg-brand/90 text-ink shadow-md font-bold uppercase"
                       onClick={handleSaveEngineProfile}
                     >
                       <CheckCircle2 className="w-6 h-6 mr-2" />
-                      Save & Activate Profile
+                      Activate Persona & Start Chat
                     </Button>
                   </div>
                 </motion.div>
