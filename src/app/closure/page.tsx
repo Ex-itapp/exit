@@ -881,28 +881,12 @@ export default function ClosurePage() {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="font-mono text-xs font-bold uppercase block">Paste Raw Past Messages / Texts (Optional Auto-Analyze)</label>
-                    <Textarea
-                      value={sampleText}
-                      onChange={(e) => setSampleText(e.target.value)}
-                      placeholder="Paste a few old text messages or emails here..."
-                      className="min-h-[90px] border-3 border-ink text-xs p-3 bg-white font-mono"
-                    />
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      className="w-full bg-ink text-bg hover:bg-brand hover:text-ink transition-all font-mono text-xs uppercase"
-                      onClick={handleAnalyzeVoiceSamples}
-                      disabled={isAnalyzingVoice || !sampleText.trim()}
-                    >
-                      {isAnalyzingVoice ? <RefreshCw className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1 text-brand" />}
-                      {isAnalyzingVoice ? "Analyzing Text Syntax..." : "Analyze & Extract Communication Profile"}
-                    </Button>
-                  </div>
-
                   <div className="flex justify-end pt-4">
-                    <Button className="h-14 px-8 bg-brand hover:bg-brand/90 text-ink shadow-md font-bold uppercase" onClick={() => setEngineStep(2)}>
+                    <Button 
+                      className="h-14 px-8 bg-brand hover:bg-brand/90 text-ink shadow-md font-bold uppercase" 
+                      onClick={() => setEngineStep(2)}
+                      disabled={!personLabel.trim() || !traitForm.relationship_context.trim()}
+                    >
                       Next Stage: Detailed Texting Style <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </div>
@@ -984,7 +968,11 @@ export default function ClosurePage() {
                     <Button variant="secondary" className="h-14 px-6 text-sm uppercase" onClick={() => setEngineStep(1)}>
                       <ArrowLeft className="w-4 h-4 mr-2" /> Back
                     </Button>
-                    <Button className="h-14 px-8 bg-brand hover:bg-brand/90 text-ink shadow-md font-bold uppercase" onClick={() => setEngineStep(3)}>
+                    <Button 
+                      className="h-14 px-8 bg-brand hover:bg-brand/90 text-ink shadow-md font-bold uppercase" 
+                      onClick={() => setEngineStep(3)}
+                      disabled={!voiceForm.response_time.trim() || !voiceForm.double_texting.trim() || !voiceForm.typing_quirks.trim() || !voiceForm.capitalization.trim() || !voiceForm.avg_message_length.trim()}
+                    >
                       Next Stage: Emotional Tone & Conflict <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </div>
@@ -1028,7 +1016,11 @@ export default function ClosurePage() {
                     <Button variant="secondary" className="h-14 px-6 text-sm uppercase" onClick={() => setEngineStep(2)}>
                       <ArrowLeft className="w-4 h-4 mr-2" /> Back
                     </Button>
-                    <Button className="h-14 px-8 bg-brand hover:bg-brand/90 text-ink shadow-md font-bold uppercase" onClick={() => setEngineStep(4)}>
+                    <Button 
+                      className="h-14 px-8 bg-brand hover:bg-brand/90 text-ink shadow-md font-bold uppercase" 
+                      onClick={() => setEngineStep(4)}
+                      disabled={!voiceForm.tone_baseline.trim() || !voiceForm.tone_under_conflict.trim()}
+                    >
                       Next Stage: Flaws & Breakup Context <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </div>
@@ -1082,7 +1074,11 @@ export default function ClosurePage() {
                     <Button variant="secondary" className="h-14 px-6 text-sm uppercase" onClick={() => setEngineStep(3)}>
                       <ArrowLeft className="w-4 h-4 mr-2" /> Back
                     </Button>
-                    <Button className="h-14 px-8 bg-brand hover:bg-brand/90 text-ink shadow-md font-bold uppercase" onClick={() => setEngineStep(5)}>
+                    <Button 
+                      className="h-14 px-8 bg-brand hover:bg-brand/90 text-ink shadow-md font-bold uppercase" 
+                      onClick={() => setEngineStep(5)}
+                      disabled={!traitForm.flaws_or_toxic_traits.trim() || !traitForm.breakup_context.trim()}
+                    >
                       Generate Persona Report <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </div>
