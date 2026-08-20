@@ -15,6 +15,7 @@ export interface UserState {
   hasCompletedOnboarding: boolean;
   isProfileSyncing: boolean;
   streakDays: number;
+  lastSeenStreak: number;
 }
 
 export function useUser() {
@@ -26,6 +27,7 @@ export function useUser() {
   const [appModeState, setAppModeState] = useState<AppMode>('no_contact');
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean>(false);
   const [isProfileSyncing, setIsProfileSyncing] = useState<boolean>(true);
+  const [lastSeenStreak, setLastSeenStreak] = useState<number>(0);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -55,6 +57,9 @@ export function useUser() {
 
       const savedOnboarding = localStorage.getItem('unsent_onboarding_done_clean');
       setHasCompletedOnboarding(savedOnboarding === 'true');
+
+      const savedStreak = localStorage.getItem('unsent_last_seen_streak_clean');
+      if (savedStreak) setLastSeenStreak(parseInt(savedStreak, 10));
     };
     
     loadState();
@@ -111,6 +116,11 @@ export function useUser() {
   const streakDays = breakupDate 
     ? Math.max(0, Math.floor((new Date().getTime() - new Date(breakupDate).getTime()) / (1000 * 3600 * 24)))
     : 0;
+
+  const updateLastSeenStreak = (newStreak: number) => {
+    setLastSeenStreak(newStreak);
+    localStorage.setItem('unsent_last_seen_streak_clean', newStreak.toString());
+  };
 
   const punchToday = async () => {
     const todayStr = new Date().toISOString().split('T')[0];
@@ -237,6 +247,8 @@ export function useUser() {
     hasCompletedOnboarding,
     isProfileSyncing,
     streakDays,
+    lastSeenStreak,
+    updateLastSeenStreak,
     punchToday,
     setAppMode,
     completeOnboarding,

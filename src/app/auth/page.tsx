@@ -79,6 +79,18 @@ export default function AuthPage() {
 
 
 
+          {process.env.NODE_ENV === 'development' && (
+            <Button
+              type="button"
+              onClick={() => {
+                router.push(hasCompletedOnboarding ? "/dashboard" : "/onboarding");
+              }}
+              className="w-full h-12 mt-4 bg-accent text-white hover:bg-accent/90 font-mono font-bold uppercase text-xs border-3 border-ink flex items-center justify-center gap-2 brutalist-shadow-sm"
+            >
+              Bypass Login (Test Mode)
+            </Button>
+          )}
+
           {authMsg && (
             <div className="p-3 bg-positive/20 border-2 border-positive font-mono text-xs font-bold text-center">
               {authMsg}

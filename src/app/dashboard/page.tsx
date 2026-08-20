@@ -11,6 +11,7 @@ import { useUser } from "@/lib/useUser";
 import { useFlags } from "@/lib/useFlags";
 import { useMoods } from "@/lib/useMoods";
 import { AnchorModal } from "@/components/AnchorModal";
+import { StreakTile } from "@/components/StreakTile";
 import { useAuth } from "@/lib/useAuth";
 import { cn } from "@/lib/utils";
 import { motion } from "motion/react";
@@ -38,7 +39,7 @@ const MOODS = [
 
 export default function DashboardPage() {
   const navigate = useRouter();
-  const { userName, userAnchor, streakDays, hasCompletedOnboarding, isProfileSyncing } = useUser();
+  const { userName, userAnchor, streakDays, lastSeenStreak, updateLastSeenStreak, hasCompletedOnboarding, isProfileSyncing } = useUser();
   const { loading: authLoading } = useAuth();
   const { checkins, addCheckin } = useCheckins();
   const { flags } = useFlags();
@@ -130,22 +131,12 @@ export default function DashboardPage() {
 
       {/* ── COMPACT RECOVERY SNAPSHOT ── */}
       <motion.div variants={itemVariants} className="grid grid-cols-3 gap-2.5 sm:gap-3">
-        {/* Streak */}
-        <div 
-          onClick={() => navigate.push('/streak')}
-          className="bg-brand border-2 sm:border-3 border-ink brutalist-shadow-sm p-3 sm:p-4 flex flex-col justify-between cursor-pointer hover:translate-y-[-2px] transition-transform"
-        >
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-[9px] sm:text-[10px] font-bold uppercase text-ink/70">Streak</span>
-            <Flame className="w-4 h-4 text-ink" />
-          </div>
-          <div className="mt-2">
-            <span className="font-heading text-2xl sm:text-4xl font-black tracking-tighter leading-none text-ink block">
-              {streakDays}d
-            </span>
-            <span className="font-mono text-[8px] sm:text-[9px] text-ink/60 uppercase block mt-1">No Contact</span>
-          </div>
-        </div>
+        {/* Streak Peel Tile */}
+        <StreakTile 
+          actualStreak={streakDays} 
+          lastSeenStreak={lastSeenStreak} 
+          onPeelComplete={updateLastSeenStreak} 
+        />
 
         {/* Red Flags */}
         <div 
