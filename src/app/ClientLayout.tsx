@@ -55,7 +55,7 @@ export function ClientLayout({ children }: { children: ReactNode }) {
     }
   }, [user, loading, profileLoading, hasCompletedOnboarding, pathname, router]);
 
-  const hideBottomNav = ['/onboarding', '/therapist', '/closure', '/diary/new', '/flags/new'].includes(pathname) || 
+  const hideBottomNav = ['/onboarding', '/therapist', '/closure', '/diary/new', '/flags/new', '/pricing'].includes(pathname) || 
                         pathname.startsWith('/closure') || 
                         pathname.startsWith('/therapist') || 
                         pathname.startsWith('/onboarding') ||
@@ -103,7 +103,6 @@ export function ClientLayout({ children }: { children: ReactNode }) {
     '/dashboard', 
     '/onboarding', 
     '/auth',
-    '/pricing',
     '/roadmap',
     '/therapist',
     '/closure',

@@ -1,21 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { usePro } from '../lib/usePro';
 import { supabase } from '../lib/supabase';
 import { savePaymentDebugRecord } from '../lib/paymentDebug';
 import type { User } from '@supabase/supabase-js';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Zap,
   Shield,
   MessageSquare,
   Heart,
   Star,
-  ArrowLeft,
   Check,
   Crown,
+  Sparkles,
 } from 'lucide-react';
 
 type BillingCycle = 'monthly' | 'annual';
@@ -37,12 +37,12 @@ const PLANS = {
 };
 
 const PRO_FEATURES = [
-  { icon: MessageSquare, label: 'Unlimited Closure Sessions', color: 'text-purple' },
-  { icon: Zap, label: 'Advanced Memory Bank Search', color: 'text-brand' },
-  { icon: Heart, label: 'Full Emotional Pattern Insights', color: 'text-accent' },
-  { icon: Shield, label: 'Priority Response Pipeline', color: 'text-blue' },
-  { icon: Star, label: 'Custom App Themes', color: 'text-positive' },
-  { icon: Crown, label: 'All Future Features — Forever', color: 'text-purple' },
+  { icon: MessageSquare, label: 'Unlimited Closure Sessions', desc: 'Talk to them without limits' },
+  { icon: Heart, label: 'Full Emotional Insights', desc: 'Discover hidden emotional patterns' },
+  { icon: Zap, label: 'Advanced Memory Bank Search', desc: 'Instant recall of any detail' },
+  { icon: Shield, label: 'Priority Response Pipeline', desc: 'No waiting in queue during peaks' },
+  { icon: Star, label: 'Custom App Themes', desc: 'Personalize your entire experience' },
+  { icon: Crown, label: 'All Future Features — Forever', desc: 'Pro users get early, free access' },
 ];
 
 function useCurrentUser() {
@@ -133,224 +133,218 @@ export function PricingClient() {
   };
 
   return (
-    <div className="min-h-screen bg-bg text-ink font-sans selection:bg-brand selection:text-ink">
+    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-purple/30 selection:text-white -m-2 sm:-m-4 md:-m-8 -mt-20 sm:-mt-24 pt-20 px-4 pb-24 overflow-hidden relative">
+      
+      {/* Premium Background Effects */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-purple/20 blur-[120px] rounded-full pointer-events-none opacity-50" />
+      <div className="absolute bottom-0 left-0 w-full h-[300px] bg-gradient-to-t from-black to-transparent pointer-events-none" />
 
-      {/* ── NAV ── */}
-      <header className="sticky top-0 z-50 bg-bg/95 backdrop-blur-md border-b-4 border-ink px-4 sm:px-8 py-3.5 flex items-center justify-between">
-        <div
-          className="flex items-center gap-2 cursor-pointer group"
-          onClick={() => router.push('/')}
-        >
-          <div className="w-6 h-6 bg-brand border-2 border-ink block transform -rotate-6 group-hover:rotate-0 transition-transform" />
-          <span className="font-heading text-xl tracking-tighter uppercase font-black">
-            EX-it<span className="text-brand">.</span>
-          </span>
-        </div>
-
-        <button
-          onClick={() => router.back()}
-          className="flex items-center gap-1.5 px-3 py-1.5 border-2 border-transparent hover:border-ink hover:bg-white transition-all font-mono text-xs font-bold uppercase"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          Back
-        </button>
-
-        <div className="flex items-center gap-2">
-          {!authLoading && (user ? (
-            <div className="flex items-center gap-2">
-              {user.user_metadata?.avatar_url && (
-                <img src={user.user_metadata.avatar_url} alt="" className="w-7 h-7 border-2 border-ink" />
-              )}
-              {isPro && (
-                <span className="font-mono text-[10px] font-bold uppercase tracking-widest bg-brand border-2 border-ink px-2 py-0.5 brutalist-shadow-sm">
-                  PRO ✓
-                </span>
-              )}
-            </div>
-          ) : (
-            <button
-              onClick={handleSignIn}
-              className="px-4 py-2 bg-white border-2 border-ink brutalist-shadow-sm font-mono text-xs font-bold uppercase hover:bg-ink hover:text-bg transition-all"
-            >
-              Sign In
-            </button>
-          ))}
-        </div>
-      </header>
-
-      <main className="max-w-4xl mx-auto px-4 sm:px-8 py-12 sm:py-20">
-
+      <main className="max-w-6xl mx-auto relative z-10 pt-8">
+        
         {/* ── HERO ── */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-white border-3 border-ink px-4 py-1.5 brutalist-shadow-sm mb-6">
+        <div className="text-center mb-16 space-y-4">
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-2 bg-white/5 border border-white/10 backdrop-blur-md px-4 py-1.5 rounded-full mb-4 shadow-lg"
+          >
             <Crown className="w-4 h-4 text-purple" />
-            <span className="font-mono text-xs font-bold uppercase tracking-widest">
-              {isPro ? 'Pro Access Active ✓' : 'Unlock Your Full Space'}
+            <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-white/80">
+              {isPro ? 'Pro Access Active ✓' : 'Unlock The Full Experience'}
             </span>
-          </div>
+          </motion.div>
 
-          <h1 className="text-4xl sm:text-6xl font-heading tracking-tighter uppercase leading-[0.95] font-black mb-4">
-            GO ALL-IN ON<br />
-            <span className="bg-brand px-3 py-1 border-3 border-ink inline-block transform -rotate-1 mt-1">
-              YOUR HEALING.
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-4xl md:text-6xl lg:text-7xl font-heading tracking-tighter uppercase font-black"
+          >
+            Go all-in on <br className="hidden sm:block"/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple via-[#ff88cc] to-brand">
+              your healing.
             </span>
-          </h1>
-          <p className="text-ink/70 text-base sm:text-lg font-sans max-w-xl mx-auto leading-relaxed mt-4">
-            Try annual with 3 days free, or subscribe monthly with no trial. Unlimited closure sessions, memory bank search, and emotional insights.
-          </p>
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-white/50 text-base md:text-lg max-w-2xl mx-auto leading-relaxed"
+          >
+            Try annual with 3 days free, or subscribe monthly. 
+            <br className="hidden sm:block" /> Unlimited sessions, deep emotional insights, and advanced memory recall.
+          </motion.p>
         </div>
 
-        {/* ── BILLING TOGGLE ── */}
-        <div className="flex justify-center mb-10">
-          <div className="flex border-3 border-ink brutalist-shadow">
-            <button
-              onClick={() => setBillingCycle('monthly')}
-              className={`px-6 py-3 font-mono text-xs font-bold uppercase tracking-widest transition-all ${
-                billingCycle === 'monthly'
-                  ? 'bg-ink text-bg'
-                  : 'bg-white text-ink hover:bg-brand'
-              }`}
-            >
-              Monthly
-            </button>
-            <button
-              onClick={() => setBillingCycle('annual')}
-              className={`px-6 py-3 font-mono text-xs font-bold uppercase tracking-widest transition-all relative ${
-                billingCycle === 'annual'
-                  ? 'bg-ink text-bg'
-                  : 'bg-white text-ink hover:bg-brand'
-              }`}
-            >
-              Annual
-              <span className="absolute -top-3 -right-2 bg-accent text-bg text-[9px] font-bold px-1.5 py-0.5 border-2 border-ink">
-                -67%
-              </span>
-            </button>
-          </div>
-        </div>
-
-        {/* ── PRICING CARD ── */}
-        <div className="max-w-lg mx-auto">
-          <div className="bg-white border-4 border-ink brutalist-shadow p-8 sm:p-10 relative">
-
-            {/* Best value badge */}
-            {activePlan.badge && (
-              <div className="absolute -top-4 left-6 bg-brand border-2 border-ink px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest">
-                {activePlan.badge}
-              </div>
-            )}
-
-            {/* Plan label */}
-            <p className="font-mono text-xs font-bold uppercase tracking-widest text-ink/50 mb-3">
-              EX-IT PRO
-            </p>
-
-            {/* Price */}
-            <div className="flex items-baseline gap-2 mb-1">
-              <span className="font-heading text-6xl tracking-tighter font-black">
-                {activePlan.price}
-              </span>
-              <span className="font-mono text-sm text-ink/50">{activePlan.period}</span>
-            </div>
-
-            {'perMonth' in activePlan && activePlan.perMonth && (
-              <p className="font-mono text-xs text-ink/50 mb-8">
-                That&apos;s just <span className="text-ink font-bold">{activePlan.perMonth}</span> — less than a coffee ☕
-              </p>
-            )}
-
-            {/* Divider */}
-            <div className="border-t-3 border-ink my-6" />
-
-            {/* Features */}
-            <ul className="space-y-4 mb-8">
-              {PRO_FEATURES.map(({ icon: Icon, label, color }) => (
-                <li key={label} className="flex items-center gap-3">
-                  <div className="w-6 h-6 bg-brand border-2 border-ink flex items-center justify-center flex-shrink-0">
-                    <Check className="w-3.5 h-3.5 text-ink" />
+        {/* ── PRICING TOGGLE & CARDS ── */}
+        <div className="flex flex-col lg:flex-row items-start justify-center gap-8 lg:gap-12">
+          
+          {/* Features Column (Left) */}
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+            className="w-full lg:w-[450px] space-y-6 lg:pt-8"
+          >
+            <h2 className="text-2xl font-heading uppercase font-bold tracking-tight mb-8">Everything in Pro</h2>
+            <div className="space-y-6">
+              {PRO_FEATURES.map((feature, i) => (
+                <div key={i} className="flex gap-4 items-start group">
+                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-purple/10 group-hover:border-purple/30 transition-all duration-300">
+                    <feature.icon className="w-5 h-5 text-white/70 group-hover:text-purple transition-colors" />
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Icon className={`w-4 h-4 ${color}`} />
-                    <span className="font-sans text-sm font-medium text-ink">{label}</span>
+                  <div>
+                    <h4 className="font-bold text-sm text-white/90">{feature.label}</h4>
+                    <p className="text-xs text-white/50 mt-1">{feature.desc}</p>
                   </div>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
+          </motion.div>
 
-            {/* Trial acknowledgment */}
-            {!isPro && billingCycle === 'annual' && (
-              <label className="flex items-start gap-3 p-3 border-2 border-ink mb-4 cursor-pointer hover:bg-ink/5 transition-colors">
-                <input
-                  type="checkbox"
-                  checked={acknowledgedTrial}
-                  onChange={(e) => setAcknowledgedTrial(e.target.checked)}
-                  className="mt-0.5 w-5 h-5 border-3 border-ink accent-accent shrink-0"
-                />
-                <span className="font-mono text-xs font-bold leading-relaxed">
-                  I understand the first 3 days are free, then I will be <span className="text-accent underline">charged {activePlan.price}{activePlan.period} automatically</span>. Cancel anytime before the trial ends to avoid charges. <span className="text-accent">No refunds</span> after billing starts.
-                </span>
-              </label>
-            )}
-
-            {/* CTA */}
-            {isPro ? (
-              <div className="w-full py-4 bg-positive border-3 border-ink text-center font-mono text-xs font-bold uppercase tracking-widest brutalist-shadow-sm">
-                ✓ Pro Access Active
-              </div>
-            ) : (
+          {/* Pricing Card Column (Right) */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="w-full lg:w-[500px]"
+          >
+            {/* Billing Toggle */}
+            <div className="flex p-1 bg-white/5 border border-white/10 rounded-2xl w-fit mx-auto mb-8 backdrop-blur-md">
               <button
-                onClick={handleCheckout}
-                disabled={isCheckoutLoading || loading || (billingCycle === 'annual' && !acknowledgedTrial)}
-                className="w-full py-5 bg-brand border-3 border-ink brutalist-shadow font-mono text-sm font-bold uppercase tracking-widest hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                onClick={() => setBillingCycle('monthly')}
+                className={`px-6 py-2.5 rounded-xl font-mono text-[11px] font-bold uppercase tracking-widest transition-all ${
+                  billingCycle === 'monthly'
+                    ? 'bg-white text-black shadow-lg'
+                    : 'text-white/60 hover:text-white'
+                }`}
               >
-                {isCheckoutLoading || loading ? (
-                  <>
-                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
-                    {isCheckoutLoading ? 'Creating checkout...' : 'Loading...'}
-                  </>
-                ) : !user ? (
-                  billingCycle === 'annual' ? 'Sign In & Start 3-Day Free Trial →' : 'Sign In & Subscribe →'
-                ) : (
-                  billingCycle === 'annual' ? `Start 3-Day Free Trial — ${activePlan.price}${activePlan.period} after →` : `Subscribe — ${activePlan.price}${activePlan.period} →`
+                Monthly
+              </button>
+              <button
+                onClick={() => setBillingCycle('annual')}
+                className={`px-6 py-2.5 rounded-xl font-mono text-[11px] font-bold uppercase tracking-widest transition-all relative ${
+                  billingCycle === 'annual'
+                    ? 'bg-white text-black shadow-lg'
+                    : 'text-white/60 hover:text-white'
+                }`}
+              >
+                Annual
+                {billingCycle !== 'annual' && (
+                  <span className="absolute -top-2 -right-2 bg-purple text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-purple shadow-[0_0_15px_rgba(168,85,247,0.5)]">
+                    SAVE 67%
+                  </span>
                 )}
               </button>
-            )}
+            </div>
 
-            <p className="mt-4 text-center font-mono text-[10px] text-ink/40 uppercase tracking-widest">
-              3-day free trial on Annual · Cancel before trial ends to avoid charges · <span className="text-accent">No refunds</span> after billing starts · Secure via Dodo Payments
-            </p>
-          </div>
+            {/* Premium Glass Card */}
+            <div className="relative group">
+              <div className="absolute -inset-[1px] bg-gradient-to-b from-purple/40 to-transparent rounded-[32px] opacity-100 group-hover:opacity-100 transition-opacity" />
+              <div className="relative bg-[#0d0d0d]/80 backdrop-blur-xl border border-white/10 rounded-[32px] p-8 sm:p-12 overflow-hidden shadow-2xl">
+                
+                {activePlan.badge && (
+                  <div className="inline-flex items-center gap-1.5 bg-purple/10 border border-purple/30 text-purple px-3 py-1 rounded-full font-mono text-[10px] font-bold uppercase tracking-widest mb-6">
+                    <Sparkles className="w-3 h-3" />
+                    {activePlan.badge}
+                  </div>
+                )}
+
+                <div className="flex items-end gap-2 mb-2">
+                  <span className="font-heading text-6xl tracking-tighter font-black">
+                    {activePlan.price}
+                  </span>
+                  <span className="font-mono text-sm text-white/50 mb-2">{activePlan.period}</span>
+                </div>
+
+                {'perMonth' in activePlan && activePlan.perMonth && (
+                  <p className="font-mono text-xs text-white/50 mb-8 pb-8 border-b border-white/10">
+                    That&apos;s just <span className="text-white font-bold">{activePlan.perMonth}</span> — less than a coffee ☕
+                  </p>
+                )}
+
+                {/* Trial acknowledgment */}
+                <AnimatePresence mode="wait">
+                  {!isPro && billingCycle === 'annual' && (
+                    <motion.label 
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="flex items-start gap-3 p-4 bg-white/5 border border-white/10 rounded-2xl mb-8 cursor-pointer hover:bg-white/10 transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={acknowledgedTrial}
+                        onChange={(e) => setAcknowledgedTrial(e.target.checked)}
+                        className="mt-1 w-4 h-4 rounded border-white/20 bg-white/5 text-purple accent-purple shrink-0"
+                      />
+                      <span className="font-sans text-xs text-white/70 leading-relaxed">
+                        I understand the first 3 days are free, then I will be <span className="text-white underline">charged {activePlan.price}{activePlan.period} automatically</span>. Cancel anytime before trial ends. <span className="text-white">No refunds</span> after billing starts.
+                      </span>
+                    </motion.label>
+                  )}
+                </AnimatePresence>
+
+                {/* CTA */}
+                {isPro ? (
+                  <div className="w-full py-4 bg-white/10 border border-white/20 rounded-2xl text-center font-mono text-xs font-bold uppercase tracking-widest text-white">
+                    ✓ Pro Access Active
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleCheckout}
+                    disabled={isCheckoutLoading || loading || (billingCycle === 'annual' && !acknowledgedTrial)}
+                    className="w-full py-5 bg-white text-black rounded-2xl font-mono text-sm font-bold uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-[0_0_40px_rgba(255,255,255,0.2)]"
+                  >
+                    {isCheckoutLoading || loading ? (
+                      <>
+                        <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        {isCheckoutLoading ? 'Creating secure session...' : 'Loading...'}
+                      </>
+                    ) : !user ? (
+                      billingCycle === 'annual' ? 'Sign In & Start Free Trial' : 'Sign In & Subscribe'
+                    ) : (
+                      billingCycle === 'annual' ? 'Start 3-Day Free Trial' : 'Subscribe Now'
+                    )}
+                  </button>
+                )}
+
+                <p className="mt-6 text-center font-mono text-[10px] text-white/30 uppercase tracking-widest">
+                  Secure Checkout via Dodo Payments
+                </p>
+              </div>
+            </div>
+          </motion.div>
         </div>
 
         {/* ── FAQ ── */}
-        <div className="mt-20">
-          <h2 className="font-heading text-2xl sm:text-3xl tracking-tighter uppercase font-black text-center mb-8">
-            Quick Q&amp;A
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="mt-32 max-w-4xl mx-auto border-t border-white/10 pt-16"
+        >
+          <h2 className="font-heading text-2xl sm:text-3xl tracking-tighter uppercase font-black text-center mb-12">
+            Quick Questions
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-0 border-3 border-ink">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12">
             {[
-              { q: 'Cancel anytime?', a: 'Yes. Cancel instantly from your account settings. No questions, no fees. No refunds on the current billing period.' },
-              { q: 'Payment methods?', a: 'Dodo Payments — all major cards, UPI, and more. Fully secure.' },
-              { q: 'Is my data private?', a: '100%. Your diary, sessions, and conversations are encrypted and only yours.' },
-            ].map(({ q, a }, i) => (
-              <div key={q} className={`p-6 ${i < 2 ? 'sm:border-r-3 sm:border-ink' : ''} border-b-3 sm:border-b-0 border-ink last:border-b-0`}>
-                <h4 className="font-mono text-xs font-bold uppercase tracking-widest mb-2">{q}</h4>
-                <p className="text-sm text-ink/60 leading-relaxed">{a}</p>
+              { q: 'Can I cancel anytime?', a: 'Yes. Cancel instantly from your account settings. No questions, no fees. No refunds on the current billing period.' },
+              { q: 'Payment methods?', a: 'We use Dodo Payments, accepting all major cards, UPI, and local payment methods globally.' },
+              { q: 'Is my data private?', a: '100%. Your diary, sessions, and conversations are strictly confidential and encrypted.' },
+            ].map(({ q, a }) => (
+              <div key={q} className="space-y-3">
+                <h4 className="font-sans text-sm font-bold text-white">{q}</h4>
+                <p className="text-xs text-white/50 leading-relaxed">{a}</p>
               </div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </main>
 
-      {/* ── FOOTER ── */}
-      <footer className="border-t-4 border-ink py-8 text-center">
-        <p className="font-mono text-[10px] uppercase tracking-widest text-ink/40">
-          © {new Date().getFullYear()} EX-it. · Built for your healing
-        </p>
-      </footer>
     </div>
   );
 }
