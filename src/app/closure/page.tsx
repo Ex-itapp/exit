@@ -767,24 +767,28 @@ export default function ClosurePage() {
 
       {/* TAB 2: PERSON ENGINE (INTERACTIVE STEP-BY-STEP ONBOARDING WIZARD) */}
       {activeTab === 'engine' && (
-        <div className="space-y-6">
-          {profile && (
-            <Button
-              variant="secondary"
-              onClick={() => setActiveTab('sessions')}
-              className="font-mono font-bold text-xs uppercase bg-white border-2 border-ink h-10 px-4 hover:bg-ink hover:text-white"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" /> Back to Persona
-            </Button>
-          )}
+        <div className="fixed inset-0 z-50 bg-bg w-full h-full overflow-y-auto custom-scrollbar flex flex-col">
+          <div className="max-w-3xl mx-auto w-full p-4 sm:p-8 flex-1 flex flex-col justify-center my-auto min-h-min">
+            
+            <div className="mb-6 flex justify-between items-center">
+              {profile && (
+                <Button
+                  variant="secondary"
+                  onClick={() => setActiveTab('sessions')}
+                  className="font-mono font-bold text-xs uppercase bg-white border-2 border-ink h-10 px-4 hover:bg-ink hover:text-white"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" /> Cancel Setup
+                </Button>
+              )}
+            </div>
 
-          {isCreatingPersona ? (
-            <motion.div
-              key="creating-animation"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-white border-4 border-ink brutalist-shadow py-16 px-6 text-center space-y-8 max-w-2xl mx-auto my-6"
-            >
+            {isCreatingPersona ? (
+              <motion.div
+                key="creating-animation"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-white border-4 border-ink brutalist-shadow py-16 px-6 text-center space-y-8 w-full"
+              >
               <div className="relative w-28 h-28 mx-auto flex items-center justify-center">
                 <div className="absolute inset-0 bg-brand/30 rounded-full animate-ping" />
                 <div className="relative w-24 h-24 bg-ink text-bg rounded-full border-4 border-brand flex items-center justify-center shadow-lg">
@@ -1134,7 +1138,7 @@ export default function ClosurePage() {
                 </motion.div>
               )}
             </div>
-          )}
+          </div>
         </div>
       )}
 
