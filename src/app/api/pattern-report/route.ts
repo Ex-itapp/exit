@@ -121,8 +121,10 @@ Ensure the output is strictly valid JSON matching the schema format:
         // Get all valid gemini models that support text generation
         const validModels = modelsData.models?.filter((m: any) => 
           m.name.includes('gemini') && 
-          !m.name.includes('2.5') &&
           !m.name.includes('vision') &&
+          !m.name.includes('robotics') &&
+          !m.name.includes('er-2') &&
+          !m.name.includes('autotuned') &&
           m.supportedGenerationMethods?.includes('generateContent')
         );
 
