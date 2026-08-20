@@ -1134,6 +1134,7 @@ export default function ClosurePage() {
                 </motion.div>
               )}
             </div>
+          )}
           </div>
         </div>
       )}
