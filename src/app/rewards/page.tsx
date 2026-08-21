@@ -135,7 +135,7 @@ export default function RewardsPage() {
                   "px-2 py-1 uppercase border border-ink",
                   selectedBadge.isUnlocked ? "bg-positive text-ink" : "bg-white text-ink/60"
                 )}>
-                  {selectedBadge.isUnlocked ? "Unlocked" : selectedBadge.progressText}
+                  {selectedBadge.isUnlocked ? "Unlocked" : selectedBadge.progressText || "Keep going"}
                 </span>
               </div>
 

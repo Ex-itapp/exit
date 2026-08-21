@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import Script from 'next/script';
+
 import '../index.css';
 import { ClientLayout } from './ClientLayout';
 
@@ -32,53 +32,6 @@ export default function RootLayout({
         <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.svg" />
       </head>
       <body suppressHydrationWarning>
-        <Script
-          id="pwa-install-prompt"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.deferredPWAInstallPrompt = null;
-              window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                window.deferredPWAInstallPrompt = e;
-              });
-            `
-          }}
-        />
-        <Script
-          id="remove-bis-skin"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                const removeAttr = (el) => {
-                  if (el && el.removeAttribute) el.removeAttribute('bis_skin_checked');
-                };
-                document.querySelectorAll('[bis_skin_checked]').forEach(removeAttr);
-                const observer = new MutationObserver((mutations) => {
-                  mutations.forEach((m) => {
-                    if (m.type === 'attributes' && m.attributeName === 'bis_skin_checked') {
-                      removeAttr(m.target);
-                    } else if (m.addedNodes.length) {
-                      m.addedNodes.forEach((node) => {
-                        if (node.nodeType === 1) {
-                          removeAttr(node);
-                          node.querySelectorAll('[bis_skin_checked]').forEach(removeAttr);
-                        }
-                      });
-                    }
-                  });
-                });
-                observer.observe(document.documentElement, {
-                  attributes: true,
-                  childList: true,
-                  subtree: true,
-                  attributeFilter: ['bis_skin_checked']
-                });
-              })();
-            `
-          }}
-        />
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>

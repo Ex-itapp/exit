@@ -4,6 +4,24 @@ import { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 import type { User, Session } from "@supabase/supabase-js";
 
+const BYPASS_AUTH = true; // Set to true to bypass authentication during local development
+
+const MOCK_USER: User = {
+  id: 'local-test-user-id',
+  app_metadata: {},
+  user_metadata: {},
+  aud: 'authenticated',
+  created_at: new Date().toISOString(),
+  email: 'test@example.com',
+};
+
+const MOCK_SESSION: Session = {
+  access_token: 'mock-access-token',
+  refresh_token: 'mock-refresh-token',
+  expires_in: 3600,
+  token_type: 'bearer',
+  user: MOCK_USER,
+};
 
 
 export function useAuth() {
@@ -16,6 +34,15 @@ export function useAuth() {
 
     async function initAuth() {
       try {
+        if (BYPASS_AUTH) {
+          if (mounted) {
+            setSession(MOCK_SESSION);
+            setUser(MOCK_USER);
+            setLoading(false);
+          }
+          return;
+        }
+
         const { data: { session: currentSession } } = await supabase.auth.getSession();
         if (mounted) {
           setSession(currentSession);

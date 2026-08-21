@@ -4,17 +4,37 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/Card";
 import { useTimeline } from "@/lib/useTimeline";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useUser } from "@/lib/useUser";
+import { ChevronLeft, ChevronRight, Flag, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "motion/react";
 
 const DAY_LABELS_SHORT = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const DAY_LABELS_FULL = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
+const moodColorMap: Record<string, string> = {
+  '😭': '#00B4D8',
+  '😔': '#9D4EDD',
+  '😐': '#888888',
+  '🙂': '#FFDF00',
+  '🤩': '#00E676'
+};
+
+function hexToRgba(hex: string, alpha: number) {
+  if (!hex) return undefined;
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 export default function CalendarTimeline() {
   const router = useRouter();
   const { events } = useTimeline();
+  const { breakupDate } = useUser();
   
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
   const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
   const getFirstDayOfMonth = (year: number, month: number) => new Date(year, month, 1).getDay();
@@ -25,8 +45,14 @@ export default function CalendarTimeline() {
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfMonth(year, month);
 
-  const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
-  const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
+  const prevMonth = () => {
+    setCurrentDate(new Date(year, month - 1, 1));
+    setSelectedDay(null);
+  };
+  const nextMonth = () => {
+    setCurrentDate(new Date(year, month + 1, 1));
+    setSelectedDay(null);
+  };
 
   const monthName = currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
 
@@ -48,11 +74,21 @@ export default function CalendarTimeline() {
   };
 
   const handleDateClick = (day: number) => {
-    // Format YYYY-MM-DD for URL
+    setSelectedDay(day);
+  };
+  
+  const navigateToDay = () => {
+    if (!selectedDay) return;
     const m = (month + 1).toString().padStart(2, '0');
-    const d = day.toString().padStart(2, '0');
+    const d = selectedDay.toString().padStart(2, '0');
     router.push(`/timeline/${year}-${m}-${d}`);
   };
+
+  const selectedDateStr = selectedDay 
+    ? new Date(year, month, selectedDay).toLocaleDateString('default', { month: 'long', day: 'numeric', year: 'numeric' })
+    : '';
+
+  const selectedEvents = selectedDay ? getEventsForDay(selectedDay) : [];
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-150 max-w-5xl mx-auto px-4 pb-24">
@@ -100,6 +136,14 @@ export default function CalendarTimeline() {
               const moodEvent = dayEvents.find(e => e.type === 'mood');
               const moodEmoji = moodEvent ? moodEvent.data.emoji : null;
 
+              const dateObj = new Date(year, month, day);
+              const todayObj = new Date();
+              todayObj.setHours(23, 59, 59, 999);
+              const breakupDateObj = breakupDate ? new Date(breakupDate) : null;
+              if (breakupDateObj) breakupDateObj.setHours(0, 0, 0, 0);
+
+              const isInStreak = breakupDateObj && dateObj >= breakupDateObj && dateObj <= todayObj;
+
               return (
                 <div 
                   key={day}
@@ -108,24 +152,28 @@ export default function CalendarTimeline() {
                     "min-h-[60px] sm:min-h-[100px] lg:min-h-[120px] p-1.5 sm:p-2.5 relative border-r border-b border-ink/10 cursor-pointer transition-all hover:bg-brand/10 active:bg-brand/20 group",
                     isToday(day) ? "bg-brand/5 ring-2 ring-brand ring-inset z-10" : "bg-white"
                   )}
+                  style={{
+                    backgroundColor: moodEmoji ? hexToRgba(moodColorMap[moodEmoji], 0.12) : undefined,
+                    borderBottom: isInStreak ? '3px solid var(--color-brand)' : undefined,
+                  }}
                 >
                   <span className={cn(
-                    "font-heading text-base sm:text-lg lg:text-xl",
+                    "font-heading text-base sm:text-lg lg:text-xl relative z-10",
                     isToday(day) ? "text-brand" : "text-ink"
                   )}>
                     {day}
                   </span>
 
                   {/* Event Indicators */}
-                  <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 flex gap-0.5 sm:gap-1">
-                    {hasFlag && <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-purple" />}
+                  <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 flex gap-0.5 sm:gap-1 items-center z-10">
+                    {hasFlag && <Flag className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-accent" />}
                     {hasDiary && <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue" />}
                     {hasCheckin && <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-positive" />}
                   </div>
 
                   {/* Mood Emoji */}
                   {moodEmoji && (
-                    <div className="absolute bottom-0.5 right-0.5 sm:bottom-2 sm:right-2 text-sm sm:text-xl lg:text-2xl group-hover:scale-110 transition-transform">
+                    <div className="absolute bottom-0.5 right-0.5 sm:bottom-2 sm:right-2 text-sm sm:text-xl lg:text-2xl group-hover:scale-110 transition-transform z-10">
                       {moodEmoji}
                     </div>
                   )}
@@ -136,10 +184,64 @@ export default function CalendarTimeline() {
         </CardContent>
       </Card>
       
+      <AnimatePresence>
+        {selectedDay && selectedEvents.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="border-4 border-ink bg-white brutalist-shadow p-4 mt-4 relative"
+          >
+            <button 
+              onClick={() => setSelectedDay(null)}
+              className="absolute top-4 right-4 text-ink hover:text-accent transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <h3 className="font-heading text-xl uppercase mb-4 pr-8">{selectedDateStr}</h3>
+            
+            <div className="space-y-3 mb-6 max-h-[300px] overflow-y-auto">
+              {selectedEvents.map((event, idx) => (
+                <div key={idx} className="flex gap-3 items-start border-b-2 border-ink/10 pb-3 last:border-0 last:pb-0">
+                  <div className="mt-1">
+                    {event.type === 'mood' && <span className="text-2xl">{event.data.emoji}</span>}
+                    {event.type === 'flag' && <Flag className="w-5 h-5 text-accent" />}
+                    {event.type === 'diary' && <div className="w-4 h-4 mt-1 rounded-full bg-blue" />}
+                    {event.type === 'checkin' && <div className="w-4 h-4 mt-1 rounded-full bg-positive" />}
+                  </div>
+                  <div>
+                    <span className="font-heading text-sm uppercase block mb-1">
+                      {event.type === 'mood' && 'Mood Logged'}
+                      {event.type === 'flag' && 'Red Flag'}
+                      {event.type === 'diary' && 'Diary Entry'}
+                      {event.type === 'checkin' && 'Check-in'}
+                    </span>
+                    <p className="font-mono text-sm text-ink/80 line-clamp-2">
+                      {event.type === 'mood' && event.data.note}
+                      {event.type === 'flag' && event.data.title}
+                      {event.type === 'diary' && event.data.content}
+                      {event.type === 'checkin' && 'Daily check-in completed.'}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <button 
+              onClick={navigateToDay}
+              className="w-full bg-brand text-ink font-heading uppercase py-3 border-2 border-ink hover:bg-brand/90 transition-colors"
+            >
+              View full day &rarr;
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
       <div className="flex flex-wrap gap-4 font-mono text-[10px] sm:text-xs text-ink/60 uppercase justify-center mt-6">
-        <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-purple" /> Red Flag</div>
+        <div className="flex items-center gap-1.5"><Flag className="w-3 h-3 text-accent" /> Red Flag</div>
         <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-blue" /> Diary</div>
         <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-positive" /> Check-in</div>
+        <div className="flex items-center gap-1.5"><div className="w-4 h-1 bg-brand" /> Streak Day</div>
       </div>
     </div>
   );

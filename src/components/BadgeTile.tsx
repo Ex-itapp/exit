@@ -85,7 +85,7 @@ export function BadgeTile({ badge, onClick }: BadgeTileProps) {
           {badge.title}
         </h3>
         <p className="font-mono text-[9px] sm:text-[10px] opacity-75 line-clamp-1">
-          {badge.isUnlocked ? "✨ UNLOCKED" : badge.progressText}
+          {badge.isUnlocked ? "✨ UNLOCKED" : badge.progressText || "Keep going"}
         </p>
       </div>
     </motion.div>

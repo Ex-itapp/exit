@@ -10,9 +10,12 @@ import { useCheckins } from "@/lib/useCheckins";
 import { usePro } from "@/lib/usePro";
 import { useUser } from '@/lib/useUser';
 import { ProGateModal } from "@/components/ProGateModal";
-import { ArrowLeft, Sparkles, MessageSquare, Send, BookOpen, Flag, Zap } from "lucide-react";
+import { ArrowLeft, Sparkles, MessageSquare, Send, BookOpen, Flag, Zap, Camera } from "lucide-react";
 import { triggerPWAActivity } from "@/lib/usePWAInstall";
 import { motion } from "framer-motion";
+import { useTheme, type ChatTheme } from "@/lib/useTheme";
+import { cn } from "@/lib/utils";
+import { BrandMark } from "@/components/BrandMark";
 
 interface Message {
   role: 'user' | 'model';
@@ -27,12 +30,14 @@ export default function TherapistPage() {
   const { flags } = useFlags();
   const { checkins } = useCheckins();
   const { userGoal, userName, streakDays } = useUser();
+  const { theme, changeTheme } = useTheme();
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isCrisis, setIsCrisis] = useState(false);
   const [errorBanner, setErrorBanner] = useState<string | null>(null);
+  const [isScreenshotMode, setIsScreenshotMode] = useState(false);
   
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -189,18 +194,43 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
   };
 
   return (
-    <div className="flex flex-col h-[100dvh] w-full bg-bg fixed inset-0 z-[100] animate-in fade-in pb-safe">
+    <div className={cn("flex flex-col h-[100dvh] w-full bg-bg fixed inset-0 z-[100] animate-in fade-in pb-safe transition-colors duration-300", theme)}>
       {/* HEADER */}
-      <div className="flex items-center gap-4 shrink-0 p-3 sm:p-4 border-b-2 border-ink/10">
-        <Button 
-          variant="secondary" 
-          size="icon" 
-          onClick={() => navigate.push('/')}
-          className="rounded-full w-12 h-12 brutalist-shadow-sm border-2 border-ink"
-        >
-          <ArrowLeft className="w-6 h-6" />
-        </Button>
-        <h1 className="font-heading tracking-tighter text-2xl sm:text-3xl md:text-4xl uppercase">Healing Companion</h1>
+      <div className="flex items-center gap-4 shrink-0 p-3 sm:p-4 border-b-2 border-ink/10 justify-between">
+        <div className="flex items-center gap-4">
+          {!isScreenshotMode && (
+            <Button 
+              variant="secondary" 
+              size="icon" 
+              onClick={() => navigate.push('/')}
+              className="rounded-full w-12 h-12 brutalist-shadow-sm border-2 border-ink shrink-0"
+            >
+              <ArrowLeft className="w-6 h-6" />
+            </Button>
+          )}
+          <h1 className="font-heading tracking-tighter text-2xl sm:text-3xl md:text-4xl uppercase shrink-0 truncate">Companion</h1>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsScreenshotMode(!isScreenshotMode)}
+            className={cn("p-2 rounded-full transition-colors", isScreenshotMode ? "bg-positive text-ink" : "text-ink/50 hover:text-ink hover:bg-ink/10")}
+            title="Screenshot Mode"
+          >
+            <Camera className="w-4 h-4" />
+          </button>
+          {!isScreenshotMode && (
+            <select
+              value={theme}
+              onChange={(e) => changeTheme(e.target.value as ChatTheme)}
+              className="h-10 px-2 sm:px-3 border-2 border-ink bg-white font-mono text-[10px] sm:text-xs font-bold uppercase brutalist-shadow-sm outline-none cursor-pointer max-w-[120px] sm:max-w-none"
+            >
+              <option value="theme-default">Default</option>
+              <option value="theme-midnight">Midnight</option>
+              <option value="theme-cherry">Cherry</option>
+              <option value="theme-serene">Serene</option>
+            </select>
+          )}
+        </div>
       </div>
 
       {errorBanner && (
@@ -231,13 +261,17 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
               const hasActions = showDiary || showFlags || showStreak;
 
               return (
-                <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  {isModel && (
+                    <div className="w-8 h-8 rounded-full border-2 border-ink bg-white flex items-center justify-center shrink-0 mt-1 shadow-sm">
+                      <Sparkles className="w-4 h-4 text-ink" />
+                    </div>
+                  )}
                   <div 
-                    className={`max-w-[85%] p-4 border-2 border-ink brutalist-shadow-sm ${
-                      msg.role === 'user' ? 'bg-ink text-bg' : 'bg-brand text-ink'
+                    className={`max-w-[85%] p-4 rounded-none ${
+                      msg.role === 'user' ? 'bg-ink text-bg' : 'bg-white text-ink border-3 border-ink brutalist-shadow-sm'
                     }`}
                   >
-                    {msg.role === 'model' && <p className="font-mono text-xs opacity-50 uppercase font-bold mb-2">Your Companion</p>}
                     <div className="font-sans text-[15px] leading-relaxed whitespace-pre-wrap">
                       {msg.parts[0].text}
                     </div>
@@ -312,9 +346,10 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
               </div>
             </motion.div>
           )}
+          <BrandMark />
 
           {/* Chat Input */}
-          {!isCrisis && (
+          {!isCrisis && !isScreenshotMode && (
             <div className="shrink-0 p-3 sm:p-4 bg-white border-t-2 border-ink flex gap-2 sm:gap-4 items-end">
               <Textarea 
                 placeholder="Type your message..." 
@@ -339,7 +374,7 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
             </div>
           )}
         </div>
-      {showProGate && <ProGateModal feature={showProGate} onClose={() => setShowProGate(null)} />}
-    </div>
-  );
-}
+        {showProGate && <ProGateModal feature={showProGate} onClose={() => setShowProGate(null)} />}
+      </div>
+    );
+  }

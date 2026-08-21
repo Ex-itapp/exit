@@ -126,14 +126,7 @@ export default function FlagsPage() {
         })}
       </div>
 
-      {/* Floating + FAB */}
-      <button
-        onClick={() => navigate.push("/flags/new")}
-        className="fixed bottom-24 right-5 sm:right-8 w-14 h-14 bg-accent text-white border-2 border-accent brutalist-shadow flex items-center justify-center hover:scale-105 transition-transform z-40"
-        aria-label="Log new red flag"
-      >
-        <Plus className="w-6 h-6" />
-      </button>
+
 
       {/* Share / Read Modal */}
       {selectedEntry && (

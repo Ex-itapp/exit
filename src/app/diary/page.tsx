@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Lock, PenLine, Flag as FlagIcon, Plus, Archive } from "lucide-react";
 import { useDiary } from "@/lib/useDiary";
 import { useFlags } from "@/lib/useFlags";
+import { getMoodColor, getMoodEmoji } from "@/lib/visualSystem";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -113,11 +114,20 @@ export default function Diary() {
           {activeTab === 'diary' && (
             <>
               {activeEntries.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-20 text-center opacity-50 space-y-4">
-                  <div className="w-24 h-24 border-4 border-dashed border-ink flex items-center justify-center rounded-xl">
-                    <PenLine className="w-8 h-8" />
+                <div className="flex flex-col items-center justify-center py-24 text-center space-y-6">
+                  <div className="w-20 h-20 bg-brand border-4 border-ink brutalist-shadow-sm flex items-center justify-center">
+                    <PenLine className="w-10 h-10 text-ink" />
                   </div>
-                  <p className="font-mono uppercase font-bold tracking-widest">No entries yet</p>
+                  <div className="space-y-2 max-w-xs">
+                    <h2 className="font-heading text-2xl uppercase">Your story starts here</h2>
+                    <p className="font-sans text-sm text-ink/60 leading-relaxed">Write your first entry. No rules, no judgment — this is yours alone.</p>
+                  </div>
+                  <button
+                    onClick={() => navigate.push('/diary/new')}
+                    className="bg-ink text-bg px-6 py-3 font-mono text-sm font-bold uppercase tracking-widest border-2 border-ink brutalist-shadow-sm hover:bg-ink/80 transition-colors"
+                  >
+                    Start Writing
+                  </button>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -125,41 +135,31 @@ export default function Diary() {
                     <Card 
                       key={entry.id} 
                       onClick={() => handleDiaryClick(entry.id)}
-                      className={`group relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[8px_8px_0_var(--color-ink)] cursor-pointer ${
-                        entry.isUnsent ? "bg-ink text-bg border-ink" : "bg-[#f4f1ea] border-ink"
-                      }`}
+                      className="group relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[8px_8px_0_var(--color-ink)] cursor-pointer bg-white border-ink"
+                      style={{ borderLeftWidth: '6px', borderLeftColor: entry.isUnsent ? 'var(--color-ink)' : getMoodColor(entry.moods[0] || 'default') }}
                     >
                       {!entry.isUnsent && (
                         <div className="absolute inset-0 opacity-5 pointer-events-none" 
                              style={{ backgroundImage: 'radial-gradient(var(--color-ink) 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
                       )}
-                      <CardContent className="p-6 flex flex-col h-full min-h-[250px] relative z-10">
+                      <CardContent className="p-6 flex flex-col h-full min-h-[220px] relative z-10">
                         <div className="flex justify-between items-start mb-4">
-                          <div className="flex flex-wrap gap-2">
+                          <div className="flex items-center gap-2">
                             {entry.isUnsent ? (
-                              <Badge variant="accent" className="border-bg bg-accent text-bg font-bold">
-                                <Lock className="w-3 h-3 mr-1 inline-block" /> Sealed
-                              </Badge>
+                               <Lock className="w-4 h-4 text-ink" />
                             ) : (
-                              entry.moods.map(mood => (
-                                <Badge key={mood} variant="outline" className="border-ink bg-white/50 backdrop-blur-sm font-bold">
-                                  {mood}
-                                </Badge>
-                              ))
+                               <span className="text-xl leading-none">{getMoodEmoji(entry.moods[0])}</span>
                             )}
                           </div>
+                          <span className="font-mono text-[10px] sm:text-xs font-bold tracking-widest text-ink/50 uppercase">
+                            {formatTime(entry.createdAt)}
+                          </span>
                         </div>
-                        <p className={`flex-1 text-lg leading-relaxed mb-6 whitespace-pre-wrap line-clamp-6 ${
-                          entry.isUnsent ? 'font-mono italic opacity-90' : 'font-medium'
+                        <p className={`flex-1 text-lg leading-relaxed mb-4 whitespace-pre-wrap line-clamp-3 ${
+                          entry.isUnsent ? 'font-mono italic opacity-90' : 'font-voice text-ink'
                         }`}>
                           {entry.content}
                         </p>
-                        <div className="mt-auto pt-4 border-t-2 border-current opacity-30 flex justify-between items-center">
-                          <span className="font-mono text-xs font-bold tracking-widest">
-                            {formatTime(entry.createdAt)}
-                          </span>
-                          {!entry.isUnsent && <span className="font-heading text-xl">#</span>}
-                        </div>
                       </CardContent>
                     </Card>
                   ))}
@@ -172,11 +172,20 @@ export default function Diary() {
           {activeTab === 'flags' && (
             <>
               {activeFlags.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-20 text-center opacity-50 space-y-4">
-                  <div className="w-24 h-24 border-4 border-dashed border-ink flex items-center justify-center rounded-xl bg-accent/5">
-                    <FlagIcon className="w-8 h-8 text-accent" />
+                <div className="flex flex-col items-center justify-center py-24 text-center space-y-6">
+                  <div className="w-20 h-20 bg-accent/20 border-4 border-ink brutalist-shadow-sm flex items-center justify-center">
+                    <FlagIcon className="w-10 h-10 text-accent" />
                   </div>
-                  <p className="font-mono uppercase font-bold tracking-widest">No flags logged yet</p>
+                  <div className="space-y-2 max-w-xs">
+                    <h2 className="font-heading text-2xl uppercase">No flags yet</h2>
+                    <p className="font-sans text-sm text-ink/60 leading-relaxed">When you spot a red flag, log it here. Writing it down helps you remember why you left.</p>
+                  </div>
+                  <button
+                    onClick={() => navigate.push('/flags/new')}
+                    className="bg-accent text-white px-6 py-3 font-mono text-sm font-bold uppercase tracking-widest border-2 border-accent brutalist-shadow-sm hover:bg-accent/80 transition-colors"
+                  >
+                    Log Your First Flag
+                  </button>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -211,11 +220,14 @@ export default function Diary() {
           {activeTab === 'archive' && (
             <>
               {allArchived.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-20 text-center opacity-50 space-y-4">
-                  <div className="w-24 h-24 border-4 border-dashed border-ink flex items-center justify-center rounded-xl bg-ink/5">
-                    <Archive className="w-8 h-8 text-ink" />
+                <div className="flex flex-col items-center justify-center py-24 text-center space-y-6">
+                  <div className="w-20 h-20 bg-ink/10 border-4 border-ink/30 flex items-center justify-center">
+                    <Archive className="w-10 h-10 text-ink/40" />
                   </div>
-                  <p className="font-mono uppercase font-bold tracking-widest">Archive is empty</p>
+                  <div className="space-y-2 max-w-xs">
+                    <h2 className="font-heading text-2xl uppercase text-ink/60">Nothing archived</h2>
+                    <p className="font-sans text-sm text-ink/40 leading-relaxed">Entries you archive will appear here. They're never deleted — just tucked away.</p>
+                  </div>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

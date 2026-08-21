@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { ArrowLeft, Share2, Archive, ArchiveRestore, Trash2 } from "lucide-react";
 import { getMoodColor, getMoodTailwind, getMoodEmoji } from "@/lib/visualSystem";
 import { cn } from "@/lib/utils";
+import { BrandMark } from "@/components/BrandMark";
 
 export default function DiaryEntryPage() {
   const { id } = useParams();
@@ -82,7 +83,7 @@ export default function DiaryEntryPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-300" style={{ backgroundColor: bgColor, color: textColor }}>
+    <div className="min-h-screen w-full flex flex-col bg-bg text-ink animate-in fade-in slide-in-from-bottom-4 duration-300 relative">
       
       {/* Off-screen Export Node (Perfect 1080x1920 / 9:16) */}
       <div 
@@ -96,7 +97,7 @@ export default function DiaryEntryPage() {
           backgroundColor: bgColor, 
           color: textColor,
           padding: '96px',
-          fontFamily: 'var(--font-inter)'
+          fontFamily: 'var(--font-sans)'
         }}
       >
         {/* Header */}
@@ -122,7 +123,7 @@ export default function DiaryEntryPage() {
               {primaryMood}
             </div>
           )}
-          <p className="text-[100px] font-serif leading-[1.2] font-medium tracking-tight text-center z-10 w-full px-12" style={{ wordWrap: 'break-word' }}>
+          <p className="text-[100px] font-voice leading-[1.2] font-medium tracking-tight text-center z-10 w-full px-12" style={{ wordWrap: 'break-word' }}>
             {entry.content}
           </p>
         </div>
@@ -138,38 +139,37 @@ export default function DiaryEntryPage() {
       </div>
 
       {/* Visible Header */}
-      <header className="px-4 py-6 sm:px-8 flex items-center justify-between z-10 sticky top-0" style={{ borderBottom: `2px solid ${textColor}`, backgroundColor: bgColor }}>
+      <header className="px-4 py-4 sm:px-8 flex items-center justify-between z-10 sticky top-0 bg-bg border-b-2 border-ink/10">
         <button 
           onClick={() => router.push("/diary")}
           className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-widest hover:opacity-70 transition-opacity"
         >
-          <ArrowLeft className="w-4 h-4" /> Back
+          <ArrowLeft className="w-5 h-5" />
         </button>
-        <div className="flex items-center gap-3 font-mono text-xs font-bold opacity-50 tracking-widest uppercase">
+        <div className="flex items-center gap-3 font-mono text-[10px] sm:text-xs font-bold opacity-60 tracking-widest uppercase">
           <span>{dateStr}</span>
           {primaryMood !== 'DEFAULT' && (
             <>
-              <span>•</span>
-              <span>{primaryMood}</span>
+              <span className="opacity-50">•</span>
+              <span style={{ color: defaultBgColor }} className="opacity-100">{primaryMood}</span>
             </>
           )}
         </div>
+        <button 
+          onClick={handleExport}
+          disabled={isExporting}
+          className="flex items-center justify-center p-2 hover:bg-ink/5 rounded-full transition-colors"
+          title="Share/Export as Quote Card"
+        >
+          {isExporting ? <div className="w-5 h-5 border-2 border-ink border-t-transparent rounded-full animate-spin"></div> : <Share2 className="w-5 h-5" />}
+        </button>
       </header>
 
       {/* Main Content - Full Page Layout */}
-      <main className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 md:p-24 relative overflow-hidden">
-        {/* Subtle Watermark - Only show if mood is genuinely selected */}
-        {primaryMood !== 'DEFAULT' && (
-          <div 
-            className="absolute pointer-events-none opacity-5 font-bold"
-            style={{ fontSize: '30vw', lineHeight: 0.8, letterSpacing: '-0.05em', whiteSpace: 'nowrap', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-5deg)', zIndex: 0 }}
-          >
-            {primaryMood}
-          </div>
-        )}
+      <main className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 md:p-24 relative overflow-hidden max-w-5xl mx-auto w-full">
 
         <div className="relative z-10 max-w-4xl w-full text-center space-y-12">
-          <p className="text-3xl sm:text-5xl md:text-6xl font-serif leading-tight sm:leading-tight md:leading-tight font-medium tracking-tight">
+          <p className="text-2xl sm:text-4xl md:text-5xl font-voice leading-relaxed sm:leading-relaxed md:leading-relaxed text-ink/90 whitespace-pre-wrap">
             {entry.content}
           </p>
           
@@ -193,36 +193,15 @@ export default function DiaryEntryPage() {
         </div>
       </main>
 
+      <BrandMark className="opacity-10 pointer-events-none" />
+
       {/* Action Footer */}
-      <footer className="px-4 py-6 sm:px-8 border-t-4 flex flex-col sm:flex-row items-center justify-between gap-4 sticky bottom-0 z-10" style={{ borderColor: textColor, backgroundColor: bgColor }}>
+      <footer className="px-4 py-6 sm:px-8 border-t-2 border-ink/10 flex flex-col sm:flex-row items-center justify-center gap-4 sticky bottom-0 z-10 bg-bg">
         <div className="flex w-full sm:w-auto gap-3 items-center">
-          <Button 
-            onClick={handleExport}
-            disabled={isExporting}
-            className="flex-1 sm:flex-none h-14 px-8 brutalist-shadow-sm border-2 rounded-none hover:-translate-y-1 transition-transform"
-            style={{ backgroundColor: textColor, color: bgColor, borderColor: textColor }}
-          >
-            {isExporting ? (
-               <><div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin mr-2"></div> EXPORTING...</>
-            ) : (
-               <><Share2 className="w-5 h-5 mr-2" /> EXPORT ENTRY</>
-            )}
-          </Button>
-          <div className="flex items-center justify-center border-2 px-3 h-14" style={{ borderColor: textColor, backgroundColor: 'transparent' }}>
-            <span className="font-mono text-xs font-bold uppercase mr-2 opacity-70">BG Color</span>
-            <input 
-              type="color" 
-              value={bgColor} 
-              onChange={(e) => setCustomBg(e.target.value)}
-              className="w-6 h-6 rounded-full cursor-pointer p-0 border-none"
-              style={{ backgroundColor: 'transparent' }}
-            />
-          </div>
           <Button 
             onClick={handleArchiveToggle}
             variant="outline"
-            className="flex-1 sm:flex-none h-14 px-6 border-2 rounded-none hover:-translate-y-1 transition-transform"
-            style={{ borderColor: textColor, color: textColor, backgroundColor: 'transparent' }}
+            className="flex-1 sm:flex-none h-14 px-6 border-2 rounded-none hover:-translate-y-1 transition-transform border-ink text-ink bg-transparent"
           >
             {isArchived ? (
               <><ArchiveRestore className="w-5 h-5 mr-2" /> UNARCHIVE</>
@@ -230,15 +209,14 @@ export default function DiaryEntryPage() {
               <><Archive className="w-5 h-5 mr-2" /> ARCHIVE</>
             )}
           </Button>
+          <Button 
+            onClick={handleDelete}
+            variant="destructive"
+            className="flex-1 sm:flex-none h-14 px-6 border-2 border-transparent rounded-none hover:border-destructive bg-transparent text-destructive hover:bg-destructive/10"
+          >
+            <Trash2 className="w-5 h-5 mr-2" /> DELETE
+          </Button>
         </div>
-        
-        <Button 
-          onClick={handleDelete}
-          variant="destructive"
-          className="w-full sm:w-auto h-14 px-6 border-2 border-transparent rounded-none hover:border-destructive bg-transparent text-destructive hover:bg-destructive/10"
-        >
-          <Trash2 className="w-5 h-5 mr-2" /> PERMANENT DELETE
-        </Button>
       </footer>
     </div>
   );

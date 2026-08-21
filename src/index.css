@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -13,6 +13,7 @@
   --font-sans: "Outfit", system-ui, sans-serif;
   --font-heading: "Archivo Black", system-ui, sans-serif;
   --font-mono: "Space Mono", monospace;
+  --font-voice: "Lora", serif;
 }
 
 @layer base {
@@ -83,5 +84,31 @@
 
   .animate-paper-tear {
     animation: paper-tear 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  /* Chat Themes (overriding the base color tokens) */
+  .theme-default {
+    /* Uses base tokens */
+  }
+
+  .theme-midnight {
+    --color-bg: #0F0F0F; /* Almost black */
+    --color-ink: #F5EFE6; /* Off-white text */
+    --color-brand: #9D4EDD; /* Vibrant purple */
+    --color-accent: #FF3366; /* Retain pink accent */
+  }
+
+  .theme-cherry {
+    --color-bg: #FFF0F5; /* Lavender blush */
+    --color-ink: #900C3F; /* Deep cherry red */
+    --color-brand: #FFC300; /* Contrast yellow */
+    --color-accent: #C70039; /* Intense red */
+  }
+
+  .theme-serene {
+    --color-bg: #E0F7FA; /* Light cyan */
+    --color-ink: #006064; /* Deep teal */
+    --color-brand: #FFAB00; /* Warm amber */
+    --color-accent: #FF5252; /* Soft red */
   }
 }

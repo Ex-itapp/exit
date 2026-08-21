@@ -68,7 +68,7 @@ export default function RoadmapPage() {
   const safeCurrentIndex = currentIndex === -1 ? 0 : currentIndex;
 
   return (
-    <div className="min-h-screen bg-bg text-ink pb-32 pt-8 px-4 font-sans">
+    <div className="min-h-screen bg-bg text-ink pb-36 pt-8 px-4 font-sans">
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <button
@@ -85,7 +85,7 @@ export default function RoadmapPage() {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-accent border-4 border-ink brutalist-shadow p-6 mb-12 relative overflow-hidden"
+        className="bg-brand border-4 border-ink brutalist-shadow p-6 mb-12 relative overflow-hidden"
       >
         <div className="font-mono text-sm uppercase font-bold mb-2">
           Current Progress

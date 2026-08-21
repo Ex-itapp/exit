@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import type { ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { motion, AnimatePresence } from 'motion/react';
 import { BottomNav } from "@/components/layout/BottomNav";
 import { useAuth } from "@/lib/useAuth";
 import { usePro } from "@/lib/usePro";
@@ -20,6 +21,34 @@ export function ClientLayout({ children }: { children: ReactNode }) {
 
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = React.useState<boolean | null>(null);
   const [profileLoading, setProfileLoading] = React.useState<boolean>(true);
+
+  React.useEffect(() => {
+    const removeAttr = (el: Element) => {
+      if (el && el.removeAttribute) el.removeAttribute('bis_skin_checked');
+    };
+    document.querySelectorAll('[bis_skin_checked]').forEach(removeAttr);
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((m) => {
+        if (m.type === 'attributes' && m.attributeName === 'bis_skin_checked') {
+          removeAttr(m.target as Element);
+        } else if (m.addedNodes.length) {
+          m.addedNodes.forEach((node) => {
+            if (node.nodeType === 1) {
+              removeAttr(node as Element);
+              (node as Element).querySelectorAll('[bis_skin_checked]').forEach(removeAttr);
+            }
+          });
+        }
+      });
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      childList: true,
+      subtree: true,
+      attributeFilter: ['bis_skin_checked']
+    });
+    return () => observer.disconnect();
+  }, []);
 
   React.useEffect(() => {
     if (!loading && user) {
@@ -110,7 +139,8 @@ export function ClientLayout({ children }: { children: ReactNode }) {
     '/flags/new',
     '/privacy',
     '/tos',
-    '/support'
+    '/support',
+    '/talk'
   ].includes(pathname) || pathname?.startsWith('/timeline/');
 
   // Public pages
@@ -126,7 +156,7 @@ export function ClientLayout({ children }: { children: ReactNode }) {
       <div suppressHydrationWarning className="w-full min-h-screen flex flex-col bg-bg relative">
         
         {/* Clean, Minimal Floating Logo Header */}
-        <header className="px-3 sm:px-4 md:px-8 pt-3 sm:pt-6 pb-2 flex items-center justify-between sticky top-0 z-40 bg-transparent pointer-events-none">
+        <header className="px-3 sm:px-4 md:px-8 pt-3 sm:pt-6 pb-2 flex items-center justify-between sticky top-0 z-40 bg-transparent pointer-events-none transition-all duration-200">
           <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto">
             {!hasCustomBackButton && (
               <button
