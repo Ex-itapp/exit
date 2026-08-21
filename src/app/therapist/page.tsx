@@ -188,9 +188,9 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] lg:h-[calc(100vh-6rem)] animate-in fade-in max-w-4xl mx-auto w-full pt-4 px-4 pb-24">
+    <div className="flex flex-col h-screen w-full bg-bg absolute top-0 left-0 z-50 animate-in fade-in pb-safe">
       {/* HEADER */}
-      <div className="flex items-center gap-4 mb-4 shrink-0">
+      <div className="flex items-center gap-4 shrink-0 p-4 border-b-2 border-ink/10 bg-white">
         <Button 
           variant="secondary" 
           size="icon" 
@@ -203,46 +203,21 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
       </div>
 
       {errorBanner && (
-        <div className="bg-danger text-white border-2 border-ink brutalist-shadow-sm p-3 mb-4 font-mono text-xs uppercase font-bold animate-in fade-in">
+        <div className="bg-danger text-white border-2 border-ink brutalist-shadow-sm p-3 mx-4 font-mono text-xs uppercase font-bold animate-in fade-in">
           ⚠️ {errorBanner}
         </div>
       )}
 
       {/* CHAT MODE */}
-      <div className="flex-1 flex flex-col bg-bg border-4 border-ink brutalist-shadow min-h-0 relative overflow-hidden">
+      <div className="flex-1 flex flex-col bg-bg min-h-0 relative overflow-hidden">
         {/* Chat Messages */}
         <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth flex flex-col">
           {messages.length === 0 && !isLoading && (
-            <div className="flex-1 flex flex-col justify-end gap-3 pb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <Button 
-                onClick={startAnalysisMode}
-                className="w-full h-auto p-4 brutalist-shadow-sm bg-brand text-ink hover:bg-brand/90 border-2 border-ink justify-start text-left whitespace-normal"
-              >
-                <div className="flex items-center gap-3">
-                  <Sparkles className="w-5 h-5 shrink-0" />
-                  <span className="font-mono text-xs uppercase font-bold">Can we talk about my past week?</span>
-                </div>
-              </Button>
-
-              <Button 
-                onClick={() => startPresetChat("I'm feeling an intense urge to reach out right now.")}
-                className="w-full h-auto p-4 brutalist-shadow-sm bg-white text-ink hover:bg-white/90 border-2 border-ink justify-start text-left whitespace-normal"
-              >
-                <div className="flex items-center gap-3">
-                  <Flag className="w-5 h-5 shrink-0 text-danger" />
-                  <span className="font-mono text-xs uppercase font-bold">I'm feeling an urge to reach out.</span>
-                </div>
-              </Button>
-
-              <Button 
-                onClick={() => startPresetChat("I just need to vent and talk about something else.")}
-                className="w-full h-auto p-4 brutalist-shadow-sm bg-white text-ink hover:bg-white/90 border-2 border-ink justify-start text-left whitespace-normal"
-              >
-                <div className="flex items-center gap-3">
-                  <MessageSquare className="w-5 h-5 shrink-0" />
-                  <span className="font-mono text-xs uppercase font-bold">I just need a distraction right now.</span>
-                </div>
-              </Button>
+            <div className="flex-1 flex flex-col items-center justify-center gap-4 opacity-50">
+               <div className="w-16 h-16 bg-brand rounded-full flex items-center justify-center border-2 border-ink brutalist-shadow-sm">
+                  <Sparkles className="w-8 h-8 text-ink" />
+               </div>
+               <p className="font-mono text-xs uppercase font-bold text-center max-w-xs">Your healing companion is ready. Send a message to start, or pick a prompt below.</p>
             </div>
           )}
 
@@ -303,12 +278,41 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
             )}
           </div>
 
+          {/* Quick Start Horizontal Pills */}
+          {messages.length === 0 && !isLoading && !isCrisis && (
+            <div className="w-full overflow-x-auto no-scrollbar py-3 px-4 shrink-0 bg-white/50 border-t-2 border-ink/10 animate-in slide-in-from-bottom-4 fade-in duration-500">
+              <div className="flex gap-3 w-max">
+                <Button 
+                  onClick={startAnalysisMode}
+                  className="rounded-full px-5 py-2 h-auto brutalist-shadow-sm bg-brand text-ink hover:bg-brand/90 border-2 border-ink whitespace-nowrap transition-transform hover:-translate-y-1"
+                >
+                  <Sparkles className="w-4 h-4 mr-2 shrink-0" />
+                  <span className="font-mono text-[11px] uppercase font-bold">Analyze my past week</span>
+                </Button>
+                <Button 
+                  onClick={() => startPresetChat("I'm feeling an intense urge to reach out right now.")}
+                  className="rounded-full px-5 py-2 h-auto brutalist-shadow-sm bg-white text-ink hover:bg-ink/5 border-2 border-ink whitespace-nowrap transition-transform hover:-translate-y-1"
+                >
+                  <Flag className="w-4 h-4 mr-2 shrink-0 text-danger" />
+                  <span className="font-mono text-[11px] uppercase font-bold">I want to text them</span>
+                </Button>
+                <Button 
+                  onClick={() => startPresetChat("I just need to vent and talk about something else.")}
+                  className="rounded-full px-5 py-2 h-auto brutalist-shadow-sm bg-white text-ink hover:bg-ink/5 border-2 border-ink whitespace-nowrap transition-transform hover:-translate-y-1"
+                >
+                  <MessageSquare className="w-4 h-4 mr-2 shrink-0" />
+                  <span className="font-mono text-[11px] uppercase font-bold">I need a distraction</span>
+                </Button>
+              </div>
+            </div>
+          )}
+
           {/* Chat Input */}
           {!isCrisis && (
-            <div className="shrink-0 p-2 sm:p-4 bg-white border-t-4 border-ink flex gap-2 sm:gap-4">
+            <div className="shrink-0 p-3 sm:p-4 bg-white border-t-2 border-ink flex gap-2 sm:gap-4 items-end">
               <Textarea 
                 placeholder="Type your message..." 
-                className="flex-1 min-h-[44px] sm:min-h-[60px] max-h-[120px] resize-none border-2 border-ink text-xs sm:text-base p-2 sm:p-3"
+                className="flex-1 min-h-[48px] max-h-[120px] resize-none border-2 border-ink text-sm sm:text-base p-3 rounded-2xl bg-bg"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyDown={(e) => {
@@ -320,11 +324,11 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
                 disabled={isLoading}
               />
               <Button 
-                className="h-auto px-4 sm:w-[60px] shrink-0 brutalist-shadow-sm border-2 border-ink bg-blue hover:bg-blue/90 text-ink"
+                className="h-12 w-12 rounded-full shrink-0 brutalist-shadow-sm border-2 border-ink bg-blue hover:bg-blue/90 text-ink flex items-center justify-center p-0 transition-transform hover:scale-105 active:scale-95"
                 onClick={sendMessage}
                 disabled={!inputText.trim() || isLoading}
               >
-                <Send className="w-4 h-4 sm:w-6 sm:h-6" />
+                <Send className="w-5 h-5 ml-1" />
               </Button>
             </div>
           )}
