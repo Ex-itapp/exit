@@ -2,6 +2,14 @@ import { NextResponse } from 'next/server';
 import { callAIRouter } from '@/lib/ai/router';
 import { requirePro } from '@/lib/requirePro';
 
+function sanitizeForPrompt(text: string): string {
+  // Strip characters that could break out of prompt context
+  return text
+    .replace(/["`'\\]/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .slice(0, 2000);
+}
+
 export async function POST(req: Request) {
   try {
     const proCheck = await requirePro();
@@ -17,7 +25,8 @@ export async function POST(req: Request) {
     if (latestMessage.role !== 'user') {
       return NextResponse.json({ error: 'Last message must be from user' }, { status: 400 });
     }
-    const userText = latestMessage.parts?.[0]?.text || (typeof latestMessage.content === 'string' ? latestMessage.content : "");
+    const rawUserText = latestMessage.parts?.[0]?.text || (typeof latestMessage.content === 'string' ? latestMessage.content : "");
+    const userText = sanitizeForPrompt(rawUserText);
 
     // Call 1 - Crisis Classifier (Only on the latest message, using lightning classifier tier)
     const classifierPrompt = `System: You are a safety classifier for a breakup-support app. Read the user's check-in text below. Respond with ONLY one word: "RISK" or "SAFE".
@@ -63,10 +72,12 @@ Adapt your tone:
 - "Processing heartbreak & grief": Gentle, patient, validating. Let them vent without rushing.
 - "Finding peace and clarity": Reflective, ask probing questions, help them see patterns.`;
 
-    // Format messages for router
+    // Format messages for router - sanitize each user message
     const formattedHistory = messages.map((m: any) => ({
       role: m.role === 'model' || m.role === 'assistant' ? 'assistant' as const : 'user' as const,
-      content: m.parts?.[0]?.text || m.content || ""
+      content: m.role === 'user' 
+        ? sanitizeForPrompt(m.parts?.[0]?.text || m.content || "")
+        : (m.parts?.[0]?.text || m.content || "")
     })).filter(m => m.content.length > 0);
 
     const aiReply = await callAIRouter({

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 import type { User, Session } from "@supabase/supabase-js";
 
-const BYPASS_AUTH = true; // Set to true to bypass authentication during local development
+const BYPASS_AUTH = false; // Set to true to bypass authentication during local development
 
 const MOCK_USER: User = {
   id: 'local-test-user-id',

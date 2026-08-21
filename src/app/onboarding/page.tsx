@@ -455,10 +455,10 @@ export default function OnboardingPage() {
                     <div className="flex flex-col items-center justify-center text-center">
                       <div className="flex items-end gap-1 justify-center leading-none">
                         <span className="font-heading text-5xl font-black tracking-tighter">
-                          ${billing === "yearly" ? "39" : "6.50"}
+                          ${billing === "yearly" ? "39" : "10"}
                         </span>
                         <span className="font-mono text-xs text-ink/50 pb-1">
-                          /{billing === "yearly" ? "year" : "mo"}
+                          /{billing === "yearly" ? "yr" : "mo"}
                         </span>
                       </div>
                       <p className="font-mono text-[9px] text-ink/60 mt-1 uppercase tracking-wider font-bold">

@@ -280,7 +280,12 @@ export function useClosure() {
   };
 
   const createSession = async (): Promise<{ session?: ClosureSession; error?: string }> => {
-    const active = getActiveSession();
+    // Use callback form to get the latest state, avoiding race conditions
+    let active: ClosureSession | undefined;
+    setSessionsState(prev => {
+      active = prev.find(s => s.status === 'active');
+      return prev;
+    });
     if (active) return { session: active };
 
     if (!profile) {

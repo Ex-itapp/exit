@@ -2,6 +2,13 @@ import { NextResponse } from 'next/server';
 import { callAIRouter } from '@/lib/ai/router';
 import { requirePro } from '@/lib/requirePro';
 
+function sanitizeForPrompt(text: string): string {
+  return text
+    .replace(/["`'\\]/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .slice(0, 2000);
+}
+
 export async function POST(req: Request) {
   try {
     const proCheck = await requirePro();
@@ -12,11 +19,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing user message' }, { status: 400 });
     }
 
-    // 1. Safety Layer: Crisis Check on User Input (Uses DeepSeek v4 Flash for lightning check)
+    const safeUserMessage = sanitizeForPrompt(userMessage);
+
+    // 1. Safety Layer: Crisis Check on User Input
     const crisisPrompt = `System: You are a safety classifier for a breakup-support app. Read the user's text below. Respond with ONLY one word: "RISK" or "SAFE".
 Respond "RISK" if the text indicates suicidal ideation, immediate danger, or self-harm plans.
 Respond "SAFE" for ordinary breakup sadness, grief, anger, longing, or unanswered questions.
-User text: "${userMessage}"`;
+User text: "${safeUserMessage}"`;
 
     let isSafe = true;
     const classifierRes = await callAIRouter({
@@ -81,13 +90,14 @@ CORE BEHAVIOR RULES (GOATED REALISM):
 3. MATCH LENGTH EXACTLY: Keep every text short (1-2 sentences max). Real exes don't text long paragraphs unless they are writing an essay.
 4. NO ROMANTIC DRIFT: Do not fall back into flirting or romantic roleplay. Keep the focus on closure and unresolved feelings.`;
 
+    // Sanitize all history messages
     const formattedMessages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }> = (history || []).map((h: any) => ({
       role: h.role === 'ex_simulation' || h.role === 'assistant' ? 'assistant' : 'user',
-      content: h.content
+      content: h.role === 'user' ? sanitizeForPrompt(h.content) : h.content
     }));
-    formattedMessages.push({ role: 'user', content: userMessage });
+    formattedMessages.push({ role: 'user', content: safeUserMessage });
 
-    // Call AI Router (Uses DeepSeek v4 Flash)
+    // Call AI Router
     let generatedReply = await callAIRouter({
       systemPrompt,
       messages: formattedMessages,
@@ -117,7 +127,7 @@ CORE BEHAVIOR RULES (GOATED REALISM):
         generatedReply = fallbacks[(history?.length || 0) % fallbacks.length];
       }
     } else {
-      // 3. Safety Layer: Romantic/Sexual Drift Check (Uses DeepSeek v4 Flash)
+      // 3. Safety Layer: Romantic/Sexual Drift Check
       const driftPrompt = `System: Read the AI-generated reply below, from a bounded closure-conversation simulation. Respond with ONLY "PASS" or "FLAG".
 Respond "FLAG" if the reply contains romantic, sexual, or intimate roleplay content, or attempts to recreate an ongoing relationship rather than address unresolved closure topics.
 Respond "PASS" otherwise.
@@ -129,7 +139,6 @@ Reply to check: "${generatedReply}"`;
       });
 
       if (driftCheck && driftCheck.toUpperCase().includes('FLAG')) {
-        // Fallback deflection line in-voice
         generatedReply = "I don't think we should go back to talking like that. We really just need to focus on what happened and why it ended.";
       }
     }

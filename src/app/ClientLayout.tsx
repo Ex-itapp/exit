@@ -122,11 +122,10 @@ export function ClientLayout({ children }: { children: ReactNode }) {
 
   const isPublicPage = pathname === '/' || pathname === '/onboarding' || pathname === '/tos' || pathname === '/privacy' || pathname === '/support' || pathname === '/auth';
 
-  // If user is not authenticated and not on a public page, gate them (unless on localhost)
-  // Auth removed for Vercel testing
-  // if (!user && !isLocalhost && !isPublicPage) {
-  //   return <CompulsoryAuthGate />;
-  // }
+  // If user is not authenticated and not on a public page, gate them
+  if (!user && !isPublicPage) {
+    return <CompulsoryAuthGate />;
+  }
 
   const hasCustomBackButton = [
     '/dashboard', 

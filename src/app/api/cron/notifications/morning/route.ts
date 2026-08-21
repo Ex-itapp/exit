@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createAdminSupabase } from '@/lib/supabase-server';
+import { verifyBearerToken } from '@/lib/crypto';
 import webpush from 'web-push';
 
 export const dynamic = 'force-dynamic';
@@ -17,7 +18,7 @@ webpush.setVapidDetails(
 export async function GET(req: Request) {
   try {
     const authHeader = req.headers.get('Authorization');
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    if (!verifyBearerToken(authHeader, process.env.CRON_SECRET)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

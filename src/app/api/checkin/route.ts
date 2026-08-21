@@ -1,13 +1,39 @@
 import { NextResponse } from 'next/server';
 import { callAIRouter } from '@/lib/ai/router';
+import { createServerSupabase } from '@/lib/supabase-server';
+
+function sanitizeForPrompt(text: string): string {
+  // Strip prompt-breaking characters and truncate to prevent injection
+  return text
+    .replace(/["`'\\]/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .slice(0, 2000);
+}
 
 export async function POST(req: Request) {
   try {
+    // Require authentication
+    const authHeader = req.headers.get('Authorization');
+    const token = authHeader?.split('Bearer ')[1];
+    
+    if (!token) {
+      return NextResponse.json({ error: 'Missing auth token' }, { status: 401 });
+    }
+
+    const supabase = await createServerSupabase();
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { contextBlock, userText } = await req.json();
     
-    if (!userText) {
+    if (!userText || typeof userText !== 'string') {
       return NextResponse.json({ error: 'Missing user check-in text' }, { status: 400 });
     }
+
+    const sanitizedText = sanitizeForPrompt(userText.trim().slice(0, 2000));
 
     // Call 1 - Crisis Classifier
     const classifierPrompt = `System: You are a safety classifier for a breakup-support app. Read the user's check-in text below. Respond with ONLY one word: "RISK" or "SAFE".
@@ -23,7 +49,7 @@ Respond "SAFE" for ordinary breakup sadness, anger, longing, anxiety, or low moo
 Do not explain your answer. Respond with exactly one word.
 
 User check-in text:
-"${userText}"`;
+"${sanitizedText}"`;
 
     // Uses DeepSeek v4 Flash
     const classifierResultText = await callAIRouter({ 
@@ -53,10 +79,10 @@ Hard rules:
 - Keep the whole reply under 80 words. Tone: warm but plain-spoken, never saccharine, never clinical.
 
 Context:
-${contextBlock}
+${contextBlock || 'No additional context available.'}
 
 Today's check-in:
-"${userText}"
+"${sanitizedText}"
 
 Write the reply now.`;
 

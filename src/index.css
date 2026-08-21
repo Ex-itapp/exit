@@ -86,6 +86,17 @@
     animation: paper-tear 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
+  /* Theme-aware surface utilities that adapt to chat themes */
+  .theme-surface {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+  }
+
+  .theme-card {
+    background-color: color-mix(in srgb, var(--color-ink) 5%, var(--color-bg));
+    border-color: var(--color-ink);
+  }
+
   /* Chat Themes (overriding the base color tokens) */
   .theme-default {
     /* Uses base tokens */
@@ -96,6 +107,19 @@
     --color-ink: #F5EFE6; /* Off-white text */
     --color-brand: #9D4EDD; /* Vibrant purple */
     --color-accent: #FF3366; /* Retain pink accent */
+  }
+
+  .theme-midnight .bg-white {
+    background-color: #1a1a1a !important;
+  }
+  .theme-midnight .border-ink {
+    border-color: #F5EFE6 !important;
+  }
+  .theme-midnight .text-ink {
+    color: #F5EFE6 !important;
+  }
+  .theme-midnight .bg-bg {
+    background-color: #0F0F0F !important;
   }
 
   .theme-cherry {
@@ -110,5 +134,18 @@
     --color-ink: #006064; /* Deep teal */
     --color-brand: #FFAB00; /* Warm amber */
     --color-accent: #FF5252; /* Soft red */
+  }
+
+  .theme-serene .bg-white {
+    background-color: #f0fafa !important;
+  }
+  .theme-serene .border-ink {
+    border-color: #006064 !important;
+  }
+  .theme-serene .text-ink {
+    color: #006064 !important;
+  }
+  .theme-serene .bg-bg {
+    background-color: #E0F7FA !important;
   }
 }

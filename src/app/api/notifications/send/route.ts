@@ -10,9 +10,6 @@ webpush.setVapidDetails(
 
 export async function POST(req: Request) {
   try {
-    // Note: We use the service role key or require standard auth depending on how this is called.
-    // For now, we will require the caller to be authenticated (e.g. testing their own push) 
-    // or you can secure this with an API key if called from a cron job.
     const authHeader = req.headers.get('Authorization');
     const token = authHeader?.split('Bearer ')[1];
     
@@ -30,8 +27,10 @@ export async function POST(req: Request) {
     const { title, body, data, targetUserId, adminSecret } = await req.json();
     
     // Security check: Only allow users to ping themselves, UNLESS they provide the admin secret
+    // If ADMIN_API_KEY is not set, adminSecret will never match — so cross-user targeting is always blocked
     if (targetUserId && targetUserId !== user.id) {
-      if (adminSecret !== process.env.ADMIN_API_KEY) {
+      const adminApiKey = process.env.ADMIN_API_KEY;
+      if (!adminApiKey || !adminSecret || adminSecret !== adminApiKey) {
         return NextResponse.json({ error: 'Unauthorized to ping other users' }, { status: 403 });
       }
     }
@@ -69,8 +68,7 @@ export async function POST(req: Request) {
         await webpush.sendNotification(pushSubscription, payload, { urgency: 'high', TTL: 86400 });
       } catch (err: any) {
         if (err.statusCode === 410 || err.statusCode === 404) {
-          // Subscription has expired or is no longer valid, delete it
-          await supabase.from('push_subscriptions').delete().eq('id', sub.id);
+          await adminSupabase.from('push_subscriptions').delete().eq('id', sub.id);
         } else {
           console.error('Error sending push notification:', err);
         }

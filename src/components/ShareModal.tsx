@@ -25,6 +25,13 @@ export function ShareModal({ entry, onClose }: ShareModalProps) {
   const [ogUrl, setOgUrl] = useState<string | null>(null);
   const [bgColor, setBgColor] = useState(() => entry ? getMoodColor(entry.tags[0] || 'DEFAULT') : '#F5EFE6');
 
+  // Cleanup blob URLs on unmount or when ogUrl changes
+  useEffect(() => {
+    return () => {
+      if (ogUrl) URL.revokeObjectURL(ogUrl);
+    };
+  }, [ogUrl]);
+
   if (!entry) return null;
 
   const handleGenerate = async () => {
@@ -45,6 +52,8 @@ export function ShareModal({ entry, onClose }: ShareModalProps) {
         })
       });
       const blob = await res.blob();
+      // Revoke previous blob URL to prevent memory leak
+      if (ogUrl) URL.revokeObjectURL(ogUrl);
       setOgUrl(URL.createObjectURL(blob));
     } catch (err) {
       console.error("Failed to generate image", err);

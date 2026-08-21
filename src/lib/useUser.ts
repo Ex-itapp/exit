@@ -113,9 +113,16 @@ export function useUser() {
     };
   }, []);
 
-  const streakDays = breakupDate 
-    ? Math.max(0, Math.floor((new Date().getTime() - new Date(breakupDate).getTime()) / (1000 * 3600 * 24)))
-    : 0;
+  const streakDays = (() => {
+    if (!breakupDate) return 0;
+    // Use date-only comparison to avoid timezone drift
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const breakup = new Date(breakupDate);
+    const breakupDay = new Date(breakup.getFullYear(), breakup.getMonth(), breakup.getDate());
+    const diffMs = today.getTime() - breakupDay.getTime();
+    return Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+  })();
 
   const updateLastSeenStreak = (newStreak: number) => {
     setLastSeenStreak(newStreak);

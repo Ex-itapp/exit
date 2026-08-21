@@ -19,8 +19,8 @@ export async function GET(request: Request) {
       return NextResponse.json({ user: null, isPro: false, paymentFailed: false });
     }
 
-    // If a userId param is provided, only allow access to own data
-    const userId = queryUserId && queryUserId === user.id ? user.id : user.id;
+    // Always use the authenticated user's ID — ignore any query param userId to prevent IDOR
+    const userId = user.id;
     const adminSupabase = createAdminSupabase();
 
     const userInfo = {
