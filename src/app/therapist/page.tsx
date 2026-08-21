@@ -188,9 +188,9 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
   };
 
   return (
-    <div className="flex flex-col h-screen w-full bg-bg absolute top-0 left-0 z-50 animate-in fade-in pb-safe">
+    <div className="flex flex-col h-[100dvh] w-full bg-bg fixed inset-0 z-[100] animate-in fade-in pb-safe">
       {/* HEADER */}
-      <div className="flex items-center gap-4 shrink-0 p-4 border-b-2 border-ink/10 bg-white">
+      <div className="flex items-center gap-4 shrink-0 p-3 sm:p-4 border-b-2 border-ink/10">
         <Button 
           variant="secondary" 
           size="icon" 
@@ -199,11 +199,11 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
         >
           <ArrowLeft className="w-6 h-6" />
         </Button>
-        <h1 className="font-heading tracking-tighter text-3xl md:text-4xl uppercase">Healing Companion</h1>
+        <h1 className="font-heading tracking-tighter text-2xl sm:text-3xl md:text-4xl uppercase">Healing Companion</h1>
       </div>
 
       {errorBanner && (
-        <div className="bg-danger text-white border-2 border-ink brutalist-shadow-sm p-3 mx-4 font-mono text-xs uppercase font-bold animate-in fade-in">
+        <div className="bg-danger text-white border-2 border-ink brutalist-shadow-sm p-2 sm:p-3 m-2 sm:m-4 font-mono text-[10px] sm:text-xs uppercase font-bold animate-in fade-in shrink-0">
           ⚠️ {errorBanner}
         </div>
       )}
@@ -278,30 +278,30 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
             )}
           </div>
 
-          {/* Quick Start Horizontal Pills */}
+          {/* Quick Start Pills (Wrapped for mobile) */}
           {messages.length === 0 && !isLoading && !isCrisis && (
-            <div className="w-full overflow-x-auto no-scrollbar py-3 px-4 shrink-0 bg-white/50 border-t-2 border-ink/10 animate-in slide-in-from-bottom-4 fade-in duration-500">
-              <div className="flex gap-3 w-max">
+            <div className="w-full py-3 px-3 sm:px-4 shrink-0 border-t-2 border-ink/10 animate-in slide-in-from-bottom-4 fade-in duration-500 bg-white/40">
+              <div className="flex flex-wrap gap-2">
                 <Button 
                   onClick={startAnalysisMode}
-                  className="rounded-full px-5 py-2 h-auto brutalist-shadow-sm bg-brand text-ink hover:bg-brand/90 border-2 border-ink whitespace-nowrap transition-transform hover:-translate-y-1"
+                  className="rounded-full px-4 py-2 h-auto brutalist-shadow-sm bg-brand text-ink hover:bg-brand/90 border-2 border-ink transition-transform hover:-translate-y-1"
                 >
-                  <Sparkles className="w-4 h-4 mr-2 shrink-0" />
-                  <span className="font-mono text-[11px] uppercase font-bold">Analyze my past week</span>
+                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 shrink-0" />
+                  <span className="font-mono text-[10px] sm:text-[11px] uppercase font-bold text-left leading-tight">Analyze my past week</span>
                 </Button>
                 <Button 
                   onClick={() => startPresetChat("I'm feeling an intense urge to reach out right now.")}
-                  className="rounded-full px-5 py-2 h-auto brutalist-shadow-sm bg-white text-ink hover:bg-ink/5 border-2 border-ink whitespace-nowrap transition-transform hover:-translate-y-1"
+                  className="rounded-full px-4 py-2 h-auto brutalist-shadow-sm bg-white text-ink hover:bg-ink/5 border-2 border-ink transition-transform hover:-translate-y-1"
                 >
-                  <Flag className="w-4 h-4 mr-2 shrink-0 text-danger" />
-                  <span className="font-mono text-[11px] uppercase font-bold">I want to text them</span>
+                  <Flag className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 shrink-0 text-danger" />
+                  <span className="font-mono text-[10px] sm:text-[11px] uppercase font-bold text-left leading-tight">I want to text them</span>
                 </Button>
                 <Button 
                   onClick={() => startPresetChat("I just need to vent and talk about something else.")}
-                  className="rounded-full px-5 py-2 h-auto brutalist-shadow-sm bg-white text-ink hover:bg-ink/5 border-2 border-ink whitespace-nowrap transition-transform hover:-translate-y-1"
+                  className="rounded-full px-4 py-2 h-auto brutalist-shadow-sm bg-white text-ink hover:bg-ink/5 border-2 border-ink transition-transform hover:-translate-y-1"
                 >
-                  <MessageSquare className="w-4 h-4 mr-2 shrink-0" />
-                  <span className="font-mono text-[11px] uppercase font-bold">I need a distraction</span>
+                  <MessageSquare className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 shrink-0" />
+                  <span className="font-mono text-[10px] sm:text-[11px] uppercase font-bold text-left leading-tight">I need a distraction</span>
                 </Button>
               </div>
             </div>
