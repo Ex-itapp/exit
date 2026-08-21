@@ -27,7 +27,6 @@ export default function TherapistPage() {
   const { checkins } = useCheckins();
   const { userGoal, userName, streakDays } = useUser();
 
-  const [mode, setMode] = useState<'select' | 'chat'>('select');
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -45,7 +44,6 @@ export default function TherapistPage() {
 
   const startAnalysisMode = async () => {
     setIsLoading(true);
-    setMode('chat');
     
     // Build context
     const recentEntries = entries.slice(0, 5).map((e, i) => 
@@ -113,17 +111,44 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
       console.error(error);
       setErrorBanner(`We couldn't connect right now: ${error.message}`);
       setTimeout(() => setErrorBanner(null), 5000);
-      setMode('select');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const startNewChatMode = () => {
-    setMode('chat');
-    setMessages([
-      { role: 'model', parts: [{ text: "I'm here for you. What's on your mind or weighing on your heart right now?" }] }
-    ]);
+  const startPresetChat = async (presetMessage: string) => {
+    setIsLoading(true);
+    
+    // Add user message to UI immediately
+    const userMessage: Message = { role: 'user', parts: [{ text: presetMessage }] };
+    const initialMessages = [userMessage];
+    setMessages(initialMessages);
+
+    try {
+      const res = await fetch('/api/therapist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: initialMessages, userGoal })
+      });
+
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+
+      if (data.crisisPathTriggered) {
+        setIsCrisis(true);
+      }
+
+      setMessages([
+        userMessage,
+        { role: 'model', parts: [{ text: data.aiReply }] }
+      ]);
+    } catch (error: any) {
+      console.error(error);
+      setErrorBanner(`We couldn't connect right now: ${error.message}`);
+      setTimeout(() => setErrorBanner(null), 5000);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const sendMessage = async () => {
@@ -183,47 +208,45 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
         </div>
       )}
 
-      {mode === 'select' ? (
-        /* SELECTION MODE */
-        <div className="flex-1 flex flex-col justify-center gap-6 pb-20">
-          <Button 
-            className="flex-col gap-4 h-auto p-8 brutalist-shadow-sm bg-brand text-ink hover:bg-brand/90 border-4 border-ink transition-transform hover:-translate-y-1"
-            onClick={startAnalysisMode}
-          >
-            <Sparkles className="w-12 h-12" />
-            <div className="space-y-2">
-              <h2 className="font-heading text-2xl uppercase">Reflect On My Journey</h2>
-              <p className="font-mono text-sm opacity-80 normal-case">
-                Let's gently review your last 5 diary entries and check-ins together to explore your feelings and start our conversation.
-              </p>
-            </div>
-          </Button>
+      {/* CHAT MODE */}
+      <div className="flex-1 flex flex-col bg-bg border-4 border-ink brutalist-shadow min-h-0 relative overflow-hidden">
+        {/* Chat Messages */}
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth flex flex-col">
+          {messages.length === 0 && !isLoading && (
+            <div className="flex-1 flex flex-col justify-end gap-3 pb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <Button 
+                onClick={startAnalysisMode}
+                className="w-full h-auto p-4 brutalist-shadow-sm bg-brand text-ink hover:bg-brand/90 border-2 border-ink justify-start text-left whitespace-normal"
+              >
+                <div className="flex items-center gap-3">
+                  <Sparkles className="w-5 h-5 shrink-0" />
+                  <span className="font-mono text-xs uppercase font-bold">Can we talk about my past week?</span>
+                </div>
+              </Button>
 
-          <div className="flex items-center gap-4">
-            <div className="h-[2px] flex-1 bg-ink/10"></div>
-            <span className="font-mono text-xs uppercase font-bold text-ink/50">OR</span>
-            <div className="h-[2px] flex-1 bg-ink/10"></div>
-          </div>
+              <Button 
+                onClick={() => startPresetChat("I'm feeling an intense urge to reach out right now.")}
+                className="w-full h-auto p-4 brutalist-shadow-sm bg-white text-ink hover:bg-white/90 border-2 border-ink justify-start text-left whitespace-normal"
+              >
+                <div className="flex items-center gap-3">
+                  <Flag className="w-5 h-5 shrink-0 text-danger" />
+                  <span className="font-mono text-xs uppercase font-bold">I'm feeling an urge to reach out.</span>
+                </div>
+              </Button>
 
-          <Button 
-            className="flex-col gap-4 h-auto p-8 brutalist-shadow-sm bg-white text-ink hover:bg-white/90 border-4 border-ink transition-transform hover:-translate-y-1"
-            onClick={startNewChatMode}
-          >
-            <MessageSquare className="w-12 h-12" />
-            <div className="space-y-2">
-              <h2 className="font-heading text-2xl uppercase">Discuss Something New</h2>
-              <p className="font-mono text-sm opacity-80 normal-case">
-                Skip the history and just start venting or talking about something specific that happened today.
-              </p>
+              <Button 
+                onClick={() => startPresetChat("I just need to vent and talk about something else.")}
+                className="w-full h-auto p-4 brutalist-shadow-sm bg-white text-ink hover:bg-white/90 border-2 border-ink justify-start text-left whitespace-normal"
+              >
+                <div className="flex items-center gap-3">
+                  <MessageSquare className="w-5 h-5 shrink-0" />
+                  <span className="font-mono text-xs uppercase font-bold">I just need a distraction right now.</span>
+                </div>
+              </Button>
             </div>
-          </Button>
-        </div>
-      ) : (
-        /* CHAT MODE */
-        <div className="flex-1 flex flex-col bg-bg border-4 border-ink brutalist-shadow min-h-0 relative overflow-hidden">
-          {/* Chat Messages */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth">
-            {messages.map((msg, i) => {
+          )}
+
+          {messages.map((msg, i) => {
               const lowerText = msg.parts[0].text.toLowerCase();
               const isModel = msg.role === 'model';
               const showDiary = isModel && lowerText.includes('diary');
@@ -306,7 +329,6 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
             </div>
           )}
         </div>
-      )}
       {showProGate && <ProGateModal feature={showProGate} onClose={() => setShowProGate(null)} />}
     </div>
   );
