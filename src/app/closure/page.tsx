@@ -132,13 +132,37 @@ export default function ClosurePage() {
             }
           }
         } else if (file.name.endsWith('.json')) {
-           // Instagram parser
+           // Instagram parser (JSON)
            const json = JSON.parse(text);
            if (json.messages && Array.isArray(json.messages)) {
              for (const msg of json.messages) {
                 if (msg.sender_name && msg.sender_name.toLowerCase().includes(personLabel.toLowerCase()) && msg.content) {
                   extractedMessages.push(msg.content);
                 }
+             }
+           }
+        } else if (file.name.endsWith('.html')) {
+           // Instagram parser (HTML)
+           const parser = new DOMParser();
+           const doc = parser.parseFromString(text, 'text/html');
+           const allDivs = doc.querySelectorAll('div');
+           for (let i = 0; i < allDivs.length; i++) {
+             const div = allDivs[i];
+             // If this div contains ONLY text and matches the sender name
+             if (div.children.length === 0 && div.textContent && div.textContent.toLowerCase().includes(personLabel.toLowerCase())) {
+               // The message text is usually the very next childless div in the document tree
+               for (let j = 1; j < 8; j++) {
+                 const nextDiv = allDivs[i + j];
+                 if (nextDiv && nextDiv.children.length === 0 && nextDiv.textContent) {
+                    const msg = nextDiv.textContent.trim();
+                    // Skip timestamps or system messages
+                    if (msg && !msg.match(/^[A-Z][a-z]{2} \d{1,2}, \d{4}, \d{1,2}:\d{2} (AM|PM)$/)) {
+                      extractedMessages.push(msg);
+                      i += j; // Skip past the message
+                      break;
+                    }
+                 }
+               }
              }
            }
         }
@@ -949,14 +973,14 @@ export default function ClosurePage() {
 
                   <div className="space-y-2 mt-6 p-4 border-2 border-ink border-dashed bg-white/50">
                     <label className="font-mono text-xs font-bold uppercase block text-ink">
-                      Optional: Auto-Load Chat Export (.txt / .json)
+                      Optional: Auto-Load Chat Export (.txt / .json / .html)
                     </label>
                     <p className="font-sans text-xs text-ink/70 mb-2">
                       Upload your WhatsApp or Instagram chat export to feed their exact historic texts into the AI for maximum realism. (Processed locally, never saved to our servers).
                     </p>
                     <input 
                       type="file" 
-                      accept=".txt,.json" 
+                      accept=".txt,.json,.html" 
                       onChange={handleFileUpload}
                       disabled={isParsingExport || !personLabel.trim()}
                       className="text-xs font-mono file:mr-4 file:py-2 file:px-4 file:border-2 file:border-ink file:text-xs file:font-bold file:uppercase file:bg-bg file:text-ink hover:file:bg-brand cursor-pointer w-full disabled:opacity-50"
