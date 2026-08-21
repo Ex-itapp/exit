@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { supabase } from './supabase';
 
 export interface MoodLog {
   id: string;
@@ -16,17 +17,45 @@ export function useMoods() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+
+    // Load from localStorage first for instant UI
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
         setMoodLogs(JSON.parse(saved));
       } catch (e) {}
     }
+
+    // Sync with Supabase if logged in
+    async function syncDB() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
+
+      const { data } = await supabase
+        .from('mood_logs')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .order('created_at', { ascending: false });
+
+      if (data) {
+        const mapped: MoodLog[] = data.map(d => ({
+          id: d.id,
+          emoji: d.emoji,
+          note: d.note || '',
+          createdAt: d.created_at
+        }));
+        setMoodLogs(mapped);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(mapped));
+      }
+    }
+
+    syncDB();
   }, []);
 
-  const logMood = (emoji: string, note: string) => {
+  const logMood = async (emoji: string, note: string) => {
+    const id = crypto.randomUUID();
     const newLog: MoodLog = {
-      id: crypto.randomUUID(),
+      id,
       emoji,
       note,
       createdAt: new Date().toISOString()
@@ -45,6 +74,24 @@ export function useMoods() {
     
     setMoodLogs(updatedLogs);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedLogs));
+
+    // Sync to Supabase
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      // If replacing today's mood, delete the old one first
+      if (existingIndex !== -1) {
+        const oldId = moodLogs[existingIndex].id;
+        await supabase.from('mood_logs').delete().eq('id', oldId).eq('user_id', session.user.id);
+      }
+      
+      await supabase.from('mood_logs').insert({
+        id,
+        user_id: session.user.id,
+        emoji,
+        note,
+        created_at: newLog.createdAt
+      });
+    }
   };
 
   const getMoodForDate = (date: Date) => {
