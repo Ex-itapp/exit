@@ -12,6 +12,7 @@ import { useUser } from '@/lib/useUser';
 import { ProGateModal } from "@/components/ProGateModal";
 import { ArrowLeft, Sparkles, MessageSquare, Send, BookOpen, Flag, Zap } from "lucide-react";
 import { triggerPWAActivity } from "@/lib/usePWAInstall";
+import { motion } from "framer-motion";
 
 interface Message {
   role: 'user' | 'model';
@@ -280,7 +281,12 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
 
           {/* Quick Start Pills (Wrapped for mobile) */}
           {messages.length === 0 && !isLoading && !isCrisis && (
-            <div className="w-full py-3 px-3 sm:px-4 shrink-0 border-t-2 border-ink/10 animate-in slide-in-from-bottom-4 fade-in duration-500 bg-white/40">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="w-full py-3 px-3 sm:px-4 shrink-0 border-t-2 border-ink/10 bg-white/40"
+            >
               <div className="flex flex-wrap gap-2">
                 <Button 
                   onClick={startAnalysisMode}
@@ -304,7 +310,7 @@ Your first message should NOT be a robotic summary. Instead, casually bring up a
                   <span className="font-mono text-[10px] sm:text-[11px] uppercase font-bold text-left leading-tight">I need a distraction</span>
                 </Button>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* Chat Input */}
