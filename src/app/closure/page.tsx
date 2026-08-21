@@ -98,6 +98,72 @@ export default function ClosurePage() {
   const [authEmail, setAuthEmail] = useState("");
   const [authSent, setAuthSent] = useState(false);
 
+  const [isParsingExport, setIsParsingExport] = useState(false);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!personLabel || !personLabel.trim()) {
+      alert("Please enter their Name / Nickname first so we know whose messages to extract.");
+      return;
+    }
+
+    setIsParsingExport(true);
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const text = event.target?.result as string;
+        let extractedMessages: string[] = [];
+
+        if (file.name.endsWith('.txt')) {
+          // WhatsApp parser
+          const lines = text.split('\n');
+          for (const line of lines) {
+            const match = line.match(/(?:\]|\-)\s+([^:]+):\s+(.*)/);
+            if (match) {
+              const sender = match[1].trim();
+              const msg = match[2].trim();
+              if (sender.toLowerCase().includes(personLabel.toLowerCase())) {
+                 if (msg && !msg.includes('<Media omitted>') && !msg.includes('image omitted')) {
+                   extractedMessages.push(msg);
+                 }
+              }
+            }
+          }
+        } else if (file.name.endsWith('.json')) {
+           // Instagram parser
+           const json = JSON.parse(text);
+           if (json.messages && Array.isArray(json.messages)) {
+             for (const msg of json.messages) {
+                if (msg.sender_name && msg.sender_name.toLowerCase().includes(personLabel.toLowerCase()) && msg.content) {
+                  extractedMessages.push(msg.content);
+                }
+             }
+           }
+        }
+
+        if (extractedMessages.length === 0) {
+           alert("Could not find any messages from '" + personLabel + "' in this file. Make sure the name exactly matches the chat log.");
+        } else {
+           const last300 = extractedMessages.slice(-300);
+           setVoiceForm(prev => ({
+              ...prev,
+              raw_chat_export: last300.join('\n')
+           }));
+           alert(`Successfully extracted ${last300.length} historic messages from ${personLabel}! The AI will now use these as direct references.`);
+        }
+      } catch (err) {
+         console.error(err);
+         alert("Failed to parse the file. Ensure it is a valid .txt or .json export.");
+      } finally {
+         setIsParsingExport(false);
+      }
+    };
+    reader.readAsText(file);
+  };
+
+
   useEffect(() => {
     if (profile) {
       setPersonLabel(profile.label || "My Ex");
@@ -879,6 +945,25 @@ export default function ClosurePage() {
                         className="h-12 border-3 border-ink text-base bg-white font-sans font-bold"
                       />
                     </div>
+                  </div>
+
+                  <div className="space-y-2 mt-6 p-4 border-2 border-ink border-dashed bg-white/50">
+                    <label className="font-mono text-xs font-bold uppercase block text-ink">
+                      Optional: Auto-Load Chat Export (.txt / .json)
+                    </label>
+                    <p className="font-sans text-xs text-ink/70 mb-2">
+                      Upload your WhatsApp or Instagram chat export to feed their exact historic texts into the AI for maximum realism. (Processed locally, never saved to our servers).
+                    </p>
+                    <input 
+                      type="file" 
+                      accept=".txt,.json" 
+                      onChange={handleFileUpload}
+                      disabled={isParsingExport || !personLabel.trim()}
+                      className="text-xs font-mono file:mr-4 file:py-2 file:px-4 file:border-2 file:border-ink file:text-xs file:font-bold file:uppercase file:bg-bg file:text-ink hover:file:bg-brand cursor-pointer w-full disabled:opacity-50"
+                    />
+                    {voiceForm.raw_chat_export && (
+                      <p className="text-xs font-bold text-brand mt-2">✓ Chat export loaded. The AI will mimic these texts.</p>
+                    )}
                   </div>
 
                   <div className="flex justify-end pt-4">

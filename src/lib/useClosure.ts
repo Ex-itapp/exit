@@ -17,6 +17,7 @@ export interface VoiceProfile {
   tone_when_affectionate: string;
   recurring_topics: string[];
   top_verbatim_example_lines: string[];
+  raw_chat_export?: string;
 }
 
 export interface TraitProfile {
