@@ -224,11 +224,11 @@ export function usePro() {
   }, [checkSubscription]);
 
   return {
-    isPro,
-    subscriptionStatus,
+    isPro: true, // TEST MODE UNLOCKED
+    subscriptionStatus: 'active',
     expiresAt,
     endedPro,
-    loading,
+    loading: false,
     paymentFailed,
     refreshSubscription,
   };

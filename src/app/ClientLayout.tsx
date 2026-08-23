@@ -95,6 +95,29 @@ export function ClientLayout({ children }: { children: ReactNode }) {
   const hasLocalSession = typeof window !== 'undefined' && Object.keys(localStorage).some(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
   
   const isResolvingAuth = loading || (user && profileLoading);
+  const isPublicPage = pathname === '/' || pathname === '/onboarding' || pathname === '/tos' || pathname === '/privacy' || pathname === '/support' || pathname === '/auth';
+
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
+
+  // During SSR and the very first client render, we must match the server output
+  // to avoid hydration mismatch errors.
+  if (!mounted) {
+    if (isPublicPage) {
+      return (
+        <div suppressHydrationWarning className="min-h-screen bg-bg text-ink font-sans antialiased selection:bg-brand selection:text-ink">
+          {children}
+        </div>
+      );
+    }
+    return (
+      <div className="min-h-screen bg-bg flex items-center justify-center p-4">
+        <div className="border-4 border-ink bg-white p-6 brutalist-shadow text-center">
+          <p className="font-mono font-bold text-sm tracking-widest uppercase text-ink">PREPARING YOUR SPACE...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (isResolvingAuth && (pathname !== '/' || hasLocalSession)) {
     return (
