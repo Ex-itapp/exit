@@ -7,12 +7,12 @@ export interface AIOptions {
   jsonMode?: boolean;
 }
 
-/**
- * DeepSeek AI Router Helper
- * Routes requests to DeepSeek's latest models:
- * - deepseek-v4-pro for heavy tasks, persona simulations, and complex reasoning
- * - deepseek-v4-flash for lightning-fast responses and classification
- */
+export type AIProvider = 'openai' | 'deepseek' | 'anthropic' | 'gemini';
+
+// Currently configured to use an OpenAI-compatible API (defaults to DeepSeek)
+// This can be easily swapped when the new APIs are ready.
+const ACTIVE_PROVIDER: AIProvider = 'deepseek';
+
 export async function callAIRouter(options: AIOptions): Promise<string | null> {
   const {
     prompt,
@@ -22,9 +22,12 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
     jsonMode = false,
   } = options;
 
-  const deepseekKey = process.env.DEEPSEEK_API_KEY || process.env.NEXT_PUBLIC_DEEPSEEK_API_KEY;
-  if (!deepseekKey) {
-    console.error('DeepSeek API Key is missing. Please set DEEPSEEK_API_KEY in your environment.');
+  // The API key structure can be adapted based on the chosen provider
+  const apiKey = process.env.AI_API_KEY || process.env.DEEPSEEK_API_KEY || process.env.NEXT_PUBLIC_DEEPSEEK_API_KEY;
+  const baseUrl = process.env.AI_BASE_URL || 'https://api.deepseek.com/v1';
+
+  if (!apiKey) {
+    console.error(`AI API Key is missing for provider ${ACTIVE_PROVIDER}. Please set AI_API_KEY in your environment.`);
     return null;
   }
 
@@ -33,6 +36,7 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
   if (systemPrompt) {
     formattedMessages.push({ role: 'system', content: systemPrompt });
   }
+  
   if (messages.length > 0) {
     formattedMessages.push(...messages.map(m => ({
       role: m.role === 'assistant' ? 'assistant' : m.role === 'system' ? 'system' : 'user',
@@ -42,26 +46,29 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
     formattedMessages.push({ role: 'user', content: prompt });
   }
 
-  // Always use the latest deepseek-v4-flash model for all tiers
-  const model = 'deepseek-v4-flash';
+  // Model selection based on tier (can be configured per provider)
+  let model = 'deepseek-chat';
+  
+  if (ACTIVE_PROVIDER === 'deepseek') {
+    model = 'deepseek-chat'; // Or deepseek-reasoner based on tier, keeping simple for now
+  } else if (ACTIVE_PROVIDER === 'openai') {
+    model = options.tier === 'heavy' ? 'gpt-4o' : 'gpt-4o-mini';
+  }
 
   try {
-    console.log('[DeepSeek Request Info]', {
+    console.log(`[AI Router Request - ${ACTIVE_PROVIDER}]`, {
       model,
       messagesCount: formattedMessages.length,
       temperature,
       jsonMode,
-      systemPromptPreview: systemPrompt ? systemPrompt.substring(0, 100) + '...' : 'none',
-      latestMessagePreview: formattedMessages.length > 0 
-        ? formattedMessages[formattedMessages.length - 1].content.substring(0, 100) + '...'
-        : 'none'
     });
 
-    const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    // We assume an OpenAI-compatible endpoint structure for DeepSeek/OpenAI
+    const res = await fetch(`${baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${deepseekKey}`,
+        'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
         model,
@@ -73,7 +80,7 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
 
     if (!res.ok) {
       const errorText = await res.text();
-      console.error('[DeepSeek API Error Response]', {
+      console.error(`[AI Router API Error - ${ACTIVE_PROVIDER}]`, {
         status: res.status,
         statusText: res.statusText,
         model,
@@ -83,29 +90,19 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
     }
 
     const data = await res.json();
-    console.log('[DeepSeek Response Success]', {
-      model,
-      choicesCount: data.choices?.length,
-      promptTokens: data.usage?.prompt_tokens,
-      completionTokens: data.usage?.completion_tokens,
-      totalTokens: data.usage?.total_tokens
-    });
-
     return data.choices?.[0]?.message?.content?.trim() || null;
+    
   } catch (e) {
-    console.error('[DeepSeek API Exception]', {
-      errorMessage: e instanceof Error ? e.message : String(e),
-      errorStack: e instanceof Error ? e.stack : undefined,
-      rawError: e
+    console.error(`[AI Router Exception - ${ACTIVE_PROVIDER}]`, {
+      errorMessage: e instanceof Error ? e.message : String(e)
     });
     return null;
   }
 }
 
 /**
- * Generate text embedding (returns null as DeepSeek focuses on LLM chat models)
+ * Generate text embedding
  */
 export async function generateEmbedding(_text: string): Promise<number[] | null> {
   return null;
 }
-

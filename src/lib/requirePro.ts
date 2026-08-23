@@ -12,29 +12,6 @@ export async function requirePro(): Promise<ProCheckResult> {
     return { user: null, error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
   }
 
-  const adminSupabase = createAdminSupabase();
-  const [subResult, paymentResult] = await Promise.all([
-    adminSupabase
-      .from('subscriptions')
-      .select('status')
-      .eq('user_id', user.id)
-      .in('status', ['active', 'trialing'])
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-    adminSupabase
-      .from('payments')
-      .select('status')
-      .eq('user_id', user.id)
-      .eq('status', 'succeeded')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-  ]);
-
-  if (!subResult.data && !paymentResult.data) {
-    return { user: null, error: NextResponse.json({ error: 'Pro subscription required' }, { status: 403 }) };
-  }
-
+  // TEST MODE: Bypassing subscription check for free testing
   return { user: { id: user.id, email: user.email }, error: null };
 }
