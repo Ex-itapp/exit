@@ -243,7 +243,49 @@ export const TherapistPage = () => {
       )}
       
       {!isScreenshotMode && !isCrisis && (
-        <div className="shrink-0 p-4 pb-6 sm:pb-8 max-w-3xl mx-auto w-full">
+        <div className="shrink-0 p-4 pb-6 sm:pb-8 max-w-3xl mx-auto w-full flex flex-col gap-3">
+          {(() => {
+            if (messages.length === 0 || isLoading) return null;
+            const lastMessage = messages[messages.length - 1];
+            if (lastMessage.role !== 'model') return null;
+            
+            const content = lastMessage.parts?.[0]?.text?.toLowerCase() || '';
+            
+            if (content.includes('diary') || content.includes('journal') || content.includes('dump')) {
+              return (
+                <button 
+                  onClick={() => router.push('/diary')}
+                  className="self-center bg-brand text-brand-foreground px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm animate-in fade-in slide-in-from-bottom-2 hover:opacity-90 transition-opacity"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Open Diary
+                </button>
+              );
+            }
+            if (content.includes('play hub') || content.includes('game') || content.includes('distract')) {
+              return (
+                <button 
+                  onClick={() => router.push('/play')}
+                  className="self-center bg-brand text-brand-foreground px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm animate-in fade-in slide-in-from-bottom-2 hover:opacity-90 transition-opacity"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Open Play Hub
+                </button>
+              );
+            }
+            if (content.includes('streak') || content.includes('no-contact') || content.includes('no contact')) {
+              return (
+                <button 
+                  onClick={() => router.push('/home')}
+                  className="self-center bg-brand text-brand-foreground px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm animate-in fade-in slide-in-from-bottom-2 hover:opacity-90 transition-opacity"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Check Streak
+                </button>
+              );
+            }
+            return null;
+          })()}
           <ChatInput 
             value={inputText}
             onChange={setInputText}
