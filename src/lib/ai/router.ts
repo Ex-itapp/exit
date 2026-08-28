@@ -9,9 +9,7 @@ export interface AIOptions {
 
 export type AIProvider = 'openai' | 'deepseek' | 'anthropic' | 'gemini';
 
-// Currently configured to use an OpenAI-compatible API (defaults to DeepSeek)
-// This can be easily swapped when the new APIs are ready.
-const ACTIVE_PROVIDER: AIProvider = 'deepseek';
+const ACTIVE_PROVIDER: AIProvider = 'gemini';
 
 export async function callAIRouter(options: AIOptions): Promise<string | null> {
   const {
@@ -22,60 +20,74 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
     jsonMode = false,
   } = options;
 
-  // The API key structure can be adapted based on the chosen provider
-  const apiKey = process.env.AI_API_KEY || process.env.DEEPSEEK_API_KEY || process.env.NEXT_PUBLIC_DEEPSEEK_API_KEY;
-  const baseUrl = process.env.AI_BASE_URL || 'https://api.deepseek.com/v1';
+  const apiKey = process.env.GEMINI_API_KEY || process.env.AI_API_KEY;
 
   if (!apiKey) {
-    console.error(`AI API Key is missing for provider ${ACTIVE_PROVIDER}. Please set AI_API_KEY in your environment.`);
+    console.error(`AI API Key is missing for provider ${ACTIVE_PROVIDER}. Please set GEMINI_API_KEY in your environment.`);
     return null;
   }
 
-  // Build standard messages array
-  const formattedMessages: Array<{ role: string; content: string }> = [];
-  if (systemPrompt) {
-    formattedMessages.push({ role: 'system', content: systemPrompt });
-  }
-  
-  if (messages.length > 0) {
-    formattedMessages.push(...messages.map(m => ({
-      role: m.role === 'assistant' ? 'assistant' : m.role === 'system' ? 'system' : 'user',
-      content: m.content
-    })));
-  } else if (prompt) {
-    formattedMessages.push({ role: 'user', content: prompt });
+  // Model selection based on tier
+  let model = 'gemini-2.0-flash';
+  if (options.tier === 'heavy') {
+    model = 'gemini-2.5-pro-preview-06-05';
+  } else if (options.tier === 'classifier') {
+    model = 'gemini-2.0-flash-lite';
   }
 
-  // Model selection based on tier (can be configured per provider)
-  let model = 'deepseek-chat';
-  
-  if (ACTIVE_PROVIDER === 'deepseek') {
-    model = 'deepseek-chat'; // Or deepseek-reasoner based on tier, keeping simple for now
-  } else if (ACTIVE_PROVIDER === 'openai') {
-    model = options.tier === 'heavy' ? 'gpt-4o' : 'gpt-4o-mini';
+  // Build Gemini-format contents array
+  const contents: Array<{ role: string; parts: Array<{ text: string }> }> = [];
+
+  if (messages.length > 0) {
+    for (const m of messages) {
+      // Gemini uses "user" and "model" roles (not "assistant")
+      // System messages get folded into systemInstruction below
+      if (m.role === 'system') continue;
+      contents.push({
+        role: m.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: m.content }]
+      });
+    }
+  } else if (prompt) {
+    contents.push({ role: 'user', parts: [{ text: prompt }] });
+  }
+
+  // Build system instruction from systemPrompt + any system messages
+  let fullSystemInstruction = systemPrompt || '';
+  const systemMessages = messages.filter(m => m.role === 'system');
+  if (systemMessages.length > 0) {
+    fullSystemInstruction = systemMessages.map(m => m.content).join('\n\n') + (fullSystemInstruction ? '\n\n' + fullSystemInstruction : '');
   }
 
   try {
     console.log(`[AI Router Request - ${ACTIVE_PROVIDER}]`, {
       model,
-      messagesCount: formattedMessages.length,
+      contentsCount: contents.length,
       temperature,
       jsonMode,
+      hasSystemInstruction: !!fullSystemInstruction,
     });
 
-    // We assume an OpenAI-compatible endpoint structure for DeepSeek/OpenAI
-    const res = await fetch(`${baseUrl}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model,
-        messages: formattedMessages,
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+    const body: any = {
+      contents,
+      generationConfig: {
         temperature,
-        ...(jsonMode ? { response_format: { type: 'json_object' } } : {})
-      }),
+        ...(jsonMode ? { responseMimeType: 'application/json' } : {}),
+      },
+    };
+
+    if (fullSystemInstruction) {
+      body.systemInstruction = {
+        parts: [{ text: fullSystemInstruction }]
+      };
+    }
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
     });
 
     if (!res.ok) {
@@ -90,8 +102,9 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
     }
 
     const data = await res.json();
-    return data.choices?.[0]?.message?.content?.trim() || null;
-    
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    return text || null;
+
   } catch (e) {
     console.error(`[AI Router Exception - ${ACTIVE_PROVIDER}]`, {
       errorMessage: e instanceof Error ? e.message : String(e)
