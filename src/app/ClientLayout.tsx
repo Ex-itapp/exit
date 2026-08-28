@@ -10,6 +10,7 @@ import { usePro } from "@/lib/usePro";
 import { ArrowLeft, Crown } from "lucide-react";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { PWANotificationsPrompt } from "@/components/PWANotificationsPrompt";
+import { CompulsoryAuthGate } from "@/components/auth/CompulsoryAuthGate";
 
 export function ClientLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
