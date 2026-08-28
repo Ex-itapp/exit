@@ -28,11 +28,11 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
   }
 
   // Model selection based on tier
-  let model = 'gemini-2.0-flash';
+  let model = 'gemini-2.5-flash';
   if (options.tier === 'heavy') {
-    model = 'gemini-2.5-pro-preview-06-05';
+    model = 'gemini-2.5-pro';
   } else if (options.tier === 'classifier') {
-    model = 'gemini-2.0-flash-lite';
+    model = 'gemini-2.5-flash-lite';
   }
 
   // Build Gemini-format contents array
