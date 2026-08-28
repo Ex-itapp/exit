@@ -90,6 +90,24 @@
     animation: bubble-slide-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
   }
 
+  /* Healing doodle float: gentle bob */
+  @keyframes float-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+  .animate-float-slow {
+    animation: float-slow 3s ease-in-out infinite;
+  }
+
+  /* Soft pulse for corner sparkle */
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.2); }
+  }
+  .animate-pulse-soft {
+    animation: pulse-soft 2.5s ease-in-out infinite;
+  }
+
   /* Typing indicator wave pulse */
   @keyframes wave-pulse {
     0%, 60%, 100% { transform: scale(1); opacity: 0.4; }
