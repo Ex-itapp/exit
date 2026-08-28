@@ -3,10 +3,16 @@
 import { cn } from "@/lib/utils";
 import type { ChatMood } from "@/lib/useTheme";
 
+interface Message {
+  role: string;
+  content?: string;
+  parts?: Array<{ text: string }>;
+}
+
 interface MessageBubbleProps {
-  content: string;
-  isUser: boolean;
+  message: Message;
   mood: ChatMood;
+  isScreenshotMode?: boolean;
   timestamp?: string;
   showTimestamp?: boolean;
   animationDelay?: number;
@@ -16,14 +22,16 @@ interface MessageBubbleProps {
 const HEALING_DOODLES = ["✿", "❀", "♡", "☽", "✦", "⊹", "˚", "⟡", "❋", "✧"];
 
 export function MessageBubble({
-  content,
-  isUser,
+  message,
   mood,
+  isScreenshotMode,
   timestamp,
   showTimestamp,
   animationDelay = 0,
 }: MessageBubbleProps) {
   const isCompanion = mood === "companion";
+  const isUser = message.role === "user";
+  const content = message.parts?.[0]?.text || message.content || "";
 
   // Pick a deterministic doodle from the message content
   const doodleIndex = content.length % HEALING_DOODLES.length;
@@ -31,7 +39,7 @@ export function MessageBubble({
   const doodle2 = HEALING_DOODLES[(doodleIndex + 3) % HEALING_DOODLES.length];
 
   // Should we show the healing decoration?
-  const showHealingDecor = isCompanion && !isUser;
+  const showHealingDecor = isCompanion && !isUser && !isScreenshotMode;
 
   // Bubble styles based on mood and sender
   let bubbleClasses = "";
