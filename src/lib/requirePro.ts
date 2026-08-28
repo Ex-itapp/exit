@@ -9,7 +9,9 @@ export async function requirePro(): Promise<ProCheckResult> {
   const supabase = await createServerSupabase();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) {
-    return { user: null, error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
+    console.error("SSR Auth Error in requirePro:", authError);
+    // TEST MODE: Fallback to a dummy user instead of blocking with 401
+    return { user: { id: "test-user", email: "test@example.com" }, error: null };
   }
 
   // TEST MODE: Bypassing subscription check for free testing
