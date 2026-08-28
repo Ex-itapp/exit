@@ -44,17 +44,6 @@ Do not explain your answer. Respond with exactly one word.
 User check-in text:
 "${userText}"`;
 
-    const classifierResultText = await callAIRouter({ prompt: classifierPrompt, tier: 'classifier', temperature: 0.1 });
-    const isSafe = !classifierResultText || classifierResultText.toUpperCase().includes('SAFE');
-
-    if (!isSafe) {
-      return NextResponse.json({
-        classifierResult: 'RISK',
-        crisisPathTriggered: true,
-        aiReply: `It sounds like you're carrying something heavy right now, and I want to take that seriously.\n\nI'm not the right support for this moment — please reach out to a crisis line or someone you trust right now:\n\n• iCall: 9152987821\n• Vandrevala Foundation: 1860-2662-345\n• Emergencies: 112\n\nYou don't have to handle this alone.`
-      });
-    }
-
     // Build tone-specific personality modifier
     const toneModifiers: Record<string, string> = {
       'tough-love': `YOUR PERSONALITY: You are a direct, no-BS accountability partner. Be sarcastic when appropriate. If they want to text their ex, firmly stop them ("bestie do NOT text them, drop the phone"). Celebrate their streak hard. Be blunt but loving. Don't sugarcoat things.`,
@@ -87,12 +76,28 @@ CONTEXT: The user's healing focus is "${userGoal || 'Finding peace and clarity'}
         : (m.parts?.[0]?.text || m.content || "")
     })).filter(m => m.content.length > 0);
 
-    const aiReply = await callAIRouter({
+    // We run the Crisis Classifier (Call 1) and the Main Reply (Call 2) IN PARALLEL
+    // to significantly reduce the waiting time for the user.
+    const classifierPromise = callAIRouter({ prompt: classifierPrompt, tier: 'classifier', temperature: 0.1 });
+
+    const replyPromise = callAIRouter({
       systemPrompt: systemInstruction || defaultSystemInstruction,
       messages: formattedHistory,
       tier: 'fast',
       temperature: 0.7
     });
+
+    const [classifierResultText, aiReply] = await Promise.all([classifierPromise, replyPromise]);
+
+    const isSafe = !classifierResultText || classifierResultText.toUpperCase().includes('SAFE');
+
+    if (!isSafe) {
+      return NextResponse.json({
+        classifierResult: 'RISK',
+        crisisPathTriggered: true,
+        aiReply: `It sounds like you're carrying something heavy right now, and I want to take that seriously.\n\nI'm not the right support for this moment — please reach out to a crisis line or someone you trust right now:\n\n• iCall: 9152987821\n• Vandrevala Foundation: 1860-2662-345\n• Emergencies: 112\n\nYou don't have to handle this alone.`
+      });
+    }
 
     if (!aiReply) {
       return NextResponse.json({
