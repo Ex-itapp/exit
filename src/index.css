@@ -37,22 +37,22 @@
 }
 
 @layer utilities {
-  /* === Brutalist Utilities (kept for non-chat pages) === */
+  /* === Soft-Brutalist Utilities === */
   .brutalist-border {
-    border: 3px solid var(--color-ink);
+    border: 2px solid var(--color-ink);
   }
   .brutalist-shadow {
-    box-shadow: 4px 4px 0 var(--color-ink);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   }
   .brutalist-shadow-sm {
-    box-shadow: 2px 2px 0 var(--color-ink);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   }
   .brutalist-shadow-hover {
-    box-shadow: 2px 2px 0 var(--color-ink);
-    transform: translate(2px, 2px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transform: translate(1px, 1px);
   }
   .snappy-transition {
-    transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
   }
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);
@@ -98,7 +98,7 @@
     100% { transform: translateY(0); opacity: 1; }
   }
   .animate-bubble-in {
-    animation: bubble-slide-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    animation: bubble-slide-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
   }
 
   /* Healing doodle float: gentle bob */
