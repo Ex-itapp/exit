@@ -216,8 +216,8 @@ export const TherapistPage = () => {
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
         {messages.length === 0 && !isLoading ? (
           <div className="flex-1 h-full flex flex-col items-center justify-center gap-4">
-            <div className="w-16 h-16 bg-brand/20 rounded-2xl flex items-center justify-center">
-              <Sparkles className="w-8 h-8 text-brand" />
+            <div className="w-16 h-16 bg-brand/10 rounded-none border border-brand/20 flex items-center justify-center">
+              <Sparkles className="w-8 h-8 text-brand/70" />
             </div>
             <p className="font-sans text-sm text-ink/50 text-center max-w-xs">
               Your companion is here. Start a conversation or pick a prompt below.
@@ -281,20 +281,20 @@ export const TherapistPage = () => {
       )}
 
       {isCrisis && (
-        <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in-up">
-          <div className="bg-bg border-4 border-destructive p-8 max-w-md w-full brutalist-shadow space-y-6">
+        <div className="fixed inset-0 z-[200] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in-up">
+          <div className="bg-bg border-2 border-destructive/60 p-8 max-w-md w-full shadow-lg space-y-6">
             <h2 className="font-heading text-2xl text-destructive uppercase">We're Here For You</h2>
-            <p className="font-sans text-ink leading-relaxed">
+            <p className="font-sans text-ink/80 leading-relaxed">
               It sounds like you might be carrying something really heavy right now. You don't have to go through this alone.
             </p>
-            <div className="space-y-4 font-mono text-sm bg-white p-4 border-2 border-ink">
+            <div className="space-y-4 font-mono text-sm bg-ink/3 p-4 border border-ink/10">
               <p><strong>iCall:</strong> 9152987821</p>
               <p><strong>Vandrevala Foundation:</strong> 1860-2662-345</p>
               <p><strong>Emergencies:</strong> 112</p>
             </div>
             <button 
               onClick={() => setIsCrisis(false)}
-              className="w-full py-4 border-2 border-ink font-bold uppercase tracking-widest hover:bg-ink hover:text-bg transition-colors"
+              className="w-full py-4 border-2 border-ink/20 font-bold uppercase tracking-widest hover:bg-ink hover:text-bg transition-colors"
             >
               I understand, return to chat
             </button>

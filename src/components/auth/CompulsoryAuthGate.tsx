@@ -86,10 +86,10 @@ export function CompulsoryAuthGate() {
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.2 }}
-        className="relative z-10 max-w-md w-full bg-white border-4 border-ink brutalist-shadow p-6 sm:p-8 space-y-6"
+        className="relative z-10 max-w-md w-full bg-white border-2 border-ink/20 shadow-sm p-6 sm:p-8 space-y-6"
       >
-        <div className="text-center space-y-2 border-b-4 border-ink pb-6">
-          <div className="w-12 h-12 bg-brand border-3 border-ink flex items-center justify-center mx-auto transform -rotate-3 mb-3 shadow-sm">
+        <div className="text-center space-y-2 border-b-2 border-ink/15 pb-6">
+          <div className="w-12 h-12 bg-brand border-2 border-ink/15 flex items-center justify-center mx-auto transform -rotate-3 mb-3 shadow-sm">
             <Lock className="w-6 h-6 text-ink" />
           </div>
           <span className="font-mono text-[10px] font-bold uppercase tracking-widest bg-ink text-bg px-2.5 py-1">
@@ -105,8 +105,8 @@ export function CompulsoryAuthGate() {
         <div className="grid grid-cols-2 gap-2 border-b-2 border-ink/20 pb-4">
           <button
             onClick={() => { setAuthTab('google'); setMsg(null); }}
-            className={cn("h-11 border-2 border-ink font-mono text-xs font-bold uppercase transition-all flex items-center justify-center gap-2",
-              authTab === 'google' ? "bg-ink text-bg brutalist-shadow-sm" : "bg-bg text-ink hover:bg-white"
+            className={cn("h-11 border-2 border-ink/15 font-mono text-xs font-bold uppercase transition-all flex items-center justify-center gap-2",
+              authTab === 'google' ? "bg-ink text-bg shadow-xs" : "bg-bg text-ink hover:bg-white"
             )}
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -120,8 +120,8 @@ export function CompulsoryAuthGate() {
 
           <button
             onClick={() => { setAuthTab('magic'); setMsg(null); }}
-            className={cn("h-11 border-2 border-ink font-mono text-xs font-bold uppercase transition-all flex items-center justify-center gap-2",
-              authTab === 'magic' ? "bg-brand text-ink brutalist-shadow-sm" : "bg-bg text-ink hover:bg-white"
+            className={cn("h-11 border-2 border-ink/15 font-mono text-xs font-bold uppercase transition-all flex items-center justify-center gap-2",
+              authTab === 'magic' ? "bg-brand text-ink shadow-xs" : "bg-bg text-ink hover:bg-white"
             )}
           >
             <Mail className="w-4 h-4" />
@@ -132,14 +132,14 @@ export function CompulsoryAuthGate() {
         {/* TAB 1: GOOGLE OAUTH */}
         {authTab === 'google' && (
           <div className="space-y-4 pt-2">
-            <div className="p-4 bg-bg border-2 border-ink space-y-2 text-center">
+            <div className="p-4 bg-bg border-2 border-ink/15 space-y-2 text-center">
               <p className="font-mono text-xs leading-relaxed text-ink/80">
                 Sign in securely with your Google account. One-click instant cloud sync and private backup.
               </p>
             </div>
 
             <Button
-              className="w-full h-14 bg-white hover:bg-gray-50 text-ink border-3 border-ink brutalist-shadow text-sm font-bold uppercase flex items-center justify-center gap-3"
+              className="w-full h-14 bg-white hover:bg-gray-50 text-ink border-2 border-ink/15 shadow-sm text-sm font-bold uppercase flex items-center justify-center gap-3"
               onClick={handleGoogle}
               disabled={loading}
             >
@@ -175,7 +175,7 @@ export function CompulsoryAuthGate() {
                   placeholder="your.email@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-12 border-2 border-ink font-mono text-sm"
+                  className="h-12 border-2 border-ink/15 font-mono text-sm"
                 />
               </div>
 
@@ -188,7 +188,7 @@ export function CompulsoryAuthGate() {
                   placeholder="Leave empty for passwordless Magic Link"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-12 border-2 border-ink font-mono text-sm"
+                  className="h-12 border-2 border-ink/15 font-mono text-sm"
                 />
               </div>
             </div>
@@ -205,7 +205,7 @@ export function CompulsoryAuthGate() {
                 </Button>
               ) : (
                 <Button
-                  className="w-full h-14 bg-brand hover:bg-brand/90 text-ink border-3 border-ink brutalist-shadow text-sm font-bold uppercase"
+                  className="w-full h-14 bg-brand hover:bg-brand/90 text-ink border-2 border-ink/15 shadow-sm text-sm font-bold uppercase"
                   onClick={handleMagicLink}
                   disabled={loading || !email.trim()}
                 >
@@ -224,7 +224,7 @@ export function CompulsoryAuthGate() {
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className={cn("p-3 border-2 border-ink font-mono text-xs font-bold",
+              className={cn("p-3 border-2 border-ink/15 font-mono text-xs font-bold",
                 msg.type === 'success' ? "bg-positive/20 border-positive text-ink" : "bg-danger/20 border-danger text-danger"
               )}
             >

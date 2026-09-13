@@ -70,9 +70,9 @@ function SuccessPageContent() {
   if (!isFullyPro && !paymentFailed && !isTimedOut) {
     return (
       <div className="min-h-screen bg-bg text-ink flex flex-col items-center justify-center p-6">
-        <div className="bg-white border-4 border-ink brutalist-shadow p-10 max-w-sm w-full text-center">
+        <div className="bg-white border-2 border-ink/20 shadow-sm p-10 max-w-sm w-full text-center">
           {/* Spinning square — on-brand brutalist loader */}
-          <div className="w-12 h-12 bg-brand border-3 border-ink mx-auto mb-8 animate-spin" />
+          <div className="w-12 h-12 bg-brand border-2 border-ink/15 mx-auto mb-8 animate-spin" />
 
           <h1 className="font-heading text-2xl tracking-tighter uppercase font-black mb-2">
             Finalizing Order
@@ -84,7 +84,7 @@ function SuccessPageContent() {
           {showRefresh && (
             <button
               onClick={() => pollServerStatus()}
-              className="px-6 py-3 bg-white border-2 border-ink brutalist-shadow-sm font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-brand hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
+              className="px-6 py-3 bg-white border-2 border-ink/15 shadow-xs font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-brand hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
             >
               Refresh Status
             </button>
@@ -98,9 +98,9 @@ function SuccessPageContent() {
   if (paymentFailed || isTimedOut) {
     return (
       <div className="min-h-screen bg-bg text-ink flex items-center justify-center p-6">
-        <div className="bg-white border-4 border-ink brutalist-shadow p-10 max-w-md w-full text-center">
+        <div className="bg-white border-2 border-ink/20 shadow-sm p-10 max-w-md w-full text-center">
           {/* X mark */}
-          <div className="w-16 h-16 bg-accent border-3 border-ink flex items-center justify-center mx-auto mb-8">
+          <div className="w-16 h-16 bg-accent border-2 border-ink/15 flex items-center justify-center mx-auto mb-8">
             <svg className="w-8 h-8 text-bg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -118,13 +118,13 @@ function SuccessPageContent() {
           <div className="space-y-3">
             <button
               onClick={() => { setIsTimedOut(false); pollServerStatus(); }}
-              className="block w-full py-4 px-6 bg-brand border-3 border-ink brutalist-shadow font-mono text-xs font-bold uppercase tracking-widest hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
+              className="block w-full py-4 px-6 bg-brand border-2 border-ink/15 shadow-sm font-mono text-xs font-bold uppercase tracking-widest hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
             >
               Refresh Status
             </button>
             <Link
               href="/pricing"
-              className="block w-full py-4 px-6 bg-white border-3 border-ink brutalist-shadow-sm font-mono text-xs font-bold uppercase tracking-widest hover:bg-ink hover:text-bg hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all text-center"
+              className="block w-full py-4 px-6 bg-white border-2 border-ink/15 shadow-xs font-mono text-xs font-bold uppercase tracking-widest hover:bg-ink hover:text-bg hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all text-center"
             >
               Back to Pricing
             </Link>
@@ -149,9 +149,9 @@ function SuccessPageContent() {
 
   return (
     <div className="min-h-screen bg-bg text-ink flex items-center justify-center p-6">
-      <div className="bg-white border-4 border-ink brutalist-shadow p-10 max-w-md w-full text-center">
+      <div className="bg-white border-2 border-ink/20 shadow-sm p-10 max-w-md w-full text-center">
         {/* Check mark */}
-        <div className="w-16 h-16 bg-positive border-3 border-ink flex items-center justify-center mx-auto mb-8">
+        <div className="w-16 h-16 bg-positive border-2 border-ink/15 flex items-center justify-center mx-auto mb-8">
           <svg className="w-8 h-8 text-ink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
           </svg>
@@ -165,7 +165,7 @@ function SuccessPageContent() {
         </p>
 
         {/* Plan details */}
-        <div className="border-3 border-ink p-5 mb-8 text-left">
+        <div className="border-2 border-ink/15 p-5 mb-8 text-left">
           <div className="flex justify-between items-center mb-3">
             <span className="font-mono text-xs uppercase tracking-widest text-ink/50">Plan</span>
             <span className="font-mono text-xs font-bold uppercase">
@@ -182,7 +182,7 @@ function SuccessPageContent() {
 
         <Link
           href="/"
-          className="block w-full py-4 px-6 bg-brand border-3 border-ink brutalist-shadow font-mono text-sm font-bold uppercase tracking-widest hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all text-center"
+          className="block w-full py-4 px-6 bg-brand border-2 border-ink/15 shadow-sm font-mono text-sm font-bold uppercase tracking-widest hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all text-center"
         >
           Enter My Space →
         </Link>
@@ -200,7 +200,7 @@ export default function SuccessPage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-bg text-ink flex flex-col items-center justify-center p-6">
-          <div className="w-12 h-12 bg-brand border-3 border-ink animate-spin mb-8" />
+          <div className="w-12 h-12 bg-brand border-2 border-ink/15 animate-spin mb-8" />
           <h1 className="font-heading text-2xl tracking-tighter uppercase font-black mb-2">
             Finalizing Order
           </h1>

@@ -43,7 +43,7 @@ export default function NewDiaryEntry() {
           <span className="font-mono text-xs font-bold uppercase opacity-60">MODE:</span>
           <button 
             onClick={() => setIsUnsentMode(!isUnsentMode)}
-            className={`px-3 py-1 text-xs font-bold font-mono tracking-widest uppercase border-2 border-ink rounded-full transition-colors ${
+            className={`px-3 py-1 text-xs font-bold font-mono tracking-widest uppercase border-2 border-ink/20 rounded-full transition-colors ${
               isUnsentMode ? 'bg-accent text-bg' : 'bg-transparent text-ink hover:bg-ink/5'
             }`}
           >
@@ -52,7 +52,7 @@ export default function NewDiaryEntry() {
         </div>
       </header>
 
-      <Card className={`flex-1 flex flex-col brutalist-shadow ${isUnsentMode ? "border-accent shadow-[8px_8px_0_var(--color-accent)]" : ""}`}>
+      <Card className={`flex-1 flex flex-col shadow-sm ${isUnsentMode ? "border-accent shadow-md" : ""}`}>
         <CardHeader className={isUnsentMode ? "bg-ink text-bg border-b-accent" : ""}>
           <CardTitle className="text-2xl font-heading flex items-center gap-2">
             {isUnsentMode ? (
@@ -97,12 +97,12 @@ export default function NewDiaryEntry() {
           
           <div className="flex justify-end pt-4 border-t-2 border-ink/10">
             {isUnsentMode ? (
-              <Button variant="danger" size="lg" onClick={handleSave} disabled={!content.trim()} className="brutalist-shadow-sm">
+              <Button variant="danger" size="lg" onClick={handleSave} disabled={!content.trim()} className="shadow-xs">
                 <Lock className="w-5 h-5 mr-2" />
                 Seal It Away
               </Button>
             ) : (
-              <Button size="lg" onClick={handleSave} disabled={!content.trim()} className="brutalist-shadow-sm">
+              <Button size="lg" onClick={handleSave} disabled={!content.trim()} className="shadow-xs">
                 <Send className="w-5 h-5 mr-2" />
                 Save Entry
               </Button>

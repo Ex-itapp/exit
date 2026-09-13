@@ -48,7 +48,7 @@ export function DiaryShareTemplate({ data }: { data: any }) {
         </div>
       )}
       {/* Header */}
-      <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center', borderBottom: `8px solid ${textColor}`, paddingBottom: '48px' }}>
+      <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center', borderBottom: `4px solid ${textColor}30`, paddingBottom: '48px' }}>
         <span style={{ fontSize: '48px', fontWeight: 'bold', fontFamily: 'monospace', letterSpacing: '2px', opacity: 0.7 }}>
           {date}
         </span>
@@ -58,32 +58,33 @@ export function DiaryShareTemplate({ data }: { data: any }) {
            <div style={{
              display: 'flex',
              alignItems: 'center',
-             justifyContent: 'center',
-             padding: '24px 48px',
-             border: `8px solid ${textColor}`,
-             borderRadius: '999px',
-             backgroundColor: 'transparent',
-             color: textColor
+             gap: '16px',
+             padding: '16px 32px',
+             border: `2px solid ${textColor}20`,
+             backgroundColor: `${textColor}05`,
+             boxShadow: `4px 4px 0px ${textColor}10`
            }}>
-             <span style={{ fontSize: '48px', fontWeight: 'bold', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '4px' }}>
-               {mood}
-             </span>
+             <span style={{ fontSize: '32px' }}>{getMoodEmoji(mood)}</span>
+             <span style={{ fontSize: '24px', fontWeight: 'bold', textTransform: 'uppercase', fontFamily: 'monospace', opacity: 0.9 }}>{mood}</span>
            </div>
         )}
       </div>
 
-      {/* Main Content */}
-      <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center', padding: '64px' }}>
-        <p style={{ 
-          fontSize: content.length > 80 ? '80px' : '120px', 
-          fontWeight: '500', 
-          fontFamily: 'serif',
-          lineHeight: 1.2,
-          letterSpacing: '-0.02em',
-          textAlign: 'center',
-          margin: 0
+      {/* Main Content Body */}
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        padding: '80px 0'
+      }}>
+        <p style={{
+          fontSize: content.length > 150 ? '42px' : '56px',
+          fontWeight: '500',
+          lineHeight: 1.4,
+          fontStyle: 'italic',
+          letterSpacing: '-1px'
         }}>
-          {content}
+          "{content}"
         </p>
       </div>
 

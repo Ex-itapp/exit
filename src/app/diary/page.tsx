@@ -41,7 +41,7 @@ export default function Diary() {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-150 pb-20 max-w-[1200px] mx-auto w-full">
-      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b-4 border-ink pb-6 relative">
+      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b-2 border-ink/15 pb-6 relative">
         <div className="z-10">
           <h1 className="text-4xl md:text-5xl font-heading tracking-tighter">LOGBOOK</h1>
           <div className="h-6 mt-2">
@@ -55,7 +55,7 @@ export default function Diary() {
         
         {/* Tab Switcher - Absolutely centered on desktop, normal flow on mobile */}
         <div className="static sm:absolute sm:left-1/2 sm:-translate-x-1/2 sm:bottom-6 z-10 flex w-full sm:w-auto justify-start sm:justify-center overflow-x-auto pb-2 sm:pb-0">
-          <div className="flex bg-white border-3 border-ink p-1 brutalist-shadow-sm shrink-0">
+          <div className="flex bg-white border-2 border-ink/15 p-1 shadow-sm shrink-0">
             <button
               onClick={() => setActiveTab('diary')}
               className={cn(
@@ -88,13 +88,13 @@ export default function Diary() {
 
         <div className="flex gap-2 z-10 w-full sm:w-auto justify-start sm:justify-end min-h-[40px]">
           {activeTab === 'diary' && (
-            <Button onClick={() => navigate.push('/diary/new')} className="brutalist-shadow-sm group h-10 px-4 shrink-0">
+            <Button onClick={() => navigate.push('/diary/new')} className="shadow-sm group h-10 px-4 shrink-0">
               <PenLine className="w-4 h-4 mr-2 group-hover:animate-pulse" />
               New Entry
             </Button>
           )}
           {activeTab === 'flags' && (
-            <Button onClick={() => navigate.push('/flags/new')} className="brutalist-shadow-sm group bg-accent hover:bg-accent/90 text-bg border-accent h-10 px-4 shrink-0">
+            <Button onClick={() => navigate.push('/flags/new')} className="shadow-sm group bg-accent hover:bg-accent/90 text-bg border-accent h-10 px-4 shrink-0">
               <Plus className="w-5 h-5 mr-2 group-hover:scale-125 transition-transform" />
               Log Flag
             </Button>
@@ -115,7 +115,7 @@ export default function Diary() {
             <>
               {activeEntries.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-24 text-center space-y-6">
-                  <div className="w-20 h-20 bg-brand border-4 border-ink brutalist-shadow-sm flex items-center justify-center">
+                  <div className="w-20 h-20 bg-brand border-2 border-ink/15 shadow-sm flex items-center justify-center">
                     <PenLine className="w-10 h-10 text-ink" />
                   </div>
                   <div className="space-y-2 max-w-xs">
@@ -124,7 +124,7 @@ export default function Diary() {
                   </div>
                   <button
                     onClick={() => navigate.push('/diary/new')}
-                    className="bg-ink text-bg px-6 py-3 font-mono text-sm font-bold uppercase tracking-widest border-2 border-ink brutalist-shadow-sm hover:bg-ink/80 transition-colors"
+                    className="bg-ink text-bg px-6 py-3 font-mono text-sm font-bold uppercase tracking-widest border-2 border-ink/20 shadow-sm hover:bg-ink/80 transition-colors"
                   >
                     Start Writing
                   </button>
@@ -135,7 +135,7 @@ export default function Diary() {
                     <Card 
                       key={entry.id} 
                       onClick={() => handleDiaryClick(entry.id)}
-                      className="group relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[8px_8px_0_var(--color-ink)] cursor-pointer bg-white border-ink"
+                      className="group relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-md cursor-pointer bg-white border-ink"
                       style={{ borderLeftWidth: '6px', borderLeftColor: entry.isUnsent ? 'var(--color-ink)' : getMoodColor(entry.moods[0] || 'default') }}
                     >
                       {!entry.isUnsent && (
@@ -173,7 +173,7 @@ export default function Diary() {
             <>
               {activeFlags.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-24 text-center space-y-6">
-                  <div className="w-20 h-20 bg-accent/20 border-4 border-ink brutalist-shadow-sm flex items-center justify-center">
+                  <div className="w-20 h-20 bg-accent/20 border-2 border-ink/15 shadow-sm flex items-center justify-center">
                     <FlagIcon className="w-10 h-10 text-accent" />
                   </div>
                   <div className="space-y-2 max-w-xs">
@@ -182,7 +182,7 @@ export default function Diary() {
                   </div>
                   <button
                     onClick={() => navigate.push('/flags/new')}
-                    className="bg-accent text-white px-6 py-3 font-mono text-sm font-bold uppercase tracking-widest border-2 border-accent brutalist-shadow-sm hover:bg-accent/80 transition-colors"
+                    className="bg-accent text-white px-6 py-3 font-mono text-sm font-bold uppercase tracking-widest border-2 border-accent shadow-sm hover:bg-accent/80 transition-colors"
                   >
                     Log Your First Flag
                   </button>
@@ -193,7 +193,7 @@ export default function Diary() {
                     <Card 
                       key={flag.id} 
                       onClick={() => handleFlagClick(flag.id)}
-                      className="group relative overflow-hidden transition-all duration-300 hover:-translate-y-1 bg-white border-ink hover:shadow-[8px_8px_0_var(--color-accent)] border-t-8 border-t-accent cursor-pointer"
+                      className="group relative overflow-hidden transition-all duration-300 hover:-translate-y-1 bg-white border-ink hover:shadow-md border-t-4 border-t-accent/60 cursor-pointer"
                     >
                       <CardContent className="p-6 flex flex-col h-full min-h-[200px] relative z-10">
                         <div className="flex justify-between items-start mb-4 gap-2">
@@ -221,7 +221,7 @@ export default function Diary() {
             <>
               {allArchived.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-24 text-center space-y-6">
-                  <div className="w-20 h-20 bg-ink/10 border-4 border-ink/30 flex items-center justify-center">
+                  <div className="w-20 h-20 bg-ink/10 border-2 border-ink/15 flex items-center justify-center">
                     <Archive className="w-10 h-10 text-ink/40" />
                   </div>
                   <div className="space-y-2 max-w-xs">

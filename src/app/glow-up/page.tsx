@@ -34,7 +34,7 @@ export default function GlowUp() {
         className="p-4 flex items-center gap-4 group hover:bg-ink hover:text-bg transition-colors cursor-pointer"
         onClick={() => toggleGoal(goal.id)}
       >
-        <div className={`w-8 h-8 border-4 border-current rounded-none flex items-center justify-center transition-all ${isCompletedToday ? 'bg-positive text-ink' : ''}`}>
+        <div className={`w-8 h-8 border-2 border-ink/30 rounded-none flex items-center justify-center transition-all ${isCompletedToday ? 'bg-positive text-ink' : ''}`}>
           {isCompletedToday && <Check className="w-5 h-5" strokeWidth={4} />}
         </div>
         <span className={`font-mono flex-1 text-lg ${isCompletedToday ? 'line-through opacity-70' : ''}`}>
@@ -60,8 +60,8 @@ export default function GlowUp() {
 
       {/* Smart Add UI Overlay */}
       {isAdding && (
-        <Card className="border-[4px] border-accent bg-bg brutalist-shadow z-20 animate-in fade-in slide-in-from-top-4">
-          <CardHeader className="flex flex-row items-center justify-between border-b-4 border-ink p-4">
+        <Card className="border-2 border-accent/40 bg-bg shadow-sm z-20 animate-in fade-in slide-in-from-top-4">
+          <CardHeader className="flex flex-row items-center justify-between border-b-2 border-ink/15 p-4">
             <CardTitle className="text-xl flex items-center gap-2">
               <Target className="w-5 h-5" /> CREATE DAILY HABIT
             </CardTitle>
@@ -118,8 +118,8 @@ export default function GlowUp() {
               </h2>
               <Badge variant="outline">{physicalGoals.filter(g => g.completedDates.includes(todayStr)).length}/{physicalGoals.length}</Badge>
             </div>
-            <Card className="border-[3px]">
-              <CardContent className="p-0 divide-y-4 divide-ink">
+            <Card className="border-2 border-ink/15">
+              <CardContent className="p-0 divide-y divide-ink/10">
                 {physicalGoals.length === 0 ? (
                   <div className="p-8 text-center text-ink/50 font-mono">NO PHYSICAL HABITS YET</div>
                 ) : (
@@ -137,8 +137,8 @@ export default function GlowUp() {
               </h2>
               <Badge variant="outline">{mentalGoals.filter(g => g.completedDates.includes(todayStr)).length}/{mentalGoals.length}</Badge>
             </div>
-            <Card className="border-[3px]">
-              <CardContent className="p-0 divide-y-4 divide-ink">
+            <Card className="border-2 border-ink/15">
+              <CardContent className="p-0 divide-y divide-ink/10">
                 {mentalGoals.length === 0 ? (
                   <div className="p-8 text-center text-ink/50 font-mono">NO MENTAL HABITS YET</div>
                 ) : (

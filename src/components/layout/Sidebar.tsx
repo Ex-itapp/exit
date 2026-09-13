@@ -24,7 +24,7 @@ export function Sidebar() {
   if (pathname === '/onboarding') return null;
 
   return (
-    <aside className="w-64 border-r-4 border-ink bg-bg h-screen sticky top-0 flex flex-col hidden md:flex">
+    <aside className="w-64 border-r border-ink/10 bg-bg h-screen sticky top-0 flex flex-col hidden md:flex">
       <div className="p-6 border-b-4 border-ink">
         <h1 className="text-3xl font-heading tracking-tighter">EX-it.</h1>
         <div className="mt-2 flex items-center gap-2">
@@ -42,8 +42,8 @@ export function Sidebar() {
               className={cn(
                 "flex items-center gap-3 px-4 py-3 border-4 font-mono font-bold text-sm snappy-transition group",
                 isActive
-                  ? "border-ink bg-brand text-ink brutalist-shadow-sm"
-                  : "border-transparent text-ink hover:border-ink hover:brutalist-shadow-sm hover:bg-white"
+                  ? "border-ink bg-brand text-ink shadow-sm"
+                  : "border-transparent text-ink hover:border-ink hover:shadow-sm hover:bg-white"
               )}
             >
               <item.icon className="w-5 h-5" strokeWidth={2.5} />

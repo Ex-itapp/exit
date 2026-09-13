@@ -48,7 +48,7 @@ export function StreakTile({ actualStreak, lastSeenStreak, onPeelComplete }: Str
   return (
     <div 
       onClick={handleTileClick}
-      className="relative bg-brand border-2 sm:border-3 border-ink brutalist-shadow-sm flex flex-col justify-between cursor-pointer hover:translate-y-[-2px] transition-transform overflow-visible"
+      className="relative bg-brand border-2 border-ink/15 shadow-sm flex flex-col justify-between cursor-pointer hover:translate-y-[-2px] transition-transform overflow-visible"
       style={{ perspective: "1000px" }}
     >
       {/* ── BOTTOM LAYER (New Streak) ── */}
@@ -84,9 +84,9 @@ export function StreakTile({ actualStreak, lastSeenStreak, onPeelComplete }: Str
               rotateY: [0, -8, 0],
               z: [0, 10, 0],
               boxShadow: [
-                "4px 4px 0px 0px #111111",
-                "10px 10px 20px 0px rgba(17,17,17,0.25)",
-                "4px 4px 0px 0px #111111"
+                "2px 2px 0px 0px rgba(17,17,17,0.15)",
+                "6px 6px 15px 0px rgba(17,17,17,0.15)",
+                "2px 2px 0px 0px rgba(17,17,17,0.15)"
               ]
             }}
             transition={isPeeling ? { 
@@ -98,11 +98,11 @@ export function StreakTile({ actualStreak, lastSeenStreak, onPeelComplete }: Str
               ease: "easeInOut"
             }}
             style={{ transformOrigin: "bottom right", zIndex: 10 }}
-            className="absolute inset-0 bg-brand p-3 sm:p-4 flex flex-col justify-between origin-bottom border-2 sm:border-3 border-ink"
+            className="absolute inset-0 bg-brand p-3 sm:p-4 flex flex-col justify-between origin-bottom border-2 border-ink/15"
           >
             {/* Top Left Dog-Ear Indicator */}
             <div className="absolute top-0 left-0 w-4 h-4 overflow-hidden pointer-events-none">
-              <div className="absolute top-[-8px] left-[-8px] w-4 h-4 bg-white border-2 border-ink rotate-45 transform origin-center shadow-sm" />
+              <div className="absolute top-[-8px] left-[-8px] w-4 h-4 bg-white border-2 border-ink/15 rotate-45 transform origin-center shadow-sm" />
             </div>
 
             <div className="flex items-center justify-between">

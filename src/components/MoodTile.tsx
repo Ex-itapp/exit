@@ -34,11 +34,11 @@ export function MoodTile() {
       className="relative w-full aspect-square max-w-[280px] mx-auto group"
     >
       {/* Shadow */}
-      <div className="absolute inset-0 bg-ink rounded-xl translate-x-2 translate-y-2 transition-transform" />
+      <div className="absolute inset-0 bg-ink/10 rounded-xl translate-x-1.5 translate-y-1.5 transition-transform" />
       
-      <div className="relative w-full h-full bg-blue/20 border-4 border-ink rounded-xl flex flex-col overflow-hidden">
+      <div className="relative w-full h-full bg-blue/20 border-2 border-ink/15 rounded-xl flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="bg-ink text-blue py-1.5 sm:py-2 text-center font-heading text-lg sm:text-xl md:text-2xl uppercase tracking-widest border-b-4 border-ink flex items-center justify-center gap-1.5 sm:gap-2">
+        <div className="bg-ink text-blue py-1.5 sm:py-2 text-center font-heading text-lg sm:text-xl md:text-2xl uppercase tracking-widest border-b-2 border-ink/15 flex items-center justify-center gap-1.5 sm:gap-2">
           {todayMood && !editing ? todayMood.emoji : "☀️"} MOOD
         </div>
         
@@ -55,7 +55,7 @@ export function MoodTile() {
                     className={cn(
                       "text-2xl sm:text-3xl transition-all duration-150",
                       selectedMood === m.emoji 
-                        ? "scale-125 drop-shadow-lg" 
+                        ? "scale-125 shadow-sm" 
                         : "opacity-40 grayscale hover:opacity-70 hover:grayscale-0 hover:scale-110"
                     )}
                   >
@@ -74,13 +74,13 @@ export function MoodTile() {
                 placeholder="How are you feeling?"
                 value={note}
                 onChange={e => setNote(e.target.value)}
-                className="w-full px-3 py-1.5 sm:py-2 border-3 border-ink bg-bg font-sans text-xs sm:text-sm focus:outline-none focus:bg-brand/10 transition-colors text-center"
+                className="w-full px-3 py-1.5 sm:py-2 border-2 border-ink/15 bg-bg font-sans text-xs sm:text-sm focus:outline-none focus:bg-brand/10 transition-colors text-center"
               />
               
               <button
                 onClick={handleLogMood}
                 disabled={!selectedMood}
-                className="px-4 sm:px-6 py-1.5 sm:py-2 border-3 border-ink bg-blue text-ink font-mono text-[10px] sm:text-xs font-bold uppercase disabled:opacity-30 hover:bg-blue/80 transition-colors brutalist-shadow-sm active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+                className="px-4 sm:px-6 py-1.5 sm:py-2 border-2 border-ink/15 bg-blue text-ink font-mono text-[10px] sm:text-xs font-bold uppercase disabled:opacity-30 hover:bg-blue/80 transition-colors shadow-sm active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
               >
                 Log Mood
               </button>
@@ -88,7 +88,7 @@ export function MoodTile() {
           ) : (
             /* Logged state */
             <div className="flex flex-col items-center justify-center h-full gap-1 sm:gap-2 cursor-pointer" onClick={() => setEditing(true)}>
-              <span className="text-5xl sm:text-7xl drop-shadow-md">{todayMood?.emoji}</span>
+              <span className="text-5xl sm:text-7xl shadow-sm">{todayMood?.emoji}</span>
               <span className="font-mono text-[10px] sm:text-sm font-bold uppercase mt-1 opacity-80 text-center">
                 {MOODS.find(m => m.emoji === todayMood?.emoji)?.label || "Logged"}
               </span>
@@ -97,7 +97,7 @@ export function MoodTile() {
                   &ldquo;{todayMood.note}&rdquo;
                 </span>
               )}
-              <div className="mt-1 sm:mt-2 px-2.5 sm:px-4 py-1 sm:py-1.5 border-3 border-ink bg-bg rounded-full flex items-center justify-center -rotate-2 group-hover:scale-110 transition-transform">
+              <div className="mt-1 sm:mt-2 px-2.5 sm:px-4 py-1 sm:py-1.5 border-2 border-ink/15 bg-bg rounded-full flex items-center justify-center -rotate-2 group-hover:scale-110 transition-transform">
                 <span className="font-mono text-[10px] sm:text-xs font-bold uppercase whitespace-nowrap text-ink">
                   TAP TO UPDATE
                 </span>

@@ -97,7 +97,7 @@ export default function CalendarTimeline() {
           <h1 className="text-4xl md:text-5xl font-heading tracking-tighter uppercase">CALENDAR</h1>
           <p className="font-mono text-ink/70 mt-2 text-sm md:text-base">YOUR HEALING JOURNEY, DAY BY DAY.</p>
         </div>
-        <div className="flex items-center gap-4 bg-white border-4 border-ink brutalist-shadow-sm p-2">
+        <div className="flex items-center gap-4 bg-white border-2 border-ink/15 shadow-xs p-2">
           <button onClick={prevMonth} className="p-1 hover:bg-ink hover:text-white transition-colors">
             <ChevronLeft className="w-6 h-6" />
           </button>
@@ -108,10 +108,10 @@ export default function CalendarTimeline() {
         </div>
       </header>
 
-      <Card className="border-4 border-ink brutalist-shadow bg-white overflow-hidden mt-8">
+      <Card className="border-2 border-ink/15 shadow-sm bg-white overflow-hidden mt-8">
         <CardContent className="p-0">
           {/* Days of week header */}
-          <div className="grid grid-cols-7 border-b-4 border-ink bg-ink text-bg">
+          <div className="grid grid-cols-7 border-b-2 border-ink/15 bg-ink text-bg">
             {DAY_LABELS_FULL.map((day, i) => (
               <div key={day} className="py-2 sm:py-3 text-center font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest border-r border-ink/20 last:border-r-0">
                 <span className="sm:hidden">{DAY_LABELS_SHORT[i]}</span>
@@ -123,7 +123,7 @@ export default function CalendarTimeline() {
           {/* Calendar Grid */}
           <div className="grid grid-cols-7 auto-rows-fr">
             {blanks.map(b => (
-              <div key={`blank-${b}`} className="min-h-[60px] sm:min-h-[100px] lg:min-h-[120px] bg-bg/50 border-r border-b border-ink/10" />
+              <div key={`blank-${b}`} className="min-h-[60px] sm:min-h-[100px] lg:min-h-[120px] bg-bg/50 border-r border-b border-ink/5" />
             ))}
             
             {days.map(day => {
@@ -149,8 +149,8 @@ export default function CalendarTimeline() {
                   key={day}
                   onClick={() => handleDateClick(day)}
                   className={cn(
-                    "min-h-[60px] sm:min-h-[100px] lg:min-h-[120px] p-1.5 sm:p-2.5 relative border-r border-b border-ink/10 cursor-pointer transition-all hover:bg-brand/10 active:bg-brand/20 group",
-                    isToday(day) ? "bg-brand/5 ring-2 ring-brand ring-inset z-10" : "bg-white"
+                    "min-h-[60px] sm:min-h-[100px] lg:min-h-[120px] p-1.5 sm:p-2.5 relative border-r border-b border-ink/5 cursor-pointer transition-all hover:bg-brand/10 active:bg-brand/20 group",
+                    isToday(day) ? "bg-brand/5 ring-2 ring-brand/60 ring-inset z-10" : "bg-white"
                   )}
                   style={{
                     backgroundColor: moodEmoji ? hexToRgba(moodColorMap[moodEmoji], 0.12) : undefined,
@@ -190,7 +190,7 @@ export default function CalendarTimeline() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="border-4 border-ink bg-white brutalist-shadow p-4 mt-4 relative"
+            className="border-2 border-ink/15 bg-white shadow-sm p-4 mt-4 relative"
           >
             <button 
               onClick={() => setSelectedDay(null)}
@@ -229,7 +229,7 @@ export default function CalendarTimeline() {
             
             <button 
               onClick={navigateToDay}
-              className="w-full bg-brand text-ink font-heading uppercase py-3 border-2 border-ink hover:bg-brand/90 transition-colors"
+              className="w-full bg-brand text-ink font-heading uppercase py-3 border-2 border-ink/20 hover:bg-brand/90 transition-colors"
             >
               View full day &rarr;
             </button>

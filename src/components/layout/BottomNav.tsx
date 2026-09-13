@@ -22,7 +22,7 @@ export function BottomNav() {
   return (
     <div className="fixed bottom-3 sm:bottom-6 left-0 right-0 z-40 pointer-events-none flex justify-center w-full px-2 sm:px-4">
       <div className="flex items-center gap-3 w-full max-w-2xl pointer-events-auto">
-        <nav className="flex-1 bg-bg border-3 sm:border-4 border-ink brutalist-shadow rounded-full flex items-center justify-between p-1 sm:p-1.5 shadow-2xl">
+        <nav className="flex-1 bg-bg border-2 border-ink/20 shadow-lg shadow-black/5 rounded-full flex items-center justify-between p-1 sm:p-1.5">
           {navItems.map((item) => {
             const isActive = pathname === item.path;
             return (

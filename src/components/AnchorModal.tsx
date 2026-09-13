@@ -26,23 +26,23 @@ export function AnchorModal({ onClose }: AnchorModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 bg-ink/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-      <div className="bg-bg border-4 border-ink brutalist-shadow max-w-lg w-full p-6 md:p-8 relative animate-in zoom-in-95 duration-200 space-y-6">
+      <div className="bg-bg border-2 border-ink/20 shadow-lg max-w-lg w-full p-6 md:p-8 relative animate-in zoom-in-95 duration-200 space-y-6">
         
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 border-2 border-ink bg-white hover:bg-black/10 transition-colors"
+          className="absolute top-4 right-4 p-2 border-2 border-ink/15 bg-white hover:bg-black/10 transition-colors"
         >
           <X className="w-6 h-6" />
         </button>
 
         {/* Header Badge */}
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-ink text-brand border-2 border-ink brutalist-shadow-sm">
+          <div className="p-3 bg-ink text-brand border-2 border-ink/15 shadow-sm">
             <Anchor className="w-8 h-8 animate-pulse" />
           </div>
           <div>
-            <span className="font-mono text-xs uppercase font-bold tracking-widest bg-white px-2 py-0.5 border-2 border-ink">
+            <span className="font-mono text-xs uppercase font-bold tracking-widest bg-white px-2 py-0.5 border-2 border-ink/15">
               Daily Grounding Reminder
             </span>
             <h2 className="text-3xl font-heading uppercase tracking-tight leading-none mt-1">
@@ -52,7 +52,7 @@ export function AnchorModal({ onClose }: AnchorModalProps) {
         </div>
 
         {/* The Anchor Quote Box */}
-        <div className="bg-brand/20 border-4 border-ink p-6 relative">
+        <div className="bg-brand/20 border-2 border-ink/20 p-6 relative">
           <div className="absolute -top-3 left-4 bg-ink text-bg px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-widest">
             The Reason
           </div>
@@ -65,8 +65,8 @@ export function AnchorModal({ onClose }: AnchorModalProps) {
         </div>
 
         {/* Goal & Affirmation Box */}
-        <div className="bg-white border-4 border-ink p-4 flex items-center gap-4">
-          <div className="p-3 bg-ink text-bg border-2 border-ink shrink-0">
+        <div className="bg-white border-2 border-ink/20 p-4 flex items-center gap-4">
+          <div className="p-3 bg-ink text-bg border-2 border-ink/15 shrink-0">
             {getGoalIcon()}
           </div>
           <div>

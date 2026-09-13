@@ -138,7 +138,7 @@ export default function OnboardingPage() {
         {/* Card */}
         <motion.div
           layout
-          className="bg-white border-4 border-ink brutalist-shadow p-6 sm:p-10 relative overflow-hidden"
+          className="bg-white border-2 border-ink/20 shadow-sm p-6 sm:p-10 relative overflow-hidden"
         >
           <AnimatePresence mode="wait">
 
@@ -155,7 +155,7 @@ export default function OnboardingPage() {
                 <div className="inline-flex flex-col items-center gap-3">
                   <motion.div
                     whileHover={{ rotate: 0, scale: 1.08 }}
-                    className="w-16 h-16 bg-brand border-4 border-ink brutalist-shadow-sm flex items-center justify-center transform -rotate-6"
+                    className="w-16 h-16 bg-brand border-2 border-ink/20 shadow-xs flex items-center justify-center transform -rotate-6"
                   >
                     <Heart className="w-8 h-8 text-ink" strokeWidth={2.5} />
                   </motion.div>
@@ -177,7 +177,7 @@ export default function OnboardingPage() {
 
                 <button
                   onClick={() => setStep(2)}
-                  className="w-full h-14 bg-ink text-bg font-mono font-bold uppercase text-sm tracking-widest flex items-center justify-center gap-2 hover:opacity-90 transition-opacity brutalist-shadow"
+                  className="w-full h-14 bg-ink text-bg font-mono font-bold uppercase text-sm tracking-widest flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-sm"
                 >
                   Let&apos;s Build Your Safe Space <ArrowRight className="w-4 h-4" />
                 </button>
@@ -209,14 +209,14 @@ export default function OnboardingPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && setStep(3)}
-                  className="h-14 text-xl font-medium border-4 border-ink px-4"
+                  className="h-14 text-xl font-medium border-2 border-ink/20 px-4"
                   autoFocus
                 />
 
                 <div className="flex gap-3 pt-2">
                   <button
                     onClick={() => setStep(1)}
-                    className="h-12 px-5 border-2 border-ink font-mono text-xs font-bold uppercase hover:bg-ink/5 transition-colors flex items-center gap-1"
+                    className="h-12 px-5 border-2 border-ink/15 font-mono text-xs font-bold uppercase hover:bg-ink/5 transition-colors flex items-center gap-1"
                   >
                     <ArrowLeft className="w-4 h-4" />
                   </button>
@@ -260,11 +260,11 @@ export default function OnboardingPage() {
                         whileTap={{ scale: 0.98 }}
                         onClick={() => setGoal(g.label)}
                         className={cn(
-                          "w-full p-4 border-2 border-ink text-left flex items-center gap-4 transition-all",
-                          selected ? "bg-brand brutalist-shadow-sm" : "bg-bg hover:bg-white"
+                          "w-full p-4 border-2 border-ink/15 text-left flex items-center gap-4 transition-all",
+                          selected ? "bg-brand shadow-xs" : "bg-bg hover:bg-white"
                         )}
                       >
-                        <div className={cn("p-2 border-2 border-ink shrink-0", selected ? "bg-white" : "bg-ink/5")}>
+                        <div className={cn("p-2 border-2 border-ink/15 shrink-0", selected ? "bg-white" : "bg-ink/5")}>
                           <Icon className="w-5 h-5" />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -278,7 +278,7 @@ export default function OnboardingPage() {
                 </div>
 
                 <div className="flex gap-3 pt-1">
-                  <button onClick={() => setStep(2)} className="h-12 px-5 border-2 border-ink font-mono text-xs font-bold uppercase hover:bg-ink/5 transition-colors flex items-center">
+                  <button onClick={() => setStep(2)} className="h-12 px-5 border-2 border-ink/15 font-mono text-xs font-bold uppercase hover:bg-ink/5 transition-colors flex items-center">
                     <ArrowLeft className="w-4 h-4" />
                   </button>
                   <button
@@ -317,7 +317,7 @@ export default function OnboardingPage() {
                   placeholder={`"I deserve someone who chooses me without hesitation."\n"My peace is worth more than their attention."`}
                   value={anchor}
                   onChange={(e) => setAnchor(e.target.value)}
-                  className="min-h-[110px] text-base font-medium border-4 border-ink p-4 leading-relaxed"
+                  className="min-h-[110px] text-base font-medium border-2 border-ink/20 p-4 leading-relaxed"
                   autoFocus
                 />
 
@@ -326,7 +326,7 @@ export default function OnboardingPage() {
                 </p>
 
                 <div className="flex gap-3">
-                  <button onClick={() => setStep(3)} className="h-12 px-5 border-2 border-ink font-mono text-xs font-bold uppercase hover:bg-ink/5 transition-colors flex items-center">
+                  <button onClick={() => setStep(3)} className="h-12 px-5 border-2 border-ink/15 font-mono text-xs font-bold uppercase hover:bg-ink/5 transition-colors flex items-center">
                     <ArrowLeft className="w-4 h-4" />
                   </button>
                   <button
@@ -367,7 +367,7 @@ export default function OnboardingPage() {
                     type="date"
                     value={breakupDate}
                     onChange={(e) => setBreakupDate(e.target.value)}
-                    className="h-14 font-mono text-lg border-4 border-ink px-4"
+                    className="h-14 font-mono text-lg border-2 border-ink/20 px-4"
                   />
                 </div>
 
@@ -388,12 +388,12 @@ export default function OnboardingPage() {
                 </div>
 
                 <div className="flex gap-3">
-                  <button onClick={() => setStep(4)} className="h-14 px-5 border-2 border-ink font-mono text-xs font-bold uppercase hover:bg-ink/5 transition-colors flex items-center">
+                  <button onClick={() => setStep(4)} className="h-14 px-5 border-2 border-ink/15 font-mono text-xs font-bold uppercase hover:bg-ink/5 transition-colors flex items-center">
                     <ArrowLeft className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setStep(6)}
-                    className="flex-1 h-14 bg-brand text-ink border-4 border-ink font-mono font-black uppercase text-sm tracking-widest hover:opacity-90 transition-opacity flex items-center justify-center gap-2 brutalist-shadow"
+                    className="flex-1 h-14 bg-brand text-ink border-2 border-ink/20 font-mono font-black uppercase text-sm tracking-widest hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-sm"
                   >
                     Continue <ArrowRight className="w-4 h-4" />
                   </button>
@@ -413,7 +413,7 @@ export default function OnboardingPage() {
               >
                 {/* Header */}
                 <div className="text-center space-y-1">
-                  <div className="inline-block bg-brand border-2 border-ink px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-widest mb-1 shadow-[2px_2px_0px_0px_#111]">
+                  <div className="inline-block bg-brand border-2 border-ink/15 px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-widest mb-1 shadow-sm">
                     🎉 Your space is ready, {name.trim().split(" ")[0] || "friend"}!
                   </div>
                   <h2 className="font-heading text-2xl sm:text-3xl uppercase tracking-tight leading-none">
@@ -422,12 +422,12 @@ export default function OnboardingPage() {
                 </div>
 
                 {/* Billing Toggle */}
-                <div className="flex bg-ink/5 p-1 border-2 border-ink w-fit mx-auto brutalist-shadow-sm mt-2">
+                <div className="flex bg-ink/5 p-1 border-2 border-ink/15 w-fit mx-auto shadow-xs mt-2">
                   <button
                     onClick={() => setBilling("monthly")}
                     className={cn(
                       "px-4 py-2 font-mono text-xs font-bold uppercase tracking-widest transition-all",
-                      billing === "monthly" ? "bg-white border-2 border-ink shadow-[2px_2px_0px_0px_#111]" : "text-ink/60 hover:text-ink"
+                      billing === "monthly" ? "bg-white border-2 border-ink/15 shadow-sm" : "text-ink/60 hover:text-ink"
                     )}
                   >
                     Monthly
@@ -436,7 +436,7 @@ export default function OnboardingPage() {
                     onClick={() => setBilling("yearly")}
                     className={cn(
                       "px-4 py-2 font-mono text-xs font-bold uppercase tracking-widest transition-all",
-                      billing === "yearly" ? "bg-white border-2 border-ink shadow-[2px_2px_0px_0px_#111]" : "text-ink/60 hover:text-ink"
+                      billing === "yearly" ? "bg-white border-2 border-ink/15 shadow-sm" : "text-ink/60 hover:text-ink"
                     )}
                   >
                     Yearly
@@ -444,9 +444,9 @@ export default function OnboardingPage() {
                 </div>
 
                 {/* Pricing card */}
-                <div className="border-4 border-ink brutalist-shadow bg-white relative overflow-hidden transition-all duration-300 mt-2">
+                <div className="border-2 border-ink/20 shadow-sm bg-white relative overflow-hidden transition-all duration-300 mt-2">
                   {billing === "yearly" && (
-                    <div className="absolute top-0 right-0 bg-accent text-white font-mono text-[8px] font-black uppercase px-2 py-0.5 tracking-widest border-b-2 border-l-2 border-ink z-10">
+                    <div className="absolute top-0 right-0 bg-accent text-white font-mono text-[8px] font-black uppercase px-2 py-0.5 tracking-widest border-b-2 border-l-2 border-ink/15 z-10">
                       Free Trial + Save 50%
                     </div>
                   )}
@@ -489,12 +489,12 @@ export default function OnboardingPage() {
 
                 {/* Trial acknowledgment */}
                 {billing === 'yearly' && (
-                  <label className="flex items-start gap-3 p-3 border-2 border-ink mb-2 cursor-pointer hover:bg-ink/5 transition-colors text-left bg-white">
+                  <label className="flex items-start gap-3 p-3 border-2 border-ink/15 mb-2 cursor-pointer hover:bg-ink/5 transition-colors text-left bg-white">
                     <input
                       type="checkbox"
                       checked={acknowledgedTrial}
                       onChange={(e) => setAcknowledgedTrial(e.target.checked)}
-                      className="mt-0.5 w-5 h-5 border-3 border-ink accent-accent shrink-0"
+                      className="mt-0.5 w-5 h-5 border-2 border-ink/15 accent-accent shrink-0"
                     />
                     <span className="font-mono text-[10px] sm:text-xs font-bold leading-relaxed">
                       I understand the first 3 days are free, then I will be <span className="text-accent underline">charged $39/year automatically</span>. Cancel anytime before the trial ends to avoid charges.
@@ -507,7 +507,7 @@ export default function OnboardingPage() {
                   <button
                     onClick={handleCheckout}
                     disabled={isCheckoutLoading || (billing === 'yearly' && !acknowledgedTrial)}
-                    className="w-full h-12 bg-brand hover:bg-brand/90 text-ink font-heading font-black uppercase text-lg tracking-tight transition-colors flex items-center justify-center gap-2 brutalist-shadow border-4 border-ink disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full h-12 bg-brand hover:bg-brand/90 text-ink font-heading font-black uppercase text-lg tracking-tight transition-colors flex items-center justify-center gap-2 shadow-sm border-2 border-ink/20 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isCheckoutLoading ? (
                       <>

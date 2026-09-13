@@ -28,14 +28,14 @@ export function ChatHeader({
   return (
     <div
       className={cn(
-        "h-16 shrink-0 flex items-center justify-between px-4 z-10 sticky top-0 bg-bg border-b-2 border-ink"
+        "h-16 shrink-0 flex items-center justify-between px-4 z-10 sticky top-0 bg-bg backdrop-blur-md border-b border-ink/10"
       )}
     >
       <div className="flex-1 flex items-center justify-start">
         {!isScreenshotMode && (
           <button
             onClick={onBack}
-            className="w-10 h-10 rounded-none border-2 border-ink/20 flex items-center justify-center transition-colors hover:bg-ink/5"
+            className="w-10 h-10 rounded-none border border-ink/10 flex items-center justify-center transition-colors hover:bg-ink/5"
             aria-label="Go back"
           >
             <ArrowLeft className="w-5 h-5 text-ink" />
@@ -65,7 +65,7 @@ export function ChatHeader({
         {!isScreenshotMode && (
           <button
             onClick={onOpenSettings}
-            className="w-10 h-10 rounded-none border-2 border-ink/20 flex items-center justify-center transition-colors hover:bg-ink/5"
+            className="w-10 h-10 rounded-none border border-ink/10 flex items-center justify-center transition-colors hover:bg-ink/5"
             aria-label="Open settings"
           >
             <Settings className="w-4 h-4 text-ink" />

@@ -119,7 +119,7 @@ export default function FlagEntryPage() {
             RED FLAG
           </div>
 
-          <div className="relative z-10 w-[90%] text-center bg-white p-16 border-[12px] brutalist-shadow-lg" style={{ borderColor: textColor, color: textColor, boxShadow: `24px 24px 0px ${textColor}` }}>
+          <div className="relative z-10 w-[90%] text-center bg-white p-16 border-4 border-ink/20 shadow-lg" style={{ color: textColor, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
             <div className="flex justify-center mb-12">
                <div className="w-24 h-24 rounded-full flex items-center justify-center" style={{ backgroundColor: bgColor, color: cardColor }}>
                  <FlagIcon className="w-12 h-12" />
@@ -169,7 +169,7 @@ export default function FlagEntryPage() {
           RED FLAG
         </div>
 
-        <div className="relative z-10 max-w-4xl w-full text-center space-y-12 bg-white p-12 sm:p-20 border-8 brutalist-shadow-lg" style={{ borderColor: textColor, color: textColor }}>
+        <div className="relative z-10 max-w-4xl w-full text-center space-y-12 bg-white p-12 sm:p-20 border-4 border-ink/20 shadow-lg" style={{ color: textColor }}>
           <div className="flex justify-center mb-8">
              <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: bgColor, color: cardColor }}>
                <FlagIcon className="w-8 h-8" />
@@ -203,7 +203,7 @@ export default function FlagEntryPage() {
           <Button 
             onClick={handleExport}
             disabled={isExporting}
-            className="flex-1 sm:flex-none h-14 px-8 brutalist-shadow-sm border-2 rounded-none hover:-translate-y-1 transition-transform"
+            className="flex-1 sm:flex-none h-14 px-8 shadow-sm border-2 rounded-none hover:-translate-y-1 transition-transform"
             style={{ backgroundColor: cardColor, color: textColor, borderColor: cardColor }}
           >
             {isExporting ? (

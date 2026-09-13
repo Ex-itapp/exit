@@ -51,14 +51,14 @@ export default function RewardsPage() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-150 pb-24">
       {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b-4 border-ink pb-6">
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b-2 border-ink/15 pb-6">
         <div>
           <h1 className="text-4xl md:text-5xl font-heading tracking-tighter uppercase">REWARDS & MILESTONES</h1>
           <p className="font-mono text-ink/70 mt-2 text-sm md:text-base">CELEBRATE EVERY STEP OF YOUR HEALING.</p>
         </div>
         
         {/* Stats Badge */}
-        <div className="bg-ink text-bg px-6 py-3 border-4 border-ink brutalist-shadow-sm flex items-center gap-4">
+        <div className="bg-ink text-bg px-6 py-3 border-2 border-ink/15 shadow-xs flex items-center gap-4">
           <Award className="w-8 h-8 text-brand animate-pulse" />
           <div>
             <div className="font-mono text-xs uppercase opacity-70">Milestones Reached</div>
@@ -76,7 +76,7 @@ export default function RewardsPage() {
             className={cn(
               "h-10 px-6 font-mono text-xs font-bold uppercase tracking-wider border-2",
               selectedCategory === cat 
-                ? "border-ink bg-ink text-bg brutalist-shadow-sm" 
+                ? "border-ink bg-ink text-bg shadow-xs" 
                 : "border-ink/20 hover:border-ink bg-white text-ink"
             )}
             onClick={() => setSelectedCategory(cat)}
@@ -100,26 +100,26 @@ export default function RewardsPage() {
       {/* Badge Inspection Modal */}
       {selectedBadge && (
         <div className="fixed inset-0 z-50 bg-ink/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-bg border-4 border-ink brutalist-shadow max-w-md w-full p-6 relative animate-in zoom-in-95 duration-200">
+          <div className="bg-bg border-2 border-ink/15 shadow-sm max-w-md w-full p-6 relative animate-in zoom-in-95 duration-200">
             <button
               onClick={() => {
                 setSelectedBadge(null);
                 setCertUrl(null);
               }}
-              className="absolute top-4 right-4 p-2 border-2 border-ink bg-white hover:bg-black/10 transition-colors z-10"
+              className="absolute top-4 right-4 p-2 border-2 border-ink/20 bg-white hover:bg-black/10 transition-colors z-10"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="flex flex-col items-center text-center space-y-4 pt-4">
               <div className={cn(
-                "p-6 border-4 border-ink brutalist-shadow-sm mb-2",
+                "p-6 border-2 border-ink/15 shadow-xs mb-2",
                 selectedBadge.isUnlocked ? "bg-brand text-ink" : "bg-ink/10 text-ink/40 border-ink/40"
               )}>
                 {selectedBadge.isUnlocked ? <Award className="w-16 h-16" /> : <Lock className="w-16 h-16" />}
               </div>
 
-              <span className="font-mono text-xs font-bold uppercase px-3 py-1 border-2 border-ink bg-white">
+              <span className="font-mono text-xs font-bold uppercase px-3 py-1 border-2 border-ink/15 bg-white">
                 {selectedBadge.category}
               </span>
 
@@ -141,8 +141,8 @@ export default function RewardsPage() {
 
               {certUrl ? (
                 <div className="w-full mt-4">
-                  <img src={certUrl} alt="Certificate" className="w-full h-auto border-4 border-ink brutalist-shadow-sm mb-4" />
-                  <a href={certUrl} download={`ex-it-certificate-${selectedBadge.id}.png`} className="w-full flex items-center justify-center h-12 bg-ink text-white font-heading uppercase text-sm border-2 border-ink hover:bg-ink/80 transition-colors">
+                  <img src={certUrl} alt="Certificate" className="w-full h-auto border-2 border-ink/15 shadow-xs mb-4" />
+                  <a href={certUrl} download={`ex-it-certificate-${selectedBadge.id}.png`} className="w-full flex items-center justify-center h-12 bg-ink text-white font-heading uppercase text-sm border-2 border-ink/20 hover:bg-ink/80 transition-colors">
                     Save to Device
                   </a>
                 </div>
@@ -160,7 +160,7 @@ export default function RewardsPage() {
                   )}
                   <Button
                     variant="ghost"
-                    className="w-full h-12 text-base border-2 border-ink"
+                    className="w-full h-12 text-base border-2 border-ink/20"
                     onClick={() => {
                       setSelectedBadge(null);
                       setCertUrl(null);

@@ -47,7 +47,7 @@ export default function DailyDetail({ params }: { params: Promise<{ date: string
     if (event.type === 'mood') {
       const data = event.data;
       return (
-        <div key={event.id} className="border-3 border-ink bg-blue/10 brutalist-shadow-sm hover:-translate-y-0.5 transition-transform p-4">
+        <div key={event.id} className="border-2 border-ink/15 bg-blue/10 shadow-sm hover:-translate-y-0.5 transition-transform p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <span className="text-4xl leading-none">{data.emoji}</span>
@@ -67,7 +67,7 @@ export default function DailyDetail({ params }: { params: Promise<{ date: string
     if (event.type === 'checkin') {
       const data = event.data;
       return (
-        <div key={event.id} className="border-3 border-ink bg-positive/10 brutalist-shadow-sm hover:-translate-y-0.5 transition-transform p-4">
+        <div key={event.id} className="border-2 border-ink/15 bg-positive/10 shadow-sm hover:-translate-y-0.5 transition-transform p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <CheckCircle className="w-4 h-4 text-positive" />
@@ -83,7 +83,7 @@ export default function DailyDetail({ params }: { params: Promise<{ date: string
     if (event.type === 'flag') {
       const data = event.data;
       return (
-        <div key={event.id} className="border-3 border-ink bg-purple/10 brutalist-shadow-sm hover:-translate-y-0.5 transition-transform p-4">
+        <div key={event.id} className="border-2 border-ink/15 bg-purple/10 shadow-sm hover:-translate-y-0.5 transition-transform p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Flag className="w-4 h-4 text-purple" />
@@ -100,7 +100,7 @@ export default function DailyDetail({ params }: { params: Promise<{ date: string
       const data = event.data;
       const isUnsent = data.isUnsent;
       return (
-        <div key={event.id} className={`border-3 border-ink ${isUnsent ? 'bg-accent/10' : 'bg-brand/10'} brutalist-shadow-sm hover:-translate-y-0.5 transition-transform p-4`}>
+        <div key={event.id} className={`border-2 border-ink/15 ${isUnsent ? 'bg-accent/10' : 'bg-brand/10'} shadow-sm hover:-translate-y-0.5 transition-transform p-4`}>
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2 flex-wrap">
               {isUnsent ? (
@@ -141,9 +141,9 @@ export default function DailyDetail({ params }: { params: Promise<{ date: string
         <p className="font-mono text-ink/70 mt-2 text-sm md:text-base">ALL ACTIVITY LOGGED ON THIS DAY.</p>
       </header>
 
-      <div className="space-y-4 pt-4 border-t-4 border-ink">
+      <div className="space-y-4 pt-4 border-t-2 border-ink/15">
         {dailyEvents.length === 0 ? (
-          <div className="text-center py-16 border-4 border-dashed border-ink/20 opacity-50">
+          <div className="text-center py-16 border-2 border-dashed border-ink/10 opacity-50">
             <p className="font-mono font-bold tracking-widest uppercase text-sm">No activity logged on this date.</p>
           </div>
         ) : (

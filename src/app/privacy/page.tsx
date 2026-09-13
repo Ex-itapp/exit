@@ -9,14 +9,14 @@ export default function PrivacyPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-8 py-12 sm:py-16">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 px-4 h-10 bg-white border-2 border-ink brutalist-shadow-sm hover:bg-ink hover:text-bg transition-colors font-mono text-xs font-bold uppercase mb-8"
+          className="inline-flex items-center gap-2 px-4 h-10 bg-white border-2 border-ink/15 shadow-xs hover:bg-ink hover:text-bg transition-colors font-mono text-xs font-bold uppercase mb-8"
         >
           <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
         </Link>
 
-        <div className="border-4 border-ink bg-white p-6 sm:p-10 brutalist-shadow space-y-8">
-          <div className="border-b-4 border-ink pb-6 space-y-2">
-            <span className="bg-accent text-bg font-mono text-xs font-bold uppercase px-3 py-1 border-2 border-ink">
+        <div className="border-2 border-ink/20 bg-white p-6 sm:p-10 shadow-sm space-y-8">
+          <div className="border-b-2 border-ink/15 pb-6 space-y-2">
+            <span className="bg-accent text-bg font-mono text-xs font-bold uppercase px-3 py-1 border-2 border-ink/15">
               Privacy
             </span>
             <h1 className="text-4xl sm:text-5xl font-heading tracking-tighter uppercase font-black">

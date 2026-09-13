@@ -55,7 +55,7 @@ export default function FlagsPage() {
         </div>
         <button
           onClick={() => navigate.push("/flags/new")}
-          className="flex items-center gap-2 bg-accent text-white font-mono text-sm font-bold uppercase tracking-widest px-6 py-3 hover:opacity-90 transition-opacity brutalist-shadow border-2 border-accent"
+          className="flex items-center gap-2 bg-accent text-white font-mono text-sm font-bold uppercase tracking-widest px-6 py-3 hover:opacity-90 transition-opacity shadow-sm border-2 border-accent"
         >
           <Plus className="w-4 h-4" />
           Log First Flag
@@ -90,10 +90,10 @@ export default function FlagsPage() {
               tabIndex={0}
               onClick={() => handleFlagClick(flag)}
               onKeyDown={(e) => e.key === "Enter" && handleFlagClick(flag)}
-              className="w-full bg-white border-2 border-ink brutalist-shadow-sm p-4 text-left flex items-start gap-4 hover:bg-rose-50/30 transition-colors group cursor-pointer"
+              className="w-full bg-white border-2 border-ink/15 shadow-xs p-4 text-left flex items-start gap-4 hover:bg-rose-50/30 transition-colors group cursor-pointer"
             >
               {/* Date Stamp */}
-              <div className="shrink-0 w-12 text-center border-r-2 border-ink/10 pr-3">
+              <div className="shrink-0 w-12 text-center border-r border-ink/8 pr-3">
                 <span className="font-mono text-[9px] font-bold text-ink/40 block">{f.day}</span>
                 <span className="font-heading text-2xl leading-none font-black text-ink block">{f.date}</span>
                 <span className="font-mono text-[9px] font-bold text-ink/50 block">{f.month}</span>

@@ -52,7 +52,7 @@ export function ChatInput({
   return (
     <div
       className={cn(
-        "flex flex-row items-end gap-2 p-2 rounded-none w-full transition-colors bg-bg border-2 border-ink shadow-[3px_3px_0px_0px] shadow-ink/15"
+        "flex flex-row items-end gap-2 p-2 rounded-none w-full transition-colors bg-bg border-2 border-ink/15 shadow-sm"
       )}
     >
       <textarea
@@ -71,7 +71,7 @@ export function ChatInput({
         onClick={handleSend}
         disabled={isDisabled}
         className={cn(
-          "w-11 h-11 rounded-none flex items-center justify-center shrink-0 transition-all border-2 border-ink",
+          "w-11 h-11 rounded-none flex items-center justify-center shrink-0 transition-all border-2 border-ink/20",
           isCompanion ? "bg-brand text-ink hover:bg-brand/90" : "bg-accent text-bg hover:bg-accent/90",
           isDisabled && "opacity-30 pointer-events-none",
           isAnimating && "animate-punch"

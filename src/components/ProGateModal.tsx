@@ -13,16 +13,16 @@ export function ProGateModal({ feature, onClose }: ProGateModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 bg-ink/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-      <div className="bg-white border-4 border-ink brutalist-shadow max-w-md w-full p-6 sm:p-8 space-y-6 text-ink relative">
+      <div className="bg-white border-2 border-ink/20 shadow-lg max-w-md w-full p-6 sm:p-8 space-y-6 text-ink relative">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 border-2 border-ink hover:bg-ink hover:text-white transition-colors"
+          className="absolute top-4 right-4 p-1.5 border-2 border-ink/20 hover:bg-ink hover:text-white transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center gap-3 border-b-4 border-ink pb-4">
-          <div className="p-3 bg-brand border-3 border-ink">
+        <div className="flex items-center gap-3 border-b-2 border-ink/15 pb-4">
+          <div className="p-3 bg-brand border-2 border-ink/15">
             <Crown className="w-6 h-6 text-ink" />
           </div>
           <div>
@@ -45,13 +45,13 @@ export function ProGateModal({ feature, onClose }: ProGateModalProps) {
               onClose();
               router.push("/pricing");
             }}
-            className="w-full h-14 bg-brand hover:bg-brand/90 text-ink border-3 border-ink brutalist-shadow font-heading text-lg uppercase tracking-wide flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full h-14 bg-brand hover:bg-brand/90 text-ink border-2 border-ink/15 shadow-lg font-heading text-lg uppercase tracking-wide flex items-center justify-center gap-2 cursor-pointer"
           >
             Start 3-Day Free Trial <ArrowRight className="w-5 h-5" />
           </button>
           <button
             onClick={onClose}
-            className="w-full h-10 border-2 border-ink font-mono text-[11px] uppercase hover:bg-ink hover:text-bg transition-colors cursor-pointer"
+            className="w-full h-10 border-2 border-ink/20 font-mono text-[11px] uppercase hover:bg-ink hover:text-bg transition-colors cursor-pointer"
           >
             Maybe Later
           </button>

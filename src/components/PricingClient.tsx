@@ -136,7 +136,7 @@ export function PricingClient() {
         
         {/* ── HERO ── */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-white border-3 border-ink px-4 py-1.5 brutalist-shadow-sm mb-6">
+          <div className="inline-flex items-center gap-2 bg-white border-2 border-ink/15 px-4 py-1.5 shadow-xs mb-6">
             <Crown className="w-4 h-4 text-purple" />
             <span className="font-mono text-xs font-bold uppercase tracking-widest">
               {isPro ? 'Pro Access Active ✓' : 'Unlock The Full Experience'}
@@ -145,7 +145,7 @@ export function PricingClient() {
 
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-heading tracking-tighter uppercase font-black">
             GO ALL-IN ON <br className="hidden sm:block"/>
-            <span className="bg-brand px-3 py-1 border-3 border-ink inline-block transform -rotate-1 mt-1">
+            <span className="bg-brand px-3 py-1 border-2 border-ink/15 inline-block transform -rotate-1 mt-1">
               YOUR HEALING.
             </span>
           </h1>
@@ -164,7 +164,7 @@ export function PricingClient() {
             <div className="space-y-6">
               {PRO_FEATURES.map((feature, i) => (
                 <div key={i} className="flex gap-4 items-start">
-                  <div className="w-10 h-10 bg-white border-3 border-ink flex items-center justify-center shrink-0 brutalist-shadow-sm">
+                  <div className="w-10 h-10 bg-white border-2 border-ink/15 flex items-center justify-center shrink-0 shadow-xs">
                     <feature.icon className="w-5 h-5 text-ink" />
                   </div>
                   <div>
@@ -180,7 +180,7 @@ export function PricingClient() {
           <div className="w-full lg:w-[500px]">
             {/* Billing Toggle */}
             <div className="flex justify-center mb-8">
-              <div className="flex border-3 border-ink brutalist-shadow-sm bg-white">
+              <div className="flex border-2 border-ink/15 shadow-xs bg-white">
                 <button
                   onClick={() => setBillingCycle('monthly')}
                   className={`px-6 py-3 font-mono text-xs font-bold uppercase tracking-widest transition-all ${
@@ -201,7 +201,7 @@ export function PricingClient() {
                 >
                   Annual
                   {billingCycle !== 'annual' && (
-                     <span className="absolute -top-3 -right-2 bg-accent text-bg text-[9px] font-bold px-1.5 py-0.5 border-2 border-ink">
+                     <span className="absolute -top-3 -right-2 bg-accent text-bg text-[9px] font-bold px-1.5 py-0.5 border-2 border-ink/15">
                        SAVE 67%
                      </span>
                   )}
@@ -210,9 +210,9 @@ export function PricingClient() {
             </div>
 
             {/* Premium Card */}
-            <div className="bg-white border-4 border-ink brutalist-shadow p-8 sm:p-10 relative">
+            <div className="bg-white border-2 border-ink/20 shadow-sm p-8 sm:p-10 relative">
               {activePlan.badge && (
-                <div className="absolute -top-4 left-6 bg-brand border-2 border-ink px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest">
+                <div className="absolute -top-4 left-6 bg-brand border-2 border-ink/15 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest">
                   {activePlan.badge}
                 </div>
               )}
@@ -229,19 +229,19 @@ export function PricingClient() {
               </div>
 
               {'perMonth' in activePlan && activePlan.perMonth && (
-                <p className="font-mono text-xs text-ink/50 mb-8 pb-8 border-b-3 border-ink">
+                <p className="font-mono text-xs text-ink/50 mb-8 pb-8 border-b-2 border-ink/15">
                   That&apos;s just <span className="text-ink font-bold">{activePlan.perMonth}</span> — less than a coffee ☕
                 </p>
               )}
 
               {/* Trial acknowledgment */}
               {!isPro && billingCycle === 'annual' && (
-                <label className="flex items-start gap-3 p-3 border-2 border-ink bg-white hover:bg-ink/5 transition-colors mb-6 cursor-pointer">
+                <label className="flex items-start gap-3 p-3 border-2 border-ink/15 bg-white hover:bg-ink/5 transition-colors mb-6 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={acknowledgedTrial}
                     onChange={(e) => setAcknowledgedTrial(e.target.checked)}
-                    className="mt-1 w-5 h-5 border-3 border-ink accent-accent shrink-0"
+                    className="mt-1 w-5 h-5 border-2 border-ink/15 accent-accent shrink-0"
                   />
                   <span className="font-mono text-[11px] font-bold text-ink leading-relaxed">
                     I understand the first 3 days are free, then I will be <span className="text-accent underline">charged {activePlan.price}{activePlan.period} automatically</span>. Cancel anytime before trial ends. <span className="text-accent">No refunds</span> after billing starts.
@@ -251,14 +251,14 @@ export function PricingClient() {
 
               {/* CTA */}
               {isPro ? (
-                <div className="w-full py-4 bg-positive border-3 border-ink text-center font-mono text-xs font-bold uppercase tracking-widest brutalist-shadow-sm">
+                <div className="w-full py-4 bg-positive border-2 border-ink/15 text-center font-mono text-xs font-bold uppercase tracking-widest shadow-xs">
                   ✓ Pro Access Active
                 </div>
               ) : (
                 <button
                   onClick={handleCheckout}
                   disabled={isCheckoutLoading || loading || (billingCycle === 'annual' && !acknowledgedTrial)}
-                  className="w-full py-5 bg-brand border-3 border-ink brutalist-shadow font-mono text-sm font-bold uppercase tracking-widest hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                  className="w-full py-5 bg-brand border-2 border-ink/15 shadow-sm font-mono text-sm font-bold uppercase tracking-widest hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
                   {isCheckoutLoading || loading ? (
                     <>
@@ -288,13 +288,13 @@ export function PricingClient() {
           <h2 className="font-heading text-2xl sm:text-3xl tracking-tighter uppercase font-black text-center mb-8">
             Quick Q&amp;A
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-0 border-3 border-ink bg-white">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-0 border-2 border-ink/15 bg-white">
             {[
               { q: 'Cancel anytime?', a: 'Yes. Cancel instantly from your account settings. No questions, no fees. No refunds on the current billing period.' },
               { q: 'Payment methods?', a: 'We use Dodo Payments, accepting all major cards, UPI, and local payment methods globally.' },
               { q: 'Is my data private?', a: '100%. Your diary, sessions, and conversations are strictly confidential and encrypted.' },
             ].map(({ q, a }, i) => (
-              <div key={q} className={`p-6 ${i < 2 ? 'sm:border-r-3 sm:border-ink' : ''} border-b-3 sm:border-b-0 border-ink last:border-b-0`}>
+              <div key={q} className={`p-6 ${i < 2 ? 'sm:border-r-2 sm:border-ink/15' : ''} border-b-2 sm:border-b-0 border-ink/15 last:border-b-0`}>
                 <h4 className="font-mono text-xs font-bold uppercase tracking-widest mb-2 text-ink">{q}</h4>
                 <p className="text-xs text-ink/70 leading-relaxed">{a}</p>
               </div>

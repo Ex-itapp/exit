@@ -139,7 +139,7 @@ export default function DiaryEntryPage() {
       </div>
 
       {/* Visible Header */}
-      <header className="px-4 py-4 sm:px-8 flex items-center justify-between z-10 sticky top-0 bg-bg border-b-2 border-ink/10">
+      <header className="px-4 py-4 sm:px-8 flex items-center justify-between z-10 sticky top-0 bg-bg border-b border-ink/8">
         <button 
           onClick={() => router.push("/diary")}
           className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-widest hover:opacity-70 transition-opacity"
@@ -196,12 +196,12 @@ export default function DiaryEntryPage() {
       <BrandMark className="opacity-10 pointer-events-none" />
 
       {/* Action Footer */}
-      <footer className="px-4 py-6 sm:px-8 border-t-2 border-ink/10 flex flex-col sm:flex-row items-center justify-center gap-4 sticky bottom-0 z-10 bg-bg">
+      <footer className="px-4 py-6 sm:px-8 border-t border-ink/8 flex flex-col sm:flex-row items-center justify-center gap-4 sticky bottom-0 z-10 bg-bg">
         <div className="flex w-full sm:w-auto gap-3 items-center">
           <Button 
             onClick={handleArchiveToggle}
             variant="outline"
-            className="flex-1 sm:flex-none h-14 px-6 border-2 rounded-none hover:-translate-y-1 transition-transform border-ink text-ink bg-transparent"
+            className="flex-1 sm:flex-none h-14 px-6 border-2 rounded-none hover:-translate-y-1 transition-transform border-ink/20 text-ink bg-transparent"
           >
             {isArchived ? (
               <><ArchiveRestore className="w-5 h-5 mr-2" /> UNARCHIVE</>

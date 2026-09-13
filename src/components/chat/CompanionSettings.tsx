@@ -48,7 +48,7 @@ export function CompanionSettings({
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed bottom-0 left-0 right-0 z-50 bg-bg border-t-4 border-ink max-h-[85vh] overflow-y-auto"
+            className="fixed bottom-0 left-0 right-0 z-50 bg-bg border-t-2 border-ink/15 max-h-[85vh] overflow-y-auto"
           >
             {/* Drag handle */}
             <div className="py-3 flex justify-center sticky top-0 bg-bg z-10" onClick={onClose}>
@@ -71,7 +71,7 @@ export function CompanionSettings({
                         className={cn(
                           "rounded-none border-2 p-3 cursor-pointer transition-all duration-200 flex flex-col gap-1",
                           isActive
-                            ? "border-ink bg-brand/10 shadow-[2px_2px_0px_0px] shadow-ink/20"
+                            ? "border-ink bg-brand/10 shadow-sm"
                             : "border-ink/15 hover:border-ink/30"
                         )}
                       >
@@ -98,7 +98,7 @@ export function CompanionSettings({
                         onClick={() => onChangeTheme(p.id as ChatTheme)}
                         className={cn(
                           "w-10 h-10 rounded-none border-2 flex items-center justify-center transition-all duration-200 relative",
-                          isActive ? "border-ink scale-110 shadow-[2px_2px_0px_0px] shadow-ink/30" : "border-ink/20 hover:scale-110 hover:border-ink/40"
+                          isActive ? "border-ink scale-110 shadow-sm" : "border-ink/20 hover:scale-110 hover:border-ink/40"
                         )}
                         style={{ backgroundColor: p.bg }}
                         aria-label={p.name}

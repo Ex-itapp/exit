@@ -23,7 +23,7 @@ export function CertificateTemplate({ data }: { data: any }) {
         backgroundColor: bgColor,
         color: fgColor,
         fontFamily: 'Inter',
-        border: '32px solid #111111'
+        border: '16px solid #111111'
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '80px' }}>
@@ -47,16 +47,16 @@ export function CertificateTemplate({ data }: { data: any }) {
           backgroundColor: fgColor,
           color: bgColor,
           padding: '24px 48px',
-          border: `8px solid ${accentColor}`,
+          border: `4px solid ${accentColor}`,
           width: 'fit-content',
-          boxShadow: `12px 12px 0px 0px ${accentColor}`,
+          boxShadow: `4px 4px 16px rgba(0,0,0,0.1)`,
           marginBottom: '64px'
         }}>
           <span style={{ fontSize: '48px', fontWeight: 'bold', fontFamily: 'monospace' }}>{stat}</span>
         </div>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: `4px solid ${fgColor}`, paddingTop: '32px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: `2px solid ${fgColor}`, paddingTop: '32px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', fontFamily: 'monospace' }}>
           <span style={{ fontSize: '16px', opacity: 0.6 }}>CASE FILE NO.</span>
           <span style={{ fontSize: '24px', fontWeight: 'bold' }}>{caseNumber}</span>

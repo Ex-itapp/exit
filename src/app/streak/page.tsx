@@ -90,7 +90,7 @@ export default function Streak() {
           Streaks become available once you initiate No Contact. Take your time to gather clarity. When you're ready to leave, switch modes.
         </p>
         <Button 
-          className="mt-8 h-14 px-8 text-lg brutalist-shadow-sm"
+          className="mt-8 h-14 px-8 text-lg shadow-xs"
           onClick={() => setAppMode('no_contact')}
         >
           I'M READY FOR NO CONTACT
@@ -104,7 +104,7 @@ export default function Streak() {
 
       {/* Toast Notice when streak is preserved */}
       {streakProtectedToast && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-positive text-ink border-4 border-ink brutalist-shadow px-6 py-4 flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300 max-w-md w-[90%]">
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-positive text-ink border-2 border-ink/20 shadow-sm px-6 py-4 flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300 max-w-md w-[90%]">
           <CheckCircle2 className="w-6 h-6 shrink-0" />
           <div className="font-mono text-xs sm:text-sm font-bold uppercase">
             ✨ Your streak is protected! Proud of you for honoring your peace and choosing yourself today.
@@ -112,7 +112,7 @@ export default function Streak() {
         </div>
       )}
 
-      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b-4 border-ink pb-6">
+      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b-2 border-ink/15 pb-6">
         <div>
           <span className="font-mono text-xs font-bold uppercase tracking-widest bg-ink text-bg px-2.5 py-1">
             Active Protection Mode
@@ -120,7 +120,7 @@ export default function Streak() {
           <h1 className="text-4xl md:text-5xl font-heading tracking-tighter uppercase mt-2">STREAK & CLARITY</h1>
           <p className="font-mono text-ink/70 mt-1 text-sm md:text-base uppercase">Every day is an act of self-respect.</p>
         </div>
-        <div className="text-left sm:text-right bg-white border-3 border-ink px-6 py-3 brutalist-shadow-sm">
+        <div className="text-left sm:text-right bg-white border-2 border-ink/15 px-6 py-3 shadow-xs">
           <div className="text-4xl sm:text-5xl font-heading tracking-tighter leading-none text-ink">{streakDays}</div>
           <p className="font-mono text-xs font-bold tracking-widest uppercase text-brand bg-ink px-2 py-0.5 mt-1 inline-block">DAYS NO CONTACT</p>
         </div>
@@ -132,13 +132,13 @@ export default function Streak() {
       </div>
 
       {/* Streak Settings & Adjustments */}
-      <Card className="border-4 border-ink brutalist-shadow bg-white">
-        <CardHeader className="border-b-4 border-ink bg-bg p-4 flex flex-row items-center justify-between cursor-pointer" onClick={() => setIsEditingSettings(!isEditingSettings)}>
+      <Card className="border-2 border-ink/20 shadow-sm bg-white">
+        <CardHeader className="border-b-2 border-ink/15 bg-bg p-4 flex flex-row items-center justify-between cursor-pointer" onClick={() => setIsEditingSettings(!isEditingSettings)}>
           <CardTitle className="flex items-center gap-2 text-lg uppercase font-heading">
             <Settings2 className="w-5 h-5" />
             STREAK SETTINGS
           </CardTitle>
-          <Button variant="ghost" className="h-8 px-3 text-xs font-mono font-bold uppercase border-2 border-ink">
+          <Button variant="ghost" className="h-8 px-3 text-xs font-mono font-bold uppercase border-2 border-ink/20">
             {isEditingSettings ? "Done" : "Edit Date"}
           </Button>
         </CardHeader>
@@ -151,9 +151,9 @@ export default function Streak() {
                   type="date" 
                   value={newBreakupDate}
                   onChange={(e) => setNewBreakupDate(e.target.value)}
-                  className="flex-1 h-12 border-3 border-ink font-mono"
+                  className="flex-1 h-12 border-2 border-ink/15 font-mono"
                 />
-                <Button onClick={handleUpdateBreakupDate} className="h-12 px-6 font-mono font-bold uppercase bg-brand text-ink border-3 border-ink">Update Date</Button>
+                <Button onClick={handleUpdateBreakupDate} className="h-12 px-6 font-mono font-bold uppercase bg-brand text-ink border-2 border-ink/20">Update Date</Button>
               </div>
             </div>
           </CardContent>
@@ -161,8 +161,8 @@ export default function Streak() {
       </Card>
 
       {/* Danger Zone */}
-      <Card className="border-4 border-danger brutalist-shadow bg-white">
-        <CardHeader className="bg-danger/10 border-b-4 border-danger p-4">
+      <Card className="border-2 border-danger/60 shadow-sm bg-white">
+        <CardHeader className="bg-danger/10 border-b-2 border-danger/40 p-4">
           <CardTitle className="flex items-center gap-2 text-danger font-heading text-xl uppercase">
             <AlertTriangle className="w-6 h-6 animate-pulse" />
             DANGER ZONE & URGE INTERVENTION
@@ -174,7 +174,7 @@ export default function Streak() {
           </p>
           <Button 
             variant="danger" 
-            className="w-full h-14 text-base font-mono font-bold uppercase border-3 border-ink brutalist-shadow-sm hover:-translate-y-0.5 transition-all" 
+            className="w-full h-14 text-base font-mono font-bold uppercase border-2 border-ink/15 shadow-xs hover:-translate-y-0.5 transition-all" 
             onClick={() => setShowResetModal(true)}
           >
             <RefreshCcw className="w-5 h-5 mr-2 animate-spin" style={{ animationDuration: '4s' }} />
@@ -186,12 +186,12 @@ export default function Streak() {
       {/* CUSTOM UI INTERVENTION MODAL */}
       {showResetModal && (
         <div className="fixed inset-0 z-50 bg-ink/90 backdrop-blur-md flex items-end sm:items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-bg border-4 border-ink brutalist-shadow max-w-md w-full flex flex-col relative my-auto">
+          <div className="bg-bg border-2 border-ink/20 shadow-sm max-w-md w-full flex flex-col relative my-auto">
             
             {/* Close Button */}
             <button 
               onClick={() => setShowResetModal(false)}
-              className="absolute -top-3 -right-3 z-10 p-1.5 bg-bg text-ink border-2 border-ink hover:bg-ink hover:text-white transition-colors brutalist-shadow-sm rounded-none"
+              className="absolute -top-3 -right-3 z-10 p-1.5 bg-bg text-ink border-2 border-ink/20 hover:bg-ink hover:text-white transition-colors shadow-xs rounded-none"
               title="Close"
             >
               <X className="w-5 h-5" />
@@ -201,7 +201,7 @@ export default function Streak() {
             <div className="p-6 space-y-6">
               
               {/* Goal Intervention */}
-              <div className={`${goalIntervention.color} border-3 border-ink p-4 text-ink space-y-2`}>
+              <div className={`${goalIntervention.color} border-2 border-ink/15 p-4 text-ink space-y-2`}>
                 <div className="font-heading text-lg sm:text-xl uppercase tracking-tight leading-none">
                   {goalIntervention.header}
                 </div>
@@ -222,7 +222,7 @@ export default function Streak() {
             <div className="p-6 pt-0 flex flex-col gap-4">
               <Button
                 onClick={handleStayedStrong}
-                className="w-full h-14 bg-positive hover:bg-positive/90 text-ink border-4 border-ink brutalist-shadow-sm hover:brutalist-shadow text-sm sm:text-base font-heading font-black uppercase tracking-tight flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5"
+                className="w-full h-14 bg-positive hover:bg-positive/90 text-ink border-2 border-ink/20 shadow-xs hover:shadow-sm text-sm sm:text-base font-heading font-black uppercase tracking-tight flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5"
               >
                 <CheckCircle2 className="w-5 h-5 shrink-0" />
                 <span>{goalIntervention.cta} (Keep My {streakDays}-Day Streak) 🛡️</span>

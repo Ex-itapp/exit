@@ -34,7 +34,7 @@ export function BadgeTile({ badge, onClick }: BadgeTileProps) {
       whileTap={{ scale: 0.96 }}
       transition={{ type: "spring", stiffness: 350, damping: 25 }}
       className={cn(
-        "aspect-square rounded-3xl border-4 border-ink p-4 sm:p-5 flex flex-col justify-between items-center text-center transition-colors cursor-pointer relative overflow-hidden group select-none shadow-lg",
+        "aspect-square rounded-none border-2 border-ink/15 p-4 sm:p-5 flex flex-col justify-between items-center text-center transition-colors cursor-pointer relative overflow-hidden group select-none shadow-sm",
         badge.isUnlocked
           ? "bg-brand text-ink"
           : "bg-white/60 text-ink/50 border-ink/40 hover:bg-white hover:border-ink/70"
@@ -65,12 +65,12 @@ export function BadgeTile({ badge, onClick }: BadgeTileProps) {
           <motion.div 
             whileHover={{ scale: 1.15, rotate: 8 }} 
             transition={{ type: "spring", stiffness: 400, damping: 15 }}
-            className="p-3.5 sm:p-4 bg-white rounded-2xl border-3 border-ink shadow-sm group-hover:shadow-md transition-shadow"
+            className="p-3.5 sm:p-4 bg-white rounded-none border-2 border-ink/15 shadow-sm group-hover:shadow-sm transition-shadow"
           >
             {getIcon()}
           </motion.div>
         ) : (
-          <div className="p-3.5 sm:p-4 bg-ink/5 rounded-2xl border-2 border-dashed border-ink/30 flex items-center justify-center">
+          <div className="p-3.5 sm:p-4 bg-ink/5 rounded-none border-2 border-dashed border-ink/30 flex items-center justify-center">
             <Lock className="w-8 h-8 sm:w-10 sm:h-10 text-ink/30" strokeWidth={2} />
           </div>
         )}

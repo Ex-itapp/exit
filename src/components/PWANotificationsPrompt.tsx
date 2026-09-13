@@ -54,7 +54,7 @@ export function PWANotificationsPrompt() {
 
   return (
     <div className="fixed inset-0 z-[100] bg-ink/90 backdrop-blur-md flex items-end sm:items-center justify-center p-4 animate-in fade-in duration-200">
-      <div className="bg-white w-full max-w-sm border-4 border-ink p-6 sm:p-8 space-y-6 relative brutalist-shadow animate-in slide-in-from-bottom-4 duration-300">
+      <div className="bg-white w-full max-w-sm border-2 border-ink/20 p-6 sm:p-8 space-y-6 relative shadow-lg animate-in slide-in-from-bottom-4 duration-300">
         <button
           onClick={handleDismiss}
           className="absolute top-4 right-4 p-2 bg-transparent hover:bg-ink/5 transition-colors"
@@ -62,7 +62,7 @@ export function PWANotificationsPrompt() {
           <X className="w-6 h-6 text-ink" />
         </button>
 
-        <div className="w-16 h-16 border-4 border-ink bg-brand flex items-center justify-center mx-auto mb-2 transform -rotate-3 brutalist-shadow-sm">
+        <div className="w-16 h-16 border-2 border-ink/20 bg-brand flex items-center justify-center mx-auto mb-2 transform -rotate-3 shadow-sm">
           <Bell className="w-8 h-8 text-ink" />
         </div>
 
@@ -73,7 +73,7 @@ export function PWANotificationsPrompt() {
           </p>
         </div>
 
-        <div className="bg-positive border-2 border-ink p-3 flex items-start gap-3 brutalist-shadow-sm">
+        <div className="bg-positive border-2 border-ink/15 p-3 flex items-start gap-3 shadow-sm">
           <ShieldCheck className="w-5 h-5 text-ink shrink-0 mt-0.5" />
           <p className="font-mono font-bold text-[10px] sm:text-xs text-ink uppercase tracking-wider">
             1-2 notifications daily.<br/>No spam, ever.
@@ -84,13 +84,13 @@ export function PWANotificationsPrompt() {
           <button
             onClick={handleSubscribe}
             disabled={loading}
-            className="w-full h-14 border-4 border-ink bg-ink text-white font-mono font-bold uppercase tracking-widest text-sm hover:bg-ink/90 transition-colors disabled:opacity-50"
+            className="w-full h-14 border-2 border-ink/20 bg-ink text-white font-mono font-bold uppercase tracking-widest text-sm hover:bg-ink/90 transition-colors disabled:opacity-50"
           >
             {loading ? "Enabling..." : "Turn On"}
           </button>
           <button
             onClick={handleDismiss}
-            className="w-full h-14 border-4 border-ink bg-white text-ink font-mono font-bold uppercase tracking-widest text-sm hover:bg-ink/5 transition-colors brutalist-shadow-sm"
+            className="w-full h-14 border-2 border-ink/20 bg-white text-ink font-mono font-bold uppercase tracking-widest text-sm hover:bg-ink/5 transition-colors shadow-sm"
           >
             Maybe later
           </button>

@@ -423,7 +423,7 @@ export default function ClosurePage() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-brand border-4 border-ink brutalist-shadow px-6 py-3 font-mono text-xs font-bold text-ink flex items-center gap-2"
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-brand border-2 border-ink/20 shadow-sm px-6 py-3 font-mono text-xs font-bold text-ink flex items-center gap-2"
           >
             <Sparkles className="w-4 h-4 text-ink animate-spin" />
             <span>{tuneToast}</span>
@@ -551,7 +551,7 @@ export default function ClosurePage() {
                 <div className="flex items-center gap-3">
                   <Button
                     variant="secondary"
-                    className="h-11 px-4 text-xs font-bold uppercase bg-bg border-2 border-ink hover:bg-ink hover:text-white transition-all flex items-center gap-2"
+                    className="h-11 px-4 text-xs font-bold uppercase bg-bg border-2 border-ink/20 hover:bg-ink hover:text-white shadow-sm transition-all flex items-center gap-2"
                     onClick={() => setActiveTab('memories')}
                   >
                     <BrainCircuit className="w-4 h-4 text-brand" />
@@ -561,7 +561,7 @@ export default function ClosurePage() {
                   <Button
                     variant="secondary"
                     size="icon"
-                    className="w-11 h-11 rounded-none border-2 border-ink bg-white hover:bg-brand transition-all flex items-center justify-center shrink-0"
+                    className="w-11 h-11 rounded-none border-2 border-ink/20 bg-white shadow-sm hover:bg-brand transition-all flex items-center justify-center shrink-0"
                     onClick={() => { setActiveTab('engine'); setEngineStep(1); }}
                     title="Alter Persona Settings or Reset"
                   >
@@ -578,9 +578,9 @@ export default function ClosurePage() {
 
                 <div
                   onClick={handleStartSession}
-                  className="group bg-white border-4 border-ink brutalist-shadow p-5 sm:p-6 hover:translate-x-1 hover:-translate-y-1 hover:bg-brand/10 transition-all duration-200 cursor-pointer flex items-center gap-4 sm:gap-6"
+                  className="group bg-white border-2 border-ink/15 shadow-sm p-5 sm:p-6 hover:translate-x-1 hover:-translate-y-1 hover:shadow-md hover:bg-brand/10 transition-all duration-200 cursor-pointer flex items-center gap-4 sm:gap-6"
                 >
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-3 border-ink bg-purple/30 flex items-center justify-center font-heading text-2xl sm:text-3xl uppercase text-ink shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-ink/20 bg-purple/30 flex items-center justify-center font-heading text-2xl sm:text-3xl uppercase text-ink shrink-0 shadow-sm group-hover:scale-105 transition-transform">
                     {profile?.label?.[0]?.toUpperCase() || "T"}
                   </div>
 
@@ -625,7 +625,7 @@ export default function ClosurePage() {
 
               {/* Reflections Section Below */}
               <div className="pt-6 space-y-4">
-                <div className="flex items-center justify-between border-b-3 border-ink pb-3">
+                <div className="flex items-center justify-between border-b-2 border-ink/15 pb-3">
                   <h3 className="text-xl sm:text-2xl font-heading uppercase tracking-tight flex items-center gap-2">
                     <Sparkles className="w-6 h-6 text-brand" /> Your Reflections & Insights
                   </h3>
@@ -635,7 +635,7 @@ export default function ClosurePage() {
                 </div>
 
                 {sessions.filter(s => s.reflection_response && s.reflection_response !== "Completed without reflection" && s.reflection_response !== "User exited to hub").length === 0 ? (
-                  <div className="text-center py-12 px-6 border-4 border-dashed border-ink/20 bg-white/50 space-y-2">
+                  <div className="text-center py-12 px-6 border-2 border-dashed border-ink/20 bg-white/50 space-y-2">
                     <p className="font-heading text-lg text-ink/70 uppercase">No Reflections Recorded Yet</p>
                     <p className="font-sans text-sm text-ink/60 max-w-md mx-auto">
                       When you complete a conversation session and write a reflection, your healing insights and reflections will be saved here.
@@ -644,18 +644,18 @@ export default function ClosurePage() {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {sessions.filter(s => s.reflection_response && s.reflection_response !== "Completed without reflection" && s.reflection_response !== "User exited to hub").map((s) => (
-                      <Card key={s.id} className="border-3 border-ink p-5 bg-white brutalist-shadow-sm space-y-3">
-                        <div className="flex justify-between items-center border-b-2 border-ink/15 pb-2 font-mono text-xs">
+                      <Card key={s.id} className="border-2 border-ink/15 p-5 bg-white shadow-sm space-y-3">
+                        <div className="flex justify-between items-center border-b border-ink/10 pb-2 font-mono text-xs">
                           <span className="font-bold uppercase text-ink/80 flex items-center gap-1.5">
                             <Clock className="w-3.5 h-3.5 text-brand" />
                             {new Date(s.started_at).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
                           </span>
-                          <span className="px-2 py-0.5 border font-bold uppercase text-[10px] bg-positive/20 border-positive text-ink">
+                          <span className="px-2 py-0.5 border font-bold uppercase text-[10px] bg-positive/20 border-positive/30 text-ink">
                             Reflection
                           </span>
                         </div>
 
-                        <div className="bg-bg/60 p-3.5 border-2 border-ink/20">
+                        <div className="bg-bg/60 p-3.5 border border-ink/10">
                           <p className="font-sans text-xs sm:text-sm leading-relaxed italic text-ink/90">
                             "{s.reflection_response}"
                           </p>
@@ -1105,7 +1105,7 @@ export default function ClosurePage() {
                         value={voiceForm.tone_baseline}
                         onChange={(e) => setVoiceForm({ ...voiceForm, tone_baseline: e.target.value })}
                         placeholder="e.g. Casual, warm, slightly distant, practical, intellectual..."
-                        className="min-h-[70px] border-3 border-ink text-sm p-3 bg-white"
+                        className="min-h-[70px] border-2 border-ink/20 text-sm p-3 bg-white"
                       />
                     </div>
 
@@ -1115,7 +1115,7 @@ export default function ClosurePage() {
                         value={voiceForm.tone_under_conflict}
                         onChange={(e) => setVoiceForm({ ...voiceForm, tone_under_conflict: e.target.value })}
                         placeholder="e.g. Withdraws into silence, gets defensive, turns things back on me..."
-                        className="min-h-[70px] border-3 border-ink text-sm p-3 bg-white"
+                        className="min-h-[70px] border-2 border-ink/20 text-sm p-3 bg-white"
                       />
                     </div>
                   </div>
@@ -1153,7 +1153,7 @@ export default function ClosurePage() {
                         value={traitForm.flaws_or_toxic_traits}
                         onChange={(e) => setTraitForm({ ...traitForm, flaws_or_toxic_traits: e.target.value })}
                         placeholder="e.g. Emotionally unavailable, gaslights when caught lying, always acts like the victim..."
-                        className="min-h-[70px] border-3 border-ink text-sm p-3 bg-white"
+                        className="min-h-[70px] border-2 border-ink/20 text-sm p-3 bg-white"
                       />
                     </div>
 
@@ -1163,7 +1163,7 @@ export default function ClosurePage() {
                         value={traitForm.breakup_context}
                         onChange={(e) => setTraitForm({ ...traitForm, breakup_context: e.target.value })}
                         placeholder="e.g. Ghosted after an argument, mutual breakup, they ended it out of nowhere..."
-                        className="min-h-[70px] border-3 border-ink text-sm p-3 bg-white"
+                        className="min-h-[70px] border-2 border-ink/20 text-sm p-3 bg-white"
                       />
                     </div>
 
@@ -1254,15 +1254,15 @@ export default function ClosurePage() {
             <Button
               variant="secondary"
               onClick={() => setActiveTab('sessions')}
-              className="font-mono font-bold text-xs uppercase bg-white border-2 border-ink h-10 px-4 hover:bg-ink hover:text-white"
+              className="font-mono font-bold text-xs uppercase bg-white border-2 border-ink/20 h-10 px-4 hover:bg-ink hover:text-white"
             >
               <ArrowLeft className="w-4 h-4 mr-2" /> Back to Persona
             </Button>
           )}
-          <div className="bg-white border-4 border-ink brutalist-shadow p-6 sm:p-10 space-y-8">
-            <div className="border-b-4 border-ink pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="bg-white border-2 border-ink/15 shadow-sm p-6 sm:p-10 space-y-8">
+            <div className="border-b-2 border-ink/15 pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <span className="font-mono text-xs font-bold uppercase bg-brand text-ink px-2 py-0.5 border border-ink">
+                <span className="font-mono text-xs font-bold uppercase bg-brand text-ink px-2 py-0.5 border border-ink/20">
                   Personal History & Depth
                 </span>
                 <h2 className="text-2xl sm:text-3xl font-heading uppercase mt-1">THE MEMORY BANK ({memories.length})</h2>
@@ -1278,7 +1278,7 @@ export default function ClosurePage() {
             </p>
 
             {/* Add Memory Box */}
-            <div className="bg-bg p-5 border-4 border-ink space-y-4">
+            <div className="bg-bg p-5 border-2 border-ink/15 space-y-4">
               <h3 className="font-heading text-lg uppercase flex items-center gap-2">
                 <Plus className="w-5 h-5 text-ink" /> Add New Memory Entry
               </h3>
@@ -1287,7 +1287,7 @@ export default function ClosurePage() {
                 placeholder="Describe the memory or exact words... e.g., 'The night we argued in the kitchen because you promised to come to my family dinner but canceled at the last minute...'"
                 value={newMemContent}
                 onChange={(e) => setNewMemContent(e.target.value)}
-                className="min-h-[90px] border-3 border-ink bg-white font-sans text-sm p-3"
+                className="min-h-[90px] border-2 border-ink/20 bg-white font-sans text-sm p-3"
               />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1342,7 +1342,7 @@ export default function ClosurePage() {
               ) : (
                 <div className="grid grid-cols-1 gap-3">
                   {memories.map((m) => (
-                    <div key={m.id} className="p-4 border-3 border-ink bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm group">
+                    <div key={m.id} className="p-4 border-2 border-ink/15 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm group">
                       <div className="space-y-1 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className={cn("px-2 py-0.5 border font-mono font-bold text-[10px] uppercase",

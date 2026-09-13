@@ -21,25 +21,25 @@ export function RedFlagTile() {
       onClick={() => router.push('/flags')}
     >
       {/* Shadow */}
-      <div className="absolute inset-0 bg-ink rounded-xl translate-x-2 translate-y-2 group-hover:translate-x-3 group-hover:translate-y-3 transition-transform" />
+      <div className="absolute inset-0 bg-ink/10 rounded-xl translate-x-1.5 translate-y-1.5 group-hover:translate-x-2 group-hover:translate-y-2 transition-transform" />
       
-      <div className="relative w-full h-full bg-purple border-4 border-ink rounded-xl flex flex-col overflow-hidden">
+      <div className="relative w-full h-full bg-purple border-2 border-ink/15 rounded-xl flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="bg-ink text-purple py-1.5 sm:py-2 text-center font-heading text-lg sm:text-xl md:text-2xl uppercase tracking-widest border-b-4 border-ink flex items-center justify-center gap-1.5 sm:gap-2">
+        <div className="bg-ink text-purple py-1.5 sm:py-2 text-center font-heading text-lg sm:text-xl md:text-2xl uppercase tracking-widest border-b-2 border-ink/15 flex items-center justify-center gap-1.5 sm:gap-2">
           <ShieldAlert className="w-4 h-4 sm:w-6 sm:h-6" />
           CLARITY
         </div>
         
         {/* Body */}
         <div className="flex-1 flex flex-col items-center justify-center p-2 sm:p-4 relative">
-          <span className="text-5xl sm:text-7xl md:text-8xl font-heading tracking-tighter leading-none text-ink drop-shadow-md">
+          <span className="text-5xl sm:text-7xl md:text-8xl font-heading tracking-tighter leading-none text-ink shadow-sm">
             {flagCount}
           </span>
           <span className="font-mono text-[10px] sm:text-sm font-bold uppercase mt-1 sm:mt-2 opacity-80 text-center leading-tight">
             Red Flags<br/>Last 30 Days
           </span>
           
-          <div className="mt-2 sm:mt-4 px-2.5 sm:px-4 py-1 sm:py-2 border-3 sm:border-4 border-ink bg-white rounded-full flex items-center justify-center -rotate-2 group-hover:scale-110 transition-transform">
+          <div className="mt-2 sm:mt-4 px-2.5 sm:px-4 py-1 sm:py-2 border-2 border-ink/15 bg-white rounded-full flex items-center justify-center -rotate-2 group-hover:scale-110 transition-transform">
             <Flag className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
             <span className="font-mono text-[10px] sm:text-xs md:text-sm font-bold uppercase whitespace-nowrap text-ink">
               LOG A FLAG

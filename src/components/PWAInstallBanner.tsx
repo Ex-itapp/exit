@@ -81,9 +81,9 @@ export function PWAInstallBanner() {
         }}
       >
         {/* Decorative top bar */}
-        <div className="mx-4 h-1 bg-brand border-x-2 border-t-2 border-ink" />
+        <div className="mx-4 h-1 bg-brand border-x-2 border-t-2 border-ink/20" />
 
-        <div className="bg-bg border-t-4 border-x-4 border-b-0 border-ink mx-0 px-5 pt-5 pb-8 shadow-[0_-8px_0_rgba(0,0,0,0.15)]">
+        <div className="bg-bg border-t-2 border-x-2 border-b-0 border-ink/20 mx-0 px-5 pt-5 pb-8 shadow-lg">
           {step === "prompt" ? (
             <PromptStep
               isIOS={isIOS}
@@ -122,7 +122,7 @@ function PromptStep({
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           {/* App icon mini */}
-          <div className="w-12 h-12 bg-ink border-2 border-ink brutalist-shadow-sm flex items-center justify-center shrink-0">
+          <div className="w-12 h-12 bg-ink border-2 border-ink/20 shadow-sm flex items-center justify-center shrink-0">
             <div className="w-5 h-5 bg-brand border border-bg transform -rotate-6" />
           </div>
           <div>
@@ -136,7 +136,7 @@ function PromptStep({
         </div>
         <button
           onClick={() => onDismiss()}
-          className="w-8 h-8 border-2 border-ink flex items-center justify-center hover:bg-ink hover:text-bg transition-colors shrink-0 mt-0.5"
+          className="w-8 h-8 border-2 border-ink/20 flex items-center justify-center hover:bg-ink hover:text-bg transition-colors shrink-0 mt-0.5"
           aria-label="Close"
         >
           <X className="w-4 h-4" />
@@ -152,7 +152,7 @@ function PromptStep({
 
       {/* iOS not-Safari warning */}
       {isIOS && !isIOSSafari && (
-        <div className="bg-brand/20 border-2 border-ink p-3">
+        <div className="bg-brand/20 border-2 border-ink/20 p-3">
           <p className="font-mono text-[11px] font-bold text-ink">
             ⚠️ Open this page in{" "}
             <span className="underline">Safari</span> to install — Chrome on
@@ -166,7 +166,7 @@ function PromptStep({
         <button
           onClick={onInstall}
           disabled={isIOS && !isIOSSafari}
-          className="flex-1 flex items-center justify-center gap-2 bg-ink text-bg px-4 py-3 border-2 border-ink brutalist-shadow-sm font-mono text-xs font-bold uppercase tracking-widest hover:bg-ink/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          className="flex-1 flex items-center justify-center gap-2 bg-ink text-bg px-4 py-3 border-2 border-ink/20 shadow-sm font-mono text-xs font-bold uppercase tracking-widest hover:bg-ink/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {isIOS ? (
             <>
@@ -182,7 +182,7 @@ function PromptStep({
         </button>
         <button
           onClick={() => onDismiss()}
-          className="px-4 py-3 border-2 border-ink font-mono text-xs font-bold uppercase tracking-widest hover:bg-ink/5 transition-colors"
+          className="px-4 py-3 border-2 border-ink/20 font-mono text-xs font-bold uppercase tracking-widest hover:bg-ink/5 transition-colors"
           aria-label="Not now"
         >
           Not now
@@ -233,7 +233,7 @@ function IOSGuideStep({ onDone }: { onDone: () => void }) {
         {steps.map((s, i) => (
           <div
             key={i}
-            className="flex items-center gap-4 bg-white border-2 border-ink p-3 brutalist-shadow-sm"
+            className="flex items-center gap-4 bg-white border-2 border-ink/15 p-3 shadow-sm"
             style={{ animationDelay: `${i * 80}ms` }}
           >
             {/* Step number */}
@@ -241,7 +241,7 @@ function IOSGuideStep({ onDone }: { onDone: () => void }) {
               {i + 1}
             </div>
             {/* Icon */}
-            <div className="w-10 h-10 bg-brand/20 border-2 border-ink flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 bg-brand/20 border-2 border-ink/15 flex items-center justify-center shrink-0">
               {s.icon}
             </div>
             {/* Text */}
@@ -271,7 +271,7 @@ function IOSGuideStep({ onDone }: { onDone: () => void }) {
 
       <button
         onClick={onDone}
-        className="w-full flex items-center justify-center gap-2 bg-brand text-ink px-4 py-3 border-2 border-ink brutalist-shadow-sm font-mono text-xs font-bold uppercase tracking-widest hover:bg-brand/90 transition-colors"
+        className="w-full flex items-center justify-center gap-2 bg-brand text-ink px-4 py-3 border-2 border-ink/20 shadow-sm font-mono text-xs font-bold uppercase tracking-widest hover:bg-brand/90 transition-colors"
       >
         Got it!
       </button>
@@ -314,11 +314,11 @@ function AndroidGuideStep({ onDone }: { onDone: () => void }) {
       </p>
       <div className="space-y-3">
         {steps.map((s, i) => (
-          <div key={i} className="flex items-center gap-4 bg-white border-2 border-ink p-3 brutalist-shadow-sm">
+          <div key={i} className="flex items-center gap-4 bg-white border-2 border-ink/15 p-3 shadow-sm">
             <div className="w-8 h-8 bg-ink text-bg font-heading text-sm font-black flex items-center justify-center shrink-0">
               {i + 1}
             </div>
-            <div className="w-10 h-10 bg-brand/20 border-2 border-ink flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 bg-brand/20 border-2 border-ink/15 flex items-center justify-center shrink-0">
               {s.icon}
             </div>
             <div className="flex-1 min-w-0">
@@ -328,7 +328,7 @@ function AndroidGuideStep({ onDone }: { onDone: () => void }) {
           </div>
         ))}
       </div>
-      <button onClick={onDone} className="w-full flex items-center justify-center gap-2 bg-brand text-ink px-4 py-3 border-2 border-ink brutalist-shadow-sm font-mono text-xs font-bold uppercase tracking-widest hover:bg-brand/90 transition-colors">
+      <button onClick={onDone} className="w-full flex items-center justify-center gap-2 bg-brand text-ink px-4 py-3 border-2 border-ink/20 shadow-sm font-mono text-xs font-bold uppercase tracking-widest hover:bg-brand/90 transition-colors">
         Got it!
       </button>
     </div>

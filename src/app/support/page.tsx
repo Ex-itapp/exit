@@ -9,14 +9,14 @@ export default function SupportPage() {
       <div className="max-w-3xl mx-auto px-4 sm:px-8 py-12 sm:py-16">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 px-4 h-10 bg-white border-2 border-ink brutalist-shadow-sm hover:bg-ink hover:text-bg transition-colors font-mono text-xs font-bold uppercase mb-8"
+          className="inline-flex items-center gap-2 px-4 h-10 bg-white border-2 border-ink/15 shadow-xs hover:bg-ink hover:text-bg transition-colors font-mono text-xs font-bold uppercase mb-8"
         >
           <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
         </Link>
 
-        <div className="border-4 border-ink bg-white p-6 sm:p-10 brutalist-shadow space-y-8 text-center">
-          <div className="border-b-4 border-ink pb-6 space-y-2">
-            <span className="bg-brand text-ink font-mono text-xs font-bold uppercase px-3 py-1 border-2 border-ink">
+        <div className="border-2 border-ink/20 bg-white p-6 sm:p-10 shadow-sm space-y-8 text-center">
+          <div className="border-b-2 border-ink/15 pb-6 space-y-2">
+            <span className="bg-brand text-ink font-mono text-xs font-bold uppercase px-3 py-1 border-2 border-ink/15">
               Support
             </span>
             <h1 className="text-4xl sm:text-5xl font-heading tracking-tighter uppercase font-black">
@@ -27,8 +27,8 @@ export default function SupportPage() {
             </p>
           </div>
 
-          <div className="inline-flex items-center gap-4 border-4 border-ink p-6 sm:p-8 bg-bg brutalist-shadow">
-            <div className="w-14 h-14 bg-brand border-3 border-ink flex items-center justify-center shrink-0">
+          <div className="inline-flex items-center gap-4 border-2 border-ink/20 p-6 sm:p-8 bg-bg shadow-sm">
+            <div className="w-14 h-14 bg-brand border-2 border-ink/15 flex items-center justify-center shrink-0">
               <Mail className="w-7 h-7 text-ink" />
             </div>
             <div className="text-left">

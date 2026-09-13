@@ -73,7 +73,7 @@ export default function RoadmapPage() {
       <div className="flex items-center gap-4 mb-8">
         <button
           onClick={() => router.push("/")}
-          className="p-2 border-4 border-ink brutalist-shadow-sm bg-bg active:translate-y-1 active:shadow-none transition-transform"
+          className="p-2 border-2 border-ink/20 shadow-xs bg-bg active:translate-y-1 active:shadow-none transition-transform"
           aria-label="Back to dashboard"
         >
           <ArrowLeft size={24} className="stroke-[3]" />
@@ -85,7 +85,7 @@ export default function RoadmapPage() {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-brand border-4 border-ink brutalist-shadow p-6 mb-12 relative overflow-hidden"
+        className="bg-brand border-2 border-ink/15 shadow-sm p-6 mb-12 relative overflow-hidden"
       >
         <div className="font-mono text-sm uppercase font-bold mb-2">
           Current Progress
@@ -99,7 +99,7 @@ export default function RoadmapPage() {
       {/* Timeline */}
       <div className="relative pl-2">
         {/* Continuous dashed line background */}
-        <div className="absolute left-[26px] top-6 bottom-6 w-0 border-l-4 border-dashed border-ink/20 z-0" />
+        <div className="absolute left-[26px] top-6 bottom-6 w-0 border-l-2 border-dashed border-ink/10 z-0" />
 
         {/* Solid line for completed sections */}
         <div
@@ -126,10 +126,10 @@ export default function RoadmapPage() {
                 {/* Node icon */}
                 <div
                   className={cn(
-                    "shrink-0 w-12 h-12 flex items-center justify-center border-4 z-10 transition-colors",
-                    isCompleted && "bg-positive border-ink brutalist-shadow-sm text-ink",
-                    isCurrent && "bg-brand border-ink brutalist-shadow text-ink animate-pulse",
-                    isLocked && "bg-bg border-dashed border-ink/30 text-ink/40"
+                    "shrink-0 w-12 h-12 flex items-center justify-center border-2 z-10 transition-colors",
+                    isCompleted && "bg-positive border-ink/20 shadow-xs text-ink",
+                    isCurrent && "bg-brand border-ink/20 shadow-sm text-ink animate-pulse",
+                    isLocked && "bg-bg border-dashed border-ink/20 text-ink/40"
                   )}
                 >
                   {isCompleted && <Check size={24} className="stroke-[3]" />}
@@ -140,10 +140,10 @@ export default function RoadmapPage() {
                 {/* Node content */}
                 <div
                   className={cn(
-                    "flex-1 pt-1 border-4 bg-bg p-4 transition-all duration-300",
-                    isCompleted && "border-ink brutalist-shadow-sm",
-                    isCurrent && "border-ink brutalist-shadow scale-[1.02]",
-                    isLocked && "border-dashed border-ink/30 bg-bg/50 shadow-none"
+                    "flex-1 pt-1 border-2 bg-bg p-4 transition-all duration-300",
+                    isCompleted && "border-ink/15 shadow-xs",
+                    isCurrent && "border-ink/15 shadow-sm scale-[1.02]",
+                    isLocked && "border-dashed border-ink/10 bg-bg/50 shadow-none"
                   )}
                 >
                   <div

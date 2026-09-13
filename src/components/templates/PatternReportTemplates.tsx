@@ -33,8 +33,8 @@ export function PatternReportOverview({ data }: { data: any }) {
         backgroundColor: '#FFDF00', // brand
         color: '#111111', // ink
         padding: '32px',
-        border: '8px solid #111111',
-        boxShadow: '16px 16px 0px 0px #F5EFE6', // brutalist shadow
+        border: '4px solid #111111',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
         marginBottom: '32px'
       }}>
         <span style={{ fontSize: '48px', fontWeight: '900', textTransform: 'uppercase' }}>{stat_highlight}</span>
@@ -91,8 +91,8 @@ export function PatternReportDiary({ data }: { data: any }) {
         flexDirection: 'column',
         backgroundColor: '#F5EFE6', 
         padding: '32px',
-        border: '6px solid #111111',
-        boxShadow: '12px 12px 0px 0px #111111',
+        border: '3px solid #111111',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         marginBottom: '40px'
       }}>
         <span style={{ fontSize: '36px', fontWeight: 'bold', fontStyle: 'italic' }}>"{standout_line}"</span>
@@ -137,7 +137,7 @@ export function PatternReportRedFlags({ data }: { data: any }) {
         backgroundColor: bgColor,
         color: '#111111',
         padding: '40px',
-        border: '8px solid #F5EFE6',
+        border: '4px solid #F5EFE6',
         marginBottom: '48px'
       }}>
         <span style={{ fontSize: '24px', fontWeight: 'bold', textTransform: 'uppercase', opacity: 0.8, marginBottom: '16px' }}>Top Pattern</span>

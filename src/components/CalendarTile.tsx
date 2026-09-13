@@ -30,15 +30,15 @@ export function CalendarTile() {
   };
 
   const renderTileContent = (isTopLayer: boolean, isPunched: boolean) => (
-    <div className="w-full h-full bg-white border-4 border-ink rounded-xl flex flex-col overflow-hidden brutalist-shadow-sm select-none">
-      <div className="bg-brand text-ink py-1.5 sm:py-2 text-center font-heading text-lg sm:text-xl md:text-2xl uppercase tracking-widest border-b-4 border-ink">
+    <div className="w-full h-full bg-white border-2 border-ink/20 rounded-xl flex flex-col overflow-hidden shadow-sm select-none">
+      <div className="bg-brand text-ink py-1.5 sm:py-2 text-center font-heading text-lg sm:text-xl md:text-2xl uppercase tracking-widest border-b-2 border-ink/20">
         {currentMonth}
       </div>
       <div className="flex-1 flex flex-col items-center justify-center p-2 sm:p-4 bg-bg relative">
         <span className="text-5xl sm:text-7xl md:text-8xl font-heading tracking-tighter leading-none text-ink drop-shadow-md">
           {currentDay}
         </span>
-        <div className="mt-2 sm:mt-4 px-2.5 sm:px-4 py-1 sm:py-2 border-3 sm:border-4 border-ink bg-white rounded-full flex items-center justify-center -rotate-2">
+        <div className="mt-2 sm:mt-4 px-2.5 sm:px-4 py-1 sm:py-2 border-2 border-ink/20 bg-white rounded-full flex items-center justify-center -rotate-2">
           <span className="font-mono text-[10px] sm:text-sm md:text-base font-bold uppercase whitespace-nowrap">
             STREAK: {isTopLayer && !isPunched ? streakDays : (hasTorn || isPunched ? streakDays : streakDays + 1)}
           </span>

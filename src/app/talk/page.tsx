@@ -39,14 +39,14 @@ export default function TalkPage() {
         </motion.div>
 
         {/* Chat List */}
-        <motion.div variants={item} className="flex flex-col border-t-2 border-ink">
+        <motion.div variants={item} className="flex flex-col border-t border-ink/10">
           
           {/* Chat Item 1 */}
           <div 
             onClick={() => router.push('/therapist')}
-            className="flex items-center p-3 border-b-2 border-ink cursor-pointer hover:bg-ink/5 transition-colors group"
+            className="flex items-center p-3 border-b border-ink/10 cursor-pointer hover:bg-ink/5 transition-colors group"
           >
-            <div className="w-12 h-12 bg-purple border-2 border-ink flex items-center justify-center shrink-0 mr-4 group-hover:rotate-3 transition-transform">
+            <div className="w-12 h-12 bg-purple border-2 border-ink/15 flex items-center justify-center shrink-0 mr-4 group-hover:rotate-3 transition-transform">
               <Zap className="w-6 h-6 text-ink" />
             </div>
             <div className="flex-1 min-w-0">
@@ -61,9 +61,9 @@ export default function TalkPage() {
           {/* Chat Item 2 */}
           <div 
             onClick={() => router.push('/closure')}
-            className="flex items-center p-3 border-b-2 border-ink cursor-pointer hover:bg-ink/5 transition-colors group"
+            className="flex items-center p-3 border-b border-ink/10 cursor-pointer hover:bg-ink/5 transition-colors group"
           >
-            <div className="w-12 h-12 bg-brand border-2 border-ink flex items-center justify-center shrink-0 mr-4 group-hover:rotate-3 transition-transform">
+            <div className="w-12 h-12 bg-brand border-2 border-ink/15 flex items-center justify-center shrink-0 mr-4 group-hover:rotate-3 transition-transform">
               <MessageSquare className="w-6 h-6 text-ink" />
             </div>
             <div className="flex-1 min-w-0">
@@ -76,7 +76,7 @@ export default function TalkPage() {
                   e.stopPropagation();
                   router.push('/closure?mode=settings');
                 }}
-                className="p-2 border-2 border-ink bg-white hover:bg-brand text-ink transition-colors brutalist-shadow-sm shrink-0"
+                className="p-2 border-2 border-ink/15 bg-white hover:bg-brand text-ink transition-colors shadow-sm shrink-0"
                 title="Persona Settings"
               >
                 <Settings className="w-4 h-4 text-ink" />
@@ -98,7 +98,7 @@ export default function TalkPage() {
           <div className="flex flex-col gap-2">
             {recentEntries.length > 0 ? (
               recentEntries.map((entry) => (
-                <div key={entry.id} className="border-2 border-ink bg-white p-3 flex flex-col gap-2 brutalist-shadow-sm transition-transform hover:-translate-y-0.5">
+                <div key={entry.id} className="border-2 border-ink/15 bg-white p-3 flex flex-col gap-2 shadow-sm transition-transform hover:-translate-y-0.5">
                   <div className="flex items-start gap-2">
                     {entry.mood && <span className="text-base leading-none pt-0.5">{getMoodEmoji(entry.mood)}</span>}
                     <p className="font-sans text-sm text-ink line-clamp-2 leading-relaxed flex-1">
