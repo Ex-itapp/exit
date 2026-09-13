@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -18,9 +18,9 @@
   --color-bubble-text-self: #F5EFE6;
   --color-bubble-text-other: #111111;
 
-  --font-sans: "Outfit", system-ui, sans-serif;
-  --font-heading: "Archivo Black", system-ui, sans-serif;
-  --font-mono: "Space Mono", monospace;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-heading: "Syne", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
   --font-voice: "Lora", serif;
 }
 

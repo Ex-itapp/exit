@@ -45,6 +45,30 @@ export const TherapistPage = () => {
   const [showProGate, setShowProGate] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Load local history on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('unsent_chat_history');
+    if (saved) {
+      try {
+        setMessages(JSON.parse(saved));
+      } catch (e) {}
+    }
+  }, []);
+
+  // Save local history on update
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem('unsent_chat_history', JSON.stringify(messages));
+    }
+  }, [messages]);
+
+  // Lock behind Pro
+  useEffect(() => {
+    if (isPro === false) {
+      setShowProGate("companion_chat");
+    }
+  }, [isPro]);
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTo({
@@ -55,10 +79,7 @@ export const TherapistPage = () => {
   }, [messages, isLoading]);
 
   const startAnalysisMode = async () => {
-    if (!isPro && messages.length >= 3) {
-      setShowProGate("chat_limit");
-      return;
-    }
+    if (!isPro) return;
 
     setIsLoading(true);
     setErrorBanner(null);
@@ -99,10 +120,7 @@ export const TherapistPage = () => {
   };
 
   const startPresetChat = async (prompt: string) => {
-    if (!isPro && messages.length >= 3) {
-      setShowProGate("chat_limit");
-      return;
-    }
+    if (!isPro) return;
 
     setIsLoading(true);
     setErrorBanner(null);
@@ -141,12 +159,7 @@ export const TherapistPage = () => {
   };
 
   const sendMessage = async () => {
-    if (!inputText.trim()) return;
-    
-    if (!isPro && messages.length >= 5) {
-      setShowProGate("chat_limit");
-      return;
-    }
+    if (!inputText.trim() || !isPro) return;
 
     const newMessage: Message = { role: 'user', parts: [{ text: inputText.trim() }] };
     const updatedMessages = [...messages, newMessage];
@@ -222,14 +235,6 @@ export const TherapistPage = () => {
         )}
         
         {isLoading && <TypingIndicator mood="companion" />}
-        
-        {isCrisis && (
-          <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
-            <p className="text-red-500 text-sm font-sans">
-              It sounds like you might be in crisis. Please consider reaching out to a helpline or emergency services in your area. You don't have to go through this alone.
-            </p>
-          </div>
-        )}
       </div>
       
       {messages.length === 0 && !isLoading && !isScreenshotMode && !isCrisis && (
@@ -271,9 +276,31 @@ export const TherapistPage = () => {
       {showProGate && (
         <ProGateModal 
           isOpen={true}
-          onClose={() => setShowProGate(null)}
+          onClose={() => router.push('/dashboard')}
           feature={showProGate}
         />
+      )}
+
+      {isCrisis && (
+        <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in-up">
+          <div className="bg-bg border-4 border-destructive p-8 max-w-md w-full brutalist-shadow space-y-6">
+            <h2 className="font-heading text-2xl text-destructive uppercase">We're Here For You</h2>
+            <p className="font-sans text-ink leading-relaxed">
+              It sounds like you might be carrying something really heavy right now. You don't have to go through this alone.
+            </p>
+            <div className="space-y-4 font-mono text-sm bg-white p-4 border-2 border-ink">
+              <p><strong>iCall:</strong> 9152987821</p>
+              <p><strong>Vandrevala Foundation:</strong> 1860-2662-345</p>
+              <p><strong>Emergencies:</strong> 112</p>
+            </div>
+            <button 
+              onClick={() => setIsCrisis(false)}
+              className="w-full py-4 border-2 border-ink font-bold uppercase tracking-widest hover:bg-ink hover:text-bg transition-colors"
+            >
+              I understand, return to chat
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

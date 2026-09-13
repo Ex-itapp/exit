@@ -24,42 +24,12 @@ export function ClientLayout({ children }: { children: ReactNode }) {
   const [profileLoading, setProfileLoading] = React.useState<boolean>(true);
 
   React.useEffect(() => {
-    const removeAttr = (el: Element) => {
-      if (el && el.removeAttribute) el.removeAttribute('bis_skin_checked');
-    };
-    document.querySelectorAll('[bis_skin_checked]').forEach(removeAttr);
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((m) => {
-        if (m.type === 'attributes' && m.attributeName === 'bis_skin_checked') {
-          removeAttr(m.target as Element);
-        } else if (m.addedNodes.length) {
-          m.addedNodes.forEach((node) => {
-            if (node.nodeType === 1) {
-              removeAttr(node as Element);
-              (node as Element).querySelectorAll('[bis_skin_checked]').forEach(removeAttr);
-            }
-          });
-        }
-      });
-    });
-    observer.observe(document.documentElement, {
-      attributes: true,
-      childList: true,
-      subtree: true,
-      attributeFilter: ['bis_skin_checked']
-    });
-    return () => observer.disconnect();
-  }, []);
-
-  React.useEffect(() => {
     if (!loading && user) {
-      // Fast path: if localStorage says they finished onboarding, trust it instantly to unblock the UI!
       const localOnboarding = localStorage.getItem('unsent_onboarding_done_clean');
       if (localOnboarding === 'true') {
         setHasCompletedOnboarding(true);
         setProfileLoading(false);
       } else {
-        // Slow path: Only hit Supabase if we don't have a local cache (e.g. fresh PWA install)
         setProfileLoading(true);
         import('@/lib/supabase').then(({ supabase }) => {
           supabase.from('user_profiles').select('has_completed_onboarding').eq('id', user.id).maybeSingle()
@@ -92,7 +62,6 @@ export function ClientLayout({ children }: { children: ReactNode }) {
                         pathname.includes('/new') ||
                         pathname.includes('/edit');
 
-  // Prevent flash of home or onboarding while verifying auth session, except on the landing page which should load instantly (unless we detect a stored session)
   const hasLocalSession = typeof window !== 'undefined' && Object.keys(localStorage).some(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
   
   const isResolvingAuth = loading || (user && profileLoading);
@@ -101,12 +70,10 @@ export function ClientLayout({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => setMounted(true), []);
 
-  // During SSR and the very first client render, we must match the server output
-  // to avoid hydration mismatch errors.
   if (!mounted) {
-    if (isPublicPage) {
+    if (isPublicPage && !hasLocalSession) {
       return (
-        <div suppressHydrationWarning className="min-h-screen bg-bg text-ink font-sans antialiased selection:bg-brand selection:text-ink">
+        <div className="min-h-screen bg-bg text-ink font-sans antialiased selection:bg-brand selection:text-ink">
           {children}
         </div>
       );
@@ -120,19 +87,7 @@ export function ClientLayout({ children }: { children: ReactNode }) {
     );
   }
 
-  if (isResolvingAuth && (pathname !== '/' || hasLocalSession)) {
-    return (
-      <div className="min-h-screen bg-bg flex items-center justify-center p-4">
-        <div className="border-4 border-ink bg-white p-6 brutalist-shadow text-center">
-          <p className="font-mono font-bold text-sm tracking-widest uppercase text-ink">PREPARING YOUR SPACE...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // If a user is fully authenticated and still on the landing page, block the rendering of the landing page completely
-  // to prevent heavy entrance animations from firing for 1 frame before the router pushes them away.
-  if (user && pathname === '/') {
+  if (isResolvingAuth && !isPublicPage) {
     return (
       <div className="min-h-screen bg-bg flex items-center justify-center p-4">
         <div className="border-4 border-ink bg-white p-6 brutalist-shadow text-center">
