@@ -1,19 +1,15 @@
 "use client";
 
-import { Sparkles, Flag, MessageSquare, Gamepad2 } from "lucide-react";
+import { Sparkles, Flag, MessageSquare } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
 
 interface QuickActionsProps {
   onSelect: (prompt: string) => void;
   visible: boolean;
-  onOpenGames?: () => void;
 }
 
-export function QuickActions({ onSelect, visible, onOpenGames }: QuickActionsProps) {
-  const router = useRouter();
-
+export function QuickActions({ onSelect, visible }: QuickActionsProps) {
   const actions = [
     {
       id: "analyze",
@@ -25,7 +21,7 @@ export function QuickActions({ onSelect, visible, onOpenGames }: QuickActionsPro
       id: "text",
       icon: <Flag className="w-4 h-4 text-accent" />,
       label: "I want to text them",
-      isIntercept: true,
+      prompt: "I really want to text my ex right now. Can you help me work through this urge?",
     },
     {
       id: "vent",
@@ -47,15 +43,9 @@ export function QuickActions({ onSelect, visible, onOpenGames }: QuickActionsPro
           {actions.map((action, index) => (
             <button
               key={action.id}
-              onClick={() => {
-                if (action.isIntercept) {
-                  router.push('/play/interceptor');
-                } else if (action.prompt) {
-                  onSelect(action.prompt);
-                }
-              }}
+              onClick={() => onSelect(action.prompt)}
               className={cn(
-                "shrink-0 rounded-none bg-bg border-2 border-ink/20 px-4 py-2 flex items-center gap-2.5 cursor-pointer hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px] hover:shadow-ink/15 transition-all duration-200 text-left animate-pill-in"
+                "shrink-0 rounded-none bg-bg border border-ink/12 px-4 py-2.5 flex items-center gap-2.5 cursor-pointer hover:-translate-y-0.5 hover:shadow-sm transition-all duration-200 text-left animate-pill-in"
               )}
               style={{ animationDelay: `${index * 80}ms` }}
             >
@@ -65,20 +55,6 @@ export function QuickActions({ onSelect, visible, onOpenGames }: QuickActionsPro
               </span>
             </button>
           ))}
-
-          {/* Games pill */}
-          {onOpenGames && (
-            <button
-              onClick={onOpenGames}
-              className="shrink-0 rounded-none bg-brand border-2 border-ink px-4 py-2 flex items-center gap-2.5 cursor-pointer hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px] hover:shadow-ink/15 transition-all duration-200 text-left animate-pill-in"
-              style={{ animationDelay: `${actions.length * 80}ms` }}
-            >
-              <Gamepad2 className="w-4 h-4 text-ink" />
-              <span className="font-mono text-xs font-bold uppercase tracking-wide text-ink whitespace-nowrap">
-                Play a game
-              </span>
-            </button>
-          )}
         </motion.div>
       )}
     </AnimatePresence>

@@ -242,7 +242,6 @@ export const TherapistPage = () => {
           <QuickActions 
             onSelect={startPresetChat}
             visible={true}
-            onOpenGames={() => router.push('/play')}
           />
         </div>
       )}
