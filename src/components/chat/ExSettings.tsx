@@ -159,18 +159,36 @@ export function ExSettings({
                 <div className="font-mono text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-3">
                   Their Profile
                 </div>
-                <div
-                  onClick={() => {
-                    onOpenPersonaEngine();
-                    onClose();
-                  }}
-                  className="rounded-none bg-ink/5 border border-ink/10 p-4 flex items-center justify-between cursor-pointer hover:bg-ink/10 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <BrainCircuit className="w-5 h-5 text-brand" />
-                    <span className="font-heading uppercase text-sm tracking-wide">{personaName || "Unknown"}</span>
+                
+                <div className="flex gap-2 flex-col sm:flex-row">
+                  <div
+                    onClick={() => {
+                      onOpenPersonaEngine();
+                      onClose();
+                    }}
+                    className="flex-1 rounded-none bg-ink/5 border border-ink/10 p-3 sm:p-4 flex items-center justify-between cursor-pointer hover:bg-ink/10 transition-colors"
+                  >
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <BrainCircuit className="w-4 h-4 sm:w-5 sm:h-5 text-brand" />
+                      <span className="font-heading uppercase text-xs sm:text-sm tracking-wide">Settings</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-ink/50" />
                   </div>
-                  <ChevronRight className="w-4 h-4 text-ink/50" />
+
+                  <div
+                    onClick={() => {
+                      onClose();
+                      // @ts-ignore - hacking it through window since ExSettings doesn't accept onOpenMemories
+                      window.dispatchEvent(new CustomEvent('unsent_open_memories'));
+                    }}
+                    className="flex-1 rounded-none bg-ink/5 border border-ink/10 p-3 sm:p-4 flex items-center justify-between cursor-pointer hover:bg-ink/10 transition-colors"
+                  >
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-brand" />
+                      <span className="font-heading uppercase text-xs sm:text-sm tracking-wide">Memory Bank</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-ink/50" />
+                  </div>
                 </div>
                 <div className="font-mono text-[10px] text-ink/40 mt-2 ml-1">
                   Voice profile • Trait profile • Sample texts

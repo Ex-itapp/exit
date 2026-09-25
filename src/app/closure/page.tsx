@@ -44,7 +44,6 @@ export default function ClosurePage() {
 
   // Active UI Navigation Tab: 'sessions' | 'engine' | 'memories'
   const [activeTab, setActiveTab] = useState<'sessions' | 'engine' | 'memories'>('sessions');
-  const [inChatView, setInChatView] = useState(true);
   const [isCreatingPersona, setIsCreatingPersona] = useState(false);
   
   // Shareable UI Toggles
@@ -218,6 +217,14 @@ export default function ClosurePage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [allChronologicalMsgs.length, isLoading]);
 
+  useEffect(() => {
+    const handleOpenMemories = () => {
+      setActiveTab('memories');
+    };
+    window.addEventListener('unsent_open_memories', handleOpenMemories);
+    return () => window.removeEventListener('unsent_open_memories', handleOpenMemories);
+  }, []);
+
   const handleStartSession = async () => {
     if (!profile) {
       setActiveTab('engine');
@@ -228,8 +235,6 @@ export default function ClosurePage() {
     if (res.error) {
       setTuneToast("Error: " + res.error);
       setTimeout(() => setTuneToast(null), 4000);
-    } else {
-      setInChatView(true);
     }
   };
 
@@ -298,7 +303,7 @@ export default function ClosurePage() {
     await endSession(activeSession.id, reflectionText.trim() || "Completed without reflection", 'completed');
     setShowReflectionCard(false);
     setReflectionText("");
-    setInChatView(false);
+    router.push('/talk');
   };
 
   const handleSaveCorrection = async (aiMsg: string) => {
@@ -380,7 +385,7 @@ export default function ClosurePage() {
     setTimeout(() => {
       setIsCreatingPersona(false);
       setActiveTab('sessions');
-      setInChatView(false);
+      handleStartSession();
       setTuneToast("✨ Persona profile attuned and ready!");
       setTimeout(() => setTuneToast(null), 4000);
     }, 2800);
@@ -533,139 +538,6 @@ export default function ClosurePage() {
                 </Button>
               </div>
             </Card>
-          ) : !inChatView ? (
-            /* INSTAGRAM DM STYLE INBOX */
-            <div className="space-y-8 animate-in fade-in">
-              {/* Top Action Header */}
-              <div className="bg-white border-4 border-ink brutalist-shadow p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <span className="font-mono text-xs font-bold uppercase bg-brand text-ink px-2.5 py-1 border border-ink">
-                    Unsent Conversations
-                  </span>
-                  <h2 className="text-3xl sm:text-4xl font-heading uppercase tracking-tight mt-1">TALK TO THEM</h2>
-                  <p className="font-sans text-sm sm:text-base text-ink/80 mt-0.5">
-                    A gentle, private space to express what was left unsaid and find closure.
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <Button
-                    variant="secondary"
-                    className="h-11 px-4 text-xs font-bold uppercase bg-bg border-2 border-ink/20 hover:bg-ink hover:text-white shadow-sm transition-all flex items-center gap-2"
-                    onClick={() => setActiveTab('memories')}
-                  >
-                    <BrainCircuit className="w-4 h-4 text-brand" />
-                    <span>Memory Bank ({memories.length})</span>
-                  </Button>
-
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    className="w-11 h-11 rounded-none border-2 border-ink/20 bg-white shadow-sm hover:bg-brand transition-all flex items-center justify-center shrink-0"
-                    onClick={() => { setActiveTab('engine'); setEngineStep(1); }}
-                    title="Alter Persona Settings or Reset"
-                  >
-                    <Settings className="w-5 h-5 text-ink" />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Singular DM Card (Instagram Style) */}
-              <div className="space-y-2">
-                <div className="font-mono text-xs font-bold uppercase text-ink/70 tracking-wider px-1">
-                  Your Private Message Thread
-                </div>
-
-                <div
-                  onClick={handleStartSession}
-                  className="group bg-white border-2 border-ink/15 shadow-sm p-5 sm:p-6 hover:translate-x-1 hover:-translate-y-1 hover:shadow-md hover:bg-brand/10 transition-all duration-200 cursor-pointer flex items-center gap-4 sm:gap-6"
-                >
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-ink/20 bg-purple/30 flex items-center justify-center font-heading text-2xl sm:text-3xl uppercase text-ink shrink-0 shadow-sm group-hover:scale-105 transition-transform">
-                    {profile?.label?.[0]?.toUpperCase() || "T"}
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-heading text-lg sm:text-2xl uppercase text-ink tracking-tight truncate">
-                          {profile?.label || "Them"}
-                        </h3>
-                        <span className="text-[10px] font-mono uppercase bg-ink/10 px-2 py-0.5 border border-ink/20 text-ink shrink-0 hidden sm:inline-block">
-                          Private DM
-                        </span>
-                      </div>
-                      {allChronologicalMsgs.length > 0 && (
-                        <span className="font-mono text-[10px] sm:text-xs text-ink/50 shrink-0">
-                          {new Date(allChronologicalMsgs[allChronologicalMsgs.length - 1].created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="mt-1 flex items-center gap-2">
-                      {allChronologicalMsgs.length > 0 ? (
-                        <p className="font-sans text-sm sm:text-base text-ink/80 truncate font-medium">
-                          <strong className="font-bold text-ink/90">
-                            {allChronologicalMsgs[allChronologicalMsgs.length - 1].role === 'user' ? 'You: ' : `${profile?.label || 'Them'}: `}
-                          </strong>
-                          {allChronologicalMsgs[allChronologicalMsgs.length - 1].content}
-                        </p>
-                      ) : (
-                        <p className="font-sans text-sm sm:text-base text-ink/60 italic truncate">
-                          Tap to open message thread and start conversation...
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="w-10 h-10 border-2 border-ink bg-bg flex items-center justify-center shrink-0 group-hover:bg-ink group-hover:text-white transition-colors">
-                    <ChevronRight className="w-6 h-6 text-ink group-hover:text-white transition-colors" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Reflections Section Below */}
-              <div className="pt-6 space-y-4">
-                <div className="flex items-center justify-between border-b-2 border-ink/15 pb-3">
-                  <h3 className="text-xl sm:text-2xl font-heading uppercase tracking-tight flex items-center gap-2">
-                    <Sparkles className="w-6 h-6 text-brand" /> Your Reflections & Insights
-                  </h3>
-                  <span className="font-mono text-xs bg-ink/10 px-2.5 py-1 border border-ink/20">
-                    {sessions.filter(s => s.reflection_response && s.reflection_response !== "Completed without reflection" && s.reflection_response !== "User exited to hub").length} Recorded
-                  </span>
-                </div>
-
-                {sessions.filter(s => s.reflection_response && s.reflection_response !== "Completed without reflection" && s.reflection_response !== "User exited to hub").length === 0 ? (
-                  <div className="text-center py-12 px-6 border-2 border-dashed border-ink/20 bg-white/50 space-y-2">
-                    <p className="font-heading text-lg text-ink/70 uppercase">No Reflections Recorded Yet</p>
-                    <p className="font-sans text-sm text-ink/60 max-w-md mx-auto">
-                      When you complete a conversation session and write a reflection, your healing insights and reflections will be saved here.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {sessions.filter(s => s.reflection_response && s.reflection_response !== "Completed without reflection" && s.reflection_response !== "User exited to hub").map((s) => (
-                      <Card key={s.id} className="border-2 border-ink/15 p-5 bg-white shadow-sm space-y-3">
-                        <div className="flex justify-between items-center border-b border-ink/10 pb-2 font-mono text-xs">
-                          <span className="font-bold uppercase text-ink/80 flex items-center gap-1.5">
-                            <Clock className="w-3.5 h-3.5 text-brand" />
-                            {new Date(s.started_at).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
-                          </span>
-                          <span className="px-2 py-0.5 border font-bold uppercase text-[10px] bg-positive/20 border-positive/30 text-ink">
-                            Reflection
-                          </span>
-                        </div>
-
-                        <div className="bg-bg/60 p-3.5 border border-ink/10">
-                          <p className="font-sans text-xs sm:text-sm leading-relaxed italic text-ink/90">
-                            "{s.reflection_response}"
-                          </p>
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
           ) : (
             /* ACTIVE CHAT SCREEN — REBUILT WITH SHARED COMPONENTS */
             <div className={cn("fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden bg-bg text-ink transition-colors duration-300", exTheme)}>
@@ -673,7 +545,7 @@ export default function ClosurePage() {
               {/* Chat Header */}
               <ChatHeader
                 mood="ex"
-                onBack={() => setInChatView(false)}
+                onBack={() => router.push('/talk')}
                 onOpenSettings={() => setShowExSettings(true)}
                 isScreenshotMode={isScreenshotMode}
                 personaName={isPrivacyBlur ? "Them" : profile.label}
@@ -796,7 +668,7 @@ export default function ClosurePage() {
                 onClearChat={() => { /* Messages are session-bound, no separate clear needed */ }}
                 onAddMemory={(content, tags, weight) => addMemory(content, tags, weight)}
                 personaName={profile.label || "Their Profile"}
-                onOpenPersonaEngine={() => { setShowExSettings(false); setInChatView(false); setActiveTab('engine'); }}
+                onOpenPersonaEngine={() => { setShowExSettings(false); setActiveTab('engine'); }}
                 sessionMessageCount={allChronologicalMsgs.length}
                 sessionStartTime={activeSession?.started_at}
               />

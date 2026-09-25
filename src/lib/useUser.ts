@@ -148,18 +148,27 @@ export function useUser() {
         setUserAvatar(config);
         localStorage.setItem('unsent_user_avatar_config', JSON.stringify(config));
       } else {
-        const detAvatar = getDeterministicAvatar(session.user.id);
-        setUserAvatar(detAvatar);
-        localStorage.setItem('unsent_user_avatar_config', JSON.stringify(detAvatar));
+        const savedAvatarStr = localStorage.getItem('unsent_user_avatar_config');
+        let avatarToSave: AvatarConfig | null = null;
+        if (savedAvatarStr) {
+          try { avatarToSave = JSON.parse(savedAvatarStr); } catch (e) {}
+        }
+        if (!avatarToSave) {
+          avatarToSave = getDeterministicAvatar(session.user.id);
+        }
+
+        setUserAvatar(avatarToSave);
+        localStorage.setItem('unsent_user_avatar_config', JSON.stringify(avatarToSave));
         
-        // Save initial deterministic avatar to db
-        supabase.from('user_avatars').insert({
+        // Save initial deterministic (or locally existing) avatar to db
+        supabase.from('user_avatars').upsert({
           user_id: session.user.id,
-          shape: detAvatar.shape,
-          fill_color: detAvatar.fillColor,
-          eyes: detAvatar.eyes,
-          mouth: detAvatar.mouth,
-          accessory: detAvatar.accessory
+          shape: avatarToSave.shape,
+          fill_color: avatarToSave.fillColor,
+          eyes: avatarToSave.eyes,
+          mouth: avatarToSave.mouth,
+          accessory: avatarToSave.accessory,
+          updated_at: new Date().toISOString()
         }).then();
       }
       setIsProfileSyncing(false);
