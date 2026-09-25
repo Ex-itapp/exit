@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Book, Home, MessageCircle, CalendarDays, User } from "lucide-react";
 import { motion } from "motion/react";
+import { useUser, DEFAULT_AVATAR } from "@/lib/useUser";
+import { Avatar } from "@/components/ui/Avatar";
 
 const navItems = [
   { icon: Home, path: "/dashboard", label: "Home" },
@@ -16,6 +18,7 @@ const navItems = [
 
 export function BottomNav() {
   const pathname = usePathname();
+  const { userAvatar } = useUser();
 
   if (pathname === '/onboarding' || pathname.startsWith('/closure') || pathname.startsWith('/therapist') || pathname.startsWith('/onboarding') || pathname.includes('/new') || pathname.includes('/edit')) return null;
 
@@ -58,6 +61,17 @@ export function BottomNav() {
             );
           })}
         </nav>
+
+        {/* Profile Avatar Pattern Report Link */}
+        <Link 
+          href="/pattern-report"
+          className="shrink-0 aspect-square h-[56px] sm:h-[64px] rounded-full border-2 border-ink/20 shadow-lg shadow-black/5 bg-bg flex items-center justify-center hover:border-ink/40 transition-colors relative overflow-hidden group"
+        >
+          <div className="w-[80%] h-[80%] flex items-center justify-center transition-transform group-hover:scale-110">
+            <Avatar config={typeof userAvatar === 'object' ? userAvatar : DEFAULT_AVATAR} size="100%" />
+          </div>
+          <div className="absolute inset-0 border-4 border-transparent rounded-full z-20 pointer-events-none" />
+        </Link>
       </div>
     </div>
   );

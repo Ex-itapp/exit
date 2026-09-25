@@ -32,6 +32,12 @@ export function ClientLayout({ children }: { children: ReactNode }) {
       } else {
         setProfileLoading(true);
         import('@/lib/supabase').then(({ supabase }) => {
+          if (user.id === 'local-test-user-id') {
+            localStorage.setItem('unsent_onboarding_done_clean', 'true');
+            setHasCompletedOnboarding(true);
+            setProfileLoading(false);
+            return;
+          }
           supabase.from('user_profiles').select('has_completed_onboarding').eq('id', user.id).maybeSingle()
             .then(({ data }) => {
               if (data?.has_completed_onboarding) {
@@ -71,9 +77,9 @@ export function ClientLayout({ children }: { children: ReactNode }) {
   React.useEffect(() => setMounted(true), []);
 
   if (!mounted) {
-    if (isPublicPage && !hasLocalSession) {
+    if (isPublicPage) {
       return (
-        <div className="min-h-screen bg-bg text-ink font-sans antialiased selection:bg-brand selection:text-ink">
+        <div suppressHydrationWarning className="min-h-screen bg-bg text-ink font-sans antialiased selection:bg-brand selection:text-ink">
           {children}
         </div>
       );

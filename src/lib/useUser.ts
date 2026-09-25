@@ -2,13 +2,30 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from './supabase';
+import { 
+  AvatarConfig, 
+  AVATAR_SHAPES, 
+  AVATAR_COLORS, 
+  AVATAR_EYES, 
+  AVATAR_MOUTHS, 
+  AVATAR_ACCESSORIES 
+} from '@/components/ui/Avatar';
 
 export type AppMode = 'evaluating' | 'no_contact';
+
+export const DEFAULT_AVATAR: AvatarConfig = {
+  shape: 'blob',
+  fillColor: '#00E676',
+  eyes: 'happy',
+  mouth: 'smile',
+  accessory: 'sparkle'
+};
 
 export interface UserState {
   userName: string;
   userGoal: string;
   userAnchor: string;
+  userAvatar: AvatarConfig;
   breakupDate: string | null;
   punchedDates: string[];
   appMode: AppMode;
@@ -18,10 +35,26 @@ export interface UserState {
   lastSeenStreak: number;
 }
 
+export function getDeterministicAvatar(userId: string): AvatarConfig {
+  let hash = 0;
+  for (let i = 0; i < userId.length; i++) {
+    hash = userId.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const h = Math.abs(hash);
+  return {
+    shape: AVATAR_SHAPES[h % AVATAR_SHAPES.length],
+    fillColor: AVATAR_COLORS[h % AVATAR_COLORS.length],
+    eyes: AVATAR_EYES[h % AVATAR_EYES.length],
+    mouth: AVATAR_MOUTHS[h % AVATAR_MOUTHS.length],
+    accessory: AVATAR_ACCESSORIES[h % AVATAR_ACCESSORIES.length],
+  };
+}
+
 export function useUser() {
   const [userName, setUserName] = useState<string>("Friend");
   const [userGoal, setUserGoal] = useState<string>("Finding peace and clarity");
   const [userAnchor, setUserAnchor] = useState<string>("I deserve someone who chooses me every day.");
+  const [userAvatar, setUserAvatar] = useState<AvatarConfig>(DEFAULT_AVATAR);
   const [breakupDate, setBreakupDate] = useState<string | null>(null);
   const [punchedDates, setPunchedDates] = useState<string[]>([]);
   const [appModeState, setAppModeState] = useState<AppMode>('no_contact');
@@ -41,6 +74,15 @@ export function useUser() {
 
       const savedAnchor = localStorage.getItem('unsent_user_anchor_clean');
       if (savedAnchor) setUserAnchor(savedAnchor);
+
+      const savedAvatarStr = localStorage.getItem('unsent_user_avatar_config');
+      if (savedAvatarStr) {
+        try {
+          setUserAvatar(JSON.parse(savedAvatarStr));
+        } catch (e) {
+          // fallback to default if corrupt
+        }
+      }
 
       let savedDate = localStorage.getItem('unsent_breakup_date_clean');
       if (!savedDate) {
@@ -71,7 +113,11 @@ export function useUser() {
         return;
       }
       
-      const { data } = await supabase.from('user_profiles').select('*').eq('id', session.user.id).maybeSingle();
+      const [{ data }, { data: avatarData }] = await Promise.all([
+        supabase.from('user_profiles').select('*').eq('id', session.user.id).maybeSingle(),
+        supabase.from('user_avatars').select('*').eq('user_id', session.user.id).maybeSingle()
+      ]);
+
       if (data) {
         setUserName(data.user_name || "Friend");
         setUserGoal(data.user_goal || "Finding peace and clarity");
@@ -89,6 +135,32 @@ export function useUser() {
         if (data.breakup_date) localStorage.setItem('unsent_breakup_date_clean', data.breakup_date);
         if (data.app_mode) localStorage.setItem('unsent_app_mode_clean', data.app_mode);
         localStorage.setItem('unsent_onboarding_done_clean', data.has_completed_onboarding ? 'true' : 'false');
+      }
+
+      if (avatarData) {
+        const config: AvatarConfig = {
+          shape: avatarData.shape,
+          fillColor: avatarData.fill_color,
+          eyes: avatarData.eyes,
+          mouth: avatarData.mouth,
+          accessory: avatarData.accessory
+        };
+        setUserAvatar(config);
+        localStorage.setItem('unsent_user_avatar_config', JSON.stringify(config));
+      } else {
+        const detAvatar = getDeterministicAvatar(session.user.id);
+        setUserAvatar(detAvatar);
+        localStorage.setItem('unsent_user_avatar_config', JSON.stringify(detAvatar));
+        
+        // Save initial deterministic avatar to db
+        supabase.from('user_avatars').insert({
+          user_id: session.user.id,
+          shape: detAvatar.shape,
+          fill_color: detAvatar.fillColor,
+          eyes: detAvatar.eyes,
+          mouth: detAvatar.mouth,
+          accessory: detAvatar.accessory
+        }).then();
       }
       setIsProfileSyncing(false);
     }
@@ -186,11 +258,34 @@ export function useUser() {
     }
   };
 
-  const updateProfile = async (name: string, goal: string, anchor: string, date: string) => {
+  const updateUserAvatar = async (config: AvatarConfig) => {
+    setUserAvatar(config);
+    localStorage.setItem('unsent_user_avatar_config', JSON.stringify(config));
+    window.dispatchEvent(new Event('unsent_sync'));
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      await supabase.from('user_avatars').upsert({
+        user_id: session.user.id,
+        shape: config.shape,
+        fill_color: config.fillColor,
+        eyes: config.eyes,
+        mouth: config.mouth,
+        accessory: config.accessory,
+        updated_at: new Date().toISOString()
+      });
+    }
+  };
+
+  const updateProfile = async (name: string, goal: string, anchor: string, date: string, config?: AvatarConfig) => {
     setUserName(name);
     setUserGoal(goal);
     setUserAnchor(anchor);
     setBreakupDate(date);
+    if (config) {
+      setUserAvatar(config);
+      localStorage.setItem('unsent_user_avatar_config', JSON.stringify(config));
+    }
 
     localStorage.setItem('unsent_user_name_clean', name);
     localStorage.setItem('unsent_user_goal_clean', goal);
@@ -209,6 +304,17 @@ export function useUser() {
         breakup_date: date,
         updated_at: new Date().toISOString()
       });
+      if (config) {
+        await supabase.from('user_avatars').upsert({
+          user_id: session.user.id,
+          shape: config.shape,
+          fill_color: config.fillColor,
+          eyes: config.eyes,
+          mouth: config.mouth,
+          accessory: config.accessory,
+          updated_at: new Date().toISOString()
+        });
+      }
     }
   };
 
@@ -248,6 +354,7 @@ export function useUser() {
     userName,
     userGoal,
     userAnchor,
+    userAvatar,
     breakupDate,
     punchedDates,
     appMode: appModeState,
@@ -255,11 +362,12 @@ export function useUser() {
     isProfileSyncing,
     streakDays,
     lastSeenStreak,
-    updateLastSeenStreak,
+    updateProfile,
+    updateUserAvatar,
     punchToday,
     setAppMode,
     completeOnboarding,
-    updateProfile,
-    resetAccount
+    updateLastSeenStreak,
+    resetAccount,
   };
 }

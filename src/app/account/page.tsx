@@ -14,12 +14,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { User, Compass, Anchor, AlertTriangle, RefreshCcw, Save, CheckCircle2, X, LogOut, CreditCard, Bell } from "lucide-react";
 import { usePushNotifications } from "@/lib/usePushNotifications";
 import { cn } from "@/lib/utils";
+import { 
+  Avatar, 
+  AvatarConfig, 
+  AVATAR_SHAPES, 
+  AVATAR_COLORS, 
+  AVATAR_EYES, 
+  AVATAR_MOUTHS, 
+  AVATAR_ACCESSORIES 
+} from '@/components/ui/Avatar';
+import { DEFAULT_AVATAR } from '@/lib/useUser';
 
 export default function AccountPage() {
   const router = useRouter();
   const { signOut } = useAuth();
   const { isPro, expiresAt, endedPro, loading: proLoading } = usePro();
-  const { userName, userGoal, userAnchor, breakupDate, updateProfile, resetAccount } = useUser();
+  const { userName, userGoal, userAnchor, breakupDate, updateProfile, resetAccount, userAvatar } = useUser();
   const { isMobile } = usePWAInstall();
   const { isSupported, permission, subscription, loading: pushLoading, subscribe, unsubscribe, sendTestNotification } = usePushNotifications();
 
@@ -27,6 +37,7 @@ export default function AccountPage() {
   const [goal, setGoal] = useState(userGoal || "Finding peace and clarity");
   const [anchor, setAnchor] = useState(userAnchor || "");
   const [date, setDate] = useState(breakupDate ? new Date(breakupDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
+  const [avatar, setAvatar] = useState<AvatarConfig>(typeof userAvatar === 'object' ? userAvatar : DEFAULT_AVATAR);
   const [isSaved, setIsSaved] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
@@ -35,6 +46,7 @@ export default function AccountPage() {
     if (userName) setName(userName);
     if (userGoal) setGoal(userGoal);
     if (userAnchor) setAnchor(userAnchor);
+    if (userAvatar) setAvatar(userAvatar);
     if (breakupDate) {
       try {
         setDate(new Date(breakupDate).toISOString().split('T')[0]);
@@ -42,7 +54,7 @@ export default function AccountPage() {
         setDate(new Date().toISOString().split('T')[0]);
       }
     }
-  }, [userName, userGoal, userAnchor, breakupDate]);
+  }, [userName, userGoal, userAnchor, breakupDate, userAvatar]);
 
   const goals = [
     "Breaking the urge to reach out",
@@ -52,7 +64,7 @@ export default function AccountPage() {
   ];
 
   const handleSave = () => {
-    updateProfile(name.trim() || "Friend", goal, anchor.trim() || "I deserve peace.", new Date(date).toISOString());
+    updateProfile(name.trim() || "Friend", goal, anchor.trim() || "I deserve peace.", new Date(date).toISOString(), avatar);
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 2500);
   };
@@ -125,6 +137,74 @@ export default function AccountPage() {
               className="min-h-[100px] font-medium border-2 border-ink/15 bg-bg p-3 focus-visible:ring-0 rounded-none resize-none"
               placeholder="I deserve peace..."
             />
+          </div>
+
+          <div className="space-y-6 pt-2 pb-4">
+            <div>
+              <label className="font-mono text-xs font-bold uppercase tracking-wider block mb-3">Avatar Profile</label>
+              
+              <div className="flex flex-col sm:flex-row gap-6 items-start">
+                {/* Live Preview */}
+                <div className="w-full sm:w-auto flex justify-center shrink-0">
+                  <div className="p-4 bg-ink/5 border-2 border-ink shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center">
+                    <Avatar config={avatar} size={120} />
+                  </div>
+                </div>
+
+                {/* Builder Options */}
+                <div className="flex-1 w-full space-y-4">
+                  {/* Shapes */}
+                  <div className="space-y-1.5">
+                    <div className="text-[10px] font-mono uppercase font-bold text-ink/50">Shape</div>
+                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                      {AVATAR_SHAPES.map(s => (
+                        <button key={s} onClick={() => setAvatar({...avatar, shape: s})} className={cn("shrink-0 px-3 py-1.5 border-2 transition-all font-sans text-xs capitalize", avatar.shape === s ? "border-ink bg-ink text-bg" : "border-ink/20 bg-bg hover:border-ink/50")}>{s}</button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Colors */}
+                  <div className="space-y-1.5">
+                    <div className="text-[10px] font-mono uppercase font-bold text-ink/50">Color</div>
+                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                      {AVATAR_COLORS.map(c => (
+                        <button key={c} onClick={() => setAvatar({...avatar, fillColor: c})} className={cn("shrink-0 w-8 h-8 rounded-full border-2 transition-all", avatar.fillColor === c ? "border-ink scale-110 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" : "border-ink/20 hover:scale-105")} style={{ backgroundColor: c }} />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Eyes */}
+                  <div className="space-y-1.5">
+                    <div className="text-[10px] font-mono uppercase font-bold text-ink/50">Eyes</div>
+                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                      {AVATAR_EYES.map(e => (
+                        <button key={e} onClick={() => setAvatar({...avatar, eyes: e})} className={cn("shrink-0 px-3 py-1.5 border-2 transition-all font-sans text-xs capitalize", avatar.eyes === e ? "border-ink bg-ink text-bg" : "border-ink/20 bg-bg hover:border-ink/50")}>{e}</button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Mouths */}
+                  <div className="space-y-1.5">
+                    <div className="text-[10px] font-mono uppercase font-bold text-ink/50">Mouth</div>
+                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                      {AVATAR_MOUTHS.map(m => (
+                        <button key={m} onClick={() => setAvatar({...avatar, mouth: m})} className={cn("shrink-0 px-3 py-1.5 border-2 transition-all font-sans text-xs capitalize", avatar.mouth === m ? "border-ink bg-ink text-bg" : "border-ink/20 bg-bg hover:border-ink/50")}>{m}</button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Accessories */}
+                  <div className="space-y-1.5">
+                    <div className="text-[10px] font-mono uppercase font-bold text-ink/50">Accessory</div>
+                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                      {AVATAR_ACCESSORIES.map(a => (
+                        <button key={a} onClick={() => setAvatar({...avatar, accessory: a})} className={cn("shrink-0 px-3 py-1.5 border-2 transition-all font-sans text-xs capitalize", avatar.accessory === a ? "border-ink bg-ink text-bg" : "border-ink/20 bg-bg hover:border-ink/50")}>{a}</button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <Button 
