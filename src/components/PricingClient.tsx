@@ -67,6 +67,8 @@ export function PricingClient() {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('annual');
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const [acknowledgedTrial, setAcknowledgedTrial] = useState(false);
+  const [promoCode, setPromoCode] = useState('');
+  const [showPromoInput, setShowPromoInput] = useState(false);
 
   const activePlan = PLANS[billingCycle];
   const loading = authLoading || proLoading;
@@ -100,6 +102,7 @@ export function PricingClient() {
         body: JSON.stringify({
           product_id: activePlan.dodoProductId,
           payment_type: 'subscription',
+          discount_code: promoCode.trim() || undefined,
         }),
       });
 
@@ -244,6 +247,52 @@ export function PricingClient() {
                     I understand the first 3 days are free, then I will be <span className="text-accent underline">charged {activePlan.price}{activePlan.period} automatically</span>. Cancel anytime before trial ends. <span className="text-accent">No refunds</span> after billing starts.
                   </span>
                 </label>
+              )}
+
+              {/* Promo code input */}
+              {!isPro && (
+                <div className="mb-5 pt-1">
+                  {!showPromoInput ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowPromoInput(true)}
+                      className="font-mono text-xs text-ink/60 hover:text-ink underline uppercase tracking-wider block"
+                    >
+                      + Have a promo / discount code?
+                    </button>
+                  ) : (
+                    <div className="space-y-1.5 p-3 bg-ink/5 border-2 border-ink/15 animate-in fade-in duration-150">
+                      <div className="flex justify-between items-center">
+                        <label className="font-mono text-[10px] uppercase font-bold text-ink/60">
+                          Discount Code
+                        </label>
+                        {promoCode.trim() && (
+                          <span className="font-mono text-[10px] uppercase font-bold text-positive flex items-center gap-1">
+                            ✓ Applied
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="ENTER CODE (e.g. NIKKU)"
+                          value={promoCode}
+                          onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                          className="flex-1 px-3 py-2 border-2 border-ink/20 font-mono text-xs uppercase bg-white text-ink focus:border-ink outline-none"
+                        />
+                        {promoCode && (
+                          <button
+                            type="button"
+                            onClick={() => setPromoCode('')}
+                            className="px-2.5 py-1 text-ink/40 hover:text-ink font-mono text-xs font-bold"
+                          >
+                            Clear
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
 
               {/* CTA */}

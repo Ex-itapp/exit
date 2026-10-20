@@ -122,7 +122,10 @@ export async function POST(request: Request) {
     const db = token ? createSupabaseWithToken(token) : supabase;
 
     const body = await request.json();
-    const { product_id, payment_type } = body;
+    const { product_id, payment_type, discount_code } = body;
+    const cleanDiscountCode = typeof discount_code === 'string' && discount_code.trim().length > 0
+      ? discount_code.trim().toUpperCase()
+      : undefined;
     const paymentType = payment_type === 'subscription' ? 'subscription' : 'one_time';
     const logContext = buildLogContext(requestId, user.id, product_id, paymentType);
 
@@ -169,77 +172,97 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Your account must have an email to subscribe. Please sign in with a magic link first.' }, { status: 400 });
     }
 
-    console.log('[checkout] creating checkout', { ...logContext, email: user.email, returnUrl });
+    console.log('[checkout] creating checkout', { ...logContext, email: user.email, returnUrl, discountCode: cleanDiscountCode });
 
-    if (paymentType === 'subscription') {
-      const subscription = await dodo.subscriptions.create({
-        billing: { city: '', country: 'US', state: '', street: '', zipcode: '' },
+    let paymentLink: string | null = null;
+    let checkoutId: string | null = null;
+
+    // 1. Try modern Checkout Session with explicit discount code support enabled
+    try {
+      const session = await dodo.checkoutSessions.create({
+        product_cart: [{ product_id, quantity: 1 }],
         customer: {
           email: user.email,
           name: user.user_metadata?.full_name || user.email,
         },
-        product_id,
-        quantity: 1,
-        trial_period_days: product_id === process.env.NEXT_PUBLIC_DODO_PRODUCT_YEARLY ? 3 : 0,
-        payment_link: true,
-        redirect_immediately: true,
         return_url: returnUrl,
+        discount_code: cleanDiscountCode,
+        feature_flags: {
+          allow_discount_code: true,
+        },
         metadata: {
           supabase_user_id: user.id,
           checkout_request_id: requestId,
         },
       });
 
-      if (!subscription.payment_link) {
-        console.error('[checkout] subscription missing payment_link', {
-          ...logContext,
-          subscriptionId: subscription.subscription_id,
-        });
-        return NextResponse.json(
-          { error: 'Dodo did not return a checkout link for this subscription.' },
-          { status: 502 }
-        );
+      if (session?.checkout_url) {
+        paymentLink = session.checkout_url;
+        checkoutId = session.session_id || null;
       }
-
-      return NextResponse.json({
-        request_id: requestId,
-        payment_link: subscription.payment_link,
-        subscription_id: subscription.subscription_id,
-      });
-    } else {
-      const payment = await dodo.payments.create({
-        billing: { city: '', country: 'US', state: '', street: '', zipcode: '' },
-        customer: {
-          email: user.email!,
-          name: user.user_metadata?.full_name || user.email!,
-        },
-        product_cart: [{ product_id, quantity: 1 }],
-        payment_link: true,
-        redirect_immediately: true,
-        return_url: returnUrl,
-        metadata: {
-          supabase_user_id: user.id,
-          checkout_request_id: requestId,
-        },
-      });
-
-      if (!payment.payment_link) {
-        console.error('[checkout] payment missing payment_link', {
-          ...logContext,
-          paymentId: payment.payment_id,
-        });
-        return NextResponse.json(
-          { error: 'Dodo did not return a checkout link for this payment.' },
-          { status: 502 }
-        );
-      }
-
-      return NextResponse.json({
-        request_id: requestId,
-        payment_link: payment.payment_link,
-        payment_id: payment.payment_id,
-      });
+    } catch (sessionError) {
+      console.warn('[checkout] checkoutSessions.create failed, falling back to legacy create:', sessionError);
     }
+
+    // 2. Fallback to direct subscription/payment create if checkoutSessions did not return link
+    if (!paymentLink) {
+      if (paymentType === 'subscription') {
+        const subscription = await dodo.subscriptions.create({
+          billing: { city: '', country: 'US', state: '', street: '', zipcode: '' },
+          customer: {
+            email: user.email,
+            name: user.user_metadata?.full_name || user.email,
+          },
+          product_id,
+          quantity: 1,
+          discount_code: cleanDiscountCode,
+          trial_period_days: product_id === process.env.NEXT_PUBLIC_DODO_PRODUCT_YEARLY ? 3 : 0,
+          payment_link: true,
+          redirect_immediately: true,
+          return_url: returnUrl,
+          metadata: {
+            supabase_user_id: user.id,
+            checkout_request_id: requestId,
+          },
+        });
+
+        paymentLink = subscription.payment_link || null;
+        checkoutId = subscription.subscription_id || null;
+      } else {
+        const payment = await dodo.payments.create({
+          billing: { city: '', country: 'US', state: '', street: '', zipcode: '' },
+          customer: {
+            email: user.email!,
+            name: user.user_metadata?.full_name || user.email!,
+          },
+          product_cart: [{ product_id, quantity: 1 }],
+          discount_code: cleanDiscountCode,
+          payment_link: true,
+          redirect_immediately: true,
+          return_url: returnUrl,
+          metadata: {
+            supabase_user_id: user.id,
+            checkout_request_id: requestId,
+          },
+        });
+
+        paymentLink = payment.payment_link || null;
+        checkoutId = payment.payment_id || null;
+      }
+    }
+
+    if (!paymentLink) {
+      return NextResponse.json(
+        { error: 'Dodo did not return a valid checkout link.' },
+        { status: 502 }
+      );
+    }
+
+    return NextResponse.json({
+      request_id: requestId,
+      payment_link: paymentLink,
+      subscription_id: checkoutId,
+    });
   } catch (error: unknown) {
     console.error('[checkout] creation failed', { requestId, error: getErrorDetails(error) });
     const message = error instanceof Error ? error.message : 'Internal Server Error';
