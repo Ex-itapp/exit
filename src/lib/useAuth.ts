@@ -4,10 +4,14 @@ import { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 import type { User, Session } from "@supabase/supabase-js";
 
-const BYPASS_AUTH = true; // Set to true to bypass authentication during local development
+// Local development escape hatch. Never enable this in production.
+// Set NEXT_PUBLIC_AUTH_BYPASS=true in .env.local to skip Supabase auth.
+const BYPASS_AUTH = process.env.NEXT_PUBLIC_AUTH_BYPASS === 'true';
+
+export const MOCK_USER_ID = '00000000-0000-4000-8000-000000000000';
 
 const MOCK_USER: User = {
-  id: 'local-test-user-id',
+  id: MOCK_USER_ID,
   app_metadata: {},
   user_metadata: {},
   aud: 'authenticated',

@@ -4,16 +4,17 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
-import { Zap, MessageSquare, Sparkles, ShieldAlert, Send, Award, Flag, Map, Calendar, CheckCircle2 } from "lucide-react";
+import { Zap, MessageSquare, Sparkles, Send, Award, Flag, Map, Calendar, CheckCircle2 } from "lucide-react";
 import { useCheckins } from "@/lib/useCheckins";
 import { useUser } from "@/lib/useUser";
 import { useFlags } from "@/lib/useFlags";
 import { useMoods } from "@/lib/useMoods";
 import { useRewards } from "@/lib/useRewards";
+import { useRealityCheck } from "@/lib/useRealityCheck";
 import { AnchorModal } from "@/components/AnchorModal";
 import { useAuth } from "@/lib/useAuth";
 import { cn } from "@/lib/utils";
-import { motion } from "motion/react";
+import { motion, type Variants } from "motion/react";
 
 const MOODS = [
   { emoji: "😭", label: "Rough", color: "#00B4D8" },
@@ -23,11 +24,11 @@ const MOODS = [
   { emoji: "🤩", label: "Great", color: "#00E676" },
 ];
 
-const container = {
+const container: Variants = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.06 } }
 };
-const item = {
+const item: Variants = {
   hidden: { opacity: 0, y: 12 },
   show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 400, damping: 30 } }
 };
@@ -40,6 +41,7 @@ export default function DashboardPage() {
   const { flags } = useFlags();
   const { logMood, getMoodForDate } = useMoods();
   const { unlockedCount, totalCount } = useRewards();
+  const { currentReport, canGenerate } = useRealityCheck();
   
   const [checkinText, setCheckinText] = useState("");
   const [checkinDone, setCheckinDone] = useState(false);
@@ -268,14 +270,30 @@ export default function DashboardPage() {
         </button>
       </motion.div>
 
-      {/* Zone E: Teaser Strip */}
+      {/* Zone E: Reality Check Teaser */}
       <motion.div variants={item}>
         <button 
-          onClick={() => navigate.push('/diary')}
-          className="w-full mt-1 flex items-center justify-center gap-2 border-2 border-ink border-dashed p-3 bg-ink/5 hover:bg-ink/10 transition-colors"
+          onClick={() => navigate.push('/pattern-report')}
+          className="w-full mt-1 flex items-center justify-between border-2 border-ink border-dashed p-3.5 bg-ink/5 hover:bg-ink/10 transition-colors group text-left"
         >
-          <Sparkles className="w-4 h-4 text-ink" />
-          <span className="font-mono text-xs uppercase text-ink font-bold">View your pattern report &rarr;</span>
+          <div className="flex items-center gap-2.5">
+            <Sparkles className="w-4 h-4 text-brand fill-brand shrink-0" />
+            <div>
+              <span className="font-mono text-xs uppercase text-ink font-black tracking-wider block">
+                Weekly Reality Check &rarr;
+              </span>
+              <span className="font-sans text-[11px] text-ink/60">
+                {currentReport 
+                  ? `Week ${currentReport.weekNumber} ready to view` 
+                  : canGenerate 
+                  ? "Ready to unlock your week's debrief" 
+                  : "Honest patterns & unedited clarity (once a week)"}
+              </span>
+            </div>
+          </div>
+          <span className="font-mono text-[10px] font-bold uppercase px-2 py-1 bg-white border border-ink/20 shadow-xs shrink-0">
+            {canGenerate ? "UNLOCK" : currentReport ? "READ" : "WEEKLY"}
+          </span>
         </button>
       </motion.div>
 

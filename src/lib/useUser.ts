@@ -3,13 +3,13 @@
 import { useState, useEffect } from 'react';
 import { supabase } from './supabase';
 import { 
-  AvatarConfig, 
   AVATAR_SHAPES, 
   AVATAR_COLORS, 
   AVATAR_EYES, 
   AVATAR_MOUTHS, 
   AVATAR_ACCESSORIES 
 } from '@/components/ui/Avatar';
+import type { AvatarConfig } from '@/components/ui/Avatar';
 
 export type AppMode = 'evaluating' | 'no_contact';
 
@@ -79,7 +79,7 @@ export function useUser() {
       if (savedAvatarStr) {
         try {
           setUserAvatar(JSON.parse(savedAvatarStr));
-        } catch (e) {
+        } catch {
           // fallback to default if corrupt
         }
       }
@@ -92,7 +92,7 @@ export function useUser() {
       setBreakupDate(savedDate);
 
       const savedPunches = localStorage.getItem('unsent_punched_dates_clean');
-      if (savedPunches) try { setPunchedDates(JSON.parse(savedPunches)); } catch (e) {}
+      if (savedPunches) try { setPunchedDates(JSON.parse(savedPunches)); } catch {}
 
       const savedMode = localStorage.getItem('unsent_app_mode_clean') as AppMode;
       if (savedMode) setAppModeState(savedMode);
@@ -151,7 +151,7 @@ export function useUser() {
         const savedAvatarStr = localStorage.getItem('unsent_user_avatar_config');
         let avatarToSave: AvatarConfig | null = null;
         if (savedAvatarStr) {
-          try { avatarToSave = JSON.parse(savedAvatarStr); } catch (e) {}
+          try { avatarToSave = JSON.parse(savedAvatarStr); } catch {}
         }
         if (!avatarToSave) {
           avatarToSave = getDeterministicAvatar(session.user.id);
@@ -342,8 +342,8 @@ export function useUser() {
         ]);
         await supabase.from('user_profiles').update({ has_completed_onboarding: false }).eq('id', session.user.id);
         await supabase.auth.updateUser({ data: { has_seen_pwa_prompt: null } });
-      } catch (err) {
-        console.error("Error wiping remote data:", err);
+      } catch {
+        console.error("Error wiping remote data");
       }
     }
 

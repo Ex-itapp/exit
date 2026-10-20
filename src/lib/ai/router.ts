@@ -7,27 +7,64 @@ export interface AIOptions {
   jsonMode?: boolean;
 }
 
-export type AIProvider = 'openai' | 'deepseek' | 'anthropic' | 'gemini';
+export type AIProvider = 'gemini' | 'groq' | 'openrouter';
 
-const ACTIVE_PROVIDER: AIProvider = 'gemini';
+/**
+ * Call Groq (OpenAI-compatible) endpoint as a high-speed, reliable provider
+ */
+async function callGroq(options: AIOptions, apiKey: string): Promise<string | null> {
+  const { prompt, systemPrompt, messages = [], temperature = 0.7, jsonMode = false } = options;
 
-export async function callAIRouter(options: AIOptions): Promise<string | null> {
-  const {
-    prompt,
-    systemPrompt,
-    messages = [],
-    temperature = 0.7,
-    jsonMode = false,
-  } = options;
-
-  const apiKey = process.env.GEMINI_API_KEY || process.env.AI_API_KEY;
-
-  if (!apiKey) {
-    console.error(`AI API Key is missing for provider ${ACTIVE_PROVIDER}. Please set GEMINI_API_KEY in your environment.`);
-    return null;
+  const formattedMessages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [];
+  if (systemPrompt) {
+    formattedMessages.push({ role: 'system', content: systemPrompt });
   }
 
-  // Model selection based on tier
+  for (const m of messages) {
+    formattedMessages.push({
+      role: m.role === 'system' ? 'system' : m.role === 'assistant' ? 'assistant' : 'user',
+      content: m.content
+    });
+  }
+
+  if (prompt && messages.length === 0) {
+    formattedMessages.push({ role: 'user', content: prompt });
+  }
+
+  try {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'qwen/qwen3.8-27b',
+        messages: formattedMessages,
+        temperature,
+        ...(jsonMode ? { response_format: { type: 'json_object' } } : {})
+      })
+    });
+
+    if (!res.ok) {
+      console.warn(`[Groq Error] status: ${res.status}`);
+      return null;
+    }
+
+    const data = await res.json();
+    return data.choices?.[0]?.message?.content?.trim() || null;
+  } catch (err) {
+    console.warn('[Groq Exception]:', err);
+    return null;
+  }
+}
+
+/**
+ * Call Gemini Generative Language API
+ */
+async function callGemini(options: AIOptions, apiKey: string): Promise<string | null> {
+  const { prompt, systemPrompt, messages = [], temperature = 0.7, jsonMode = false } = options;
+
   let model = 'gemini-3.6-flash';
   if (options.tier === 'heavy') {
     model = 'gemini-3.1-pro-preview';
@@ -35,13 +72,10 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
     model = 'gemini-3.5-flash-lite';
   }
 
-  // Build Gemini-format contents array
   const contents: Array<{ role: string; parts: Array<{ text: string }> }> = [];
 
   if (messages.length > 0) {
     for (const m of messages) {
-      // Gemini uses "user" and "model" roles (not "assistant")
-      // System messages get folded into systemInstruction below
       if (m.role === 'system') continue;
       contents.push({
         role: m.role === 'assistant' ? 'model' : 'user',
@@ -52,7 +86,6 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
     contents.push({ role: 'user', parts: [{ text: prompt }] });
   }
 
-  // Build system instruction from systemPrompt + any system messages
   let fullSystemInstruction = systemPrompt || '';
   const systemMessages = messages.filter(m => m.role === 'system');
   if (systemMessages.length > 0) {
@@ -60,14 +93,6 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
   }
 
   try {
-    console.log(`[AI Router Request - ${ACTIVE_PROVIDER}]`, {
-      model,
-      contentsCount: contents.length,
-      temperature,
-      jsonMode,
-      hasSystemInstruction: !!fullSystemInstruction,
-    });
-
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     const body: any = {
@@ -92,25 +117,38 @@ export async function callAIRouter(options: AIOptions): Promise<string | null> {
 
     if (!res.ok) {
       const errorText = await res.text();
-      console.error(`[AI Router API Error - ${ACTIVE_PROVIDER}]`, {
-        status: res.status,
-        statusText: res.statusText,
-        model,
-        errorBody: errorText
-      });
+      console.warn(`[Gemini Error] status: ${res.status}, body: ${errorText.slice(0, 200)}`);
       return null;
     }
 
     const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-    return text || null;
-
-  } catch (e) {
-    console.error(`[AI Router Exception - ${ACTIVE_PROVIDER}]`, {
-      errorMessage: e instanceof Error ? e.message : String(e)
-    });
+    return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || null;
+  } catch (err) {
+    console.warn('[Gemini Exception]:', err);
     return null;
   }
+}
+
+/**
+ * Universal Multi-Provider AI Router with automatic fallback
+ */
+export async function callAIRouter(options: AIOptions): Promise<string | null> {
+  // 1. Try Gemini first if key exists
+  const geminiKey = process.env.GEMINI_API_KEY || process.env.AI_API_KEY;
+  if (geminiKey) {
+    const geminiRes = await callGemini(options, geminiKey);
+    if (geminiRes) return geminiRes;
+  }
+
+  // 2. Automatic fallback to Groq
+  const groqKey = process.env.GROQ_API_KEY;
+  if (groqKey) {
+    console.log('[AI Router] Failing over to Groq...');
+    const groqRes = await callGroq(options, groqKey);
+    if (groqRes) return groqRes;
+  }
+
+  return null;
 }
 
 /**

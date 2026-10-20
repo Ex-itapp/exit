@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import type { ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { motion, AnimatePresence } from 'motion/react';
 import { BottomNav } from "@/components/layout/BottomNav";
-import { useAuth } from "@/lib/useAuth";
+import { useAuth, MOCK_USER_ID } from "@/lib/useAuth";
 import { usePro } from "@/lib/usePro";
 import { ArrowLeft, Crown } from "lucide-react";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
@@ -32,7 +31,7 @@ export function ClientLayout({ children }: { children: ReactNode }) {
       } else {
         setProfileLoading(true);
         import('@/lib/supabase').then(({ supabase }) => {
-          if (user.id === 'local-test-user-id') {
+          if (user.id === MOCK_USER_ID) {
             localStorage.setItem('unsent_onboarding_done_clean', 'true');
             setHasCompletedOnboarding(true);
             setProfileLoading(false);
@@ -68,8 +67,6 @@ export function ClientLayout({ children }: { children: ReactNode }) {
                         pathname.includes('/new') ||
                         pathname.includes('/edit');
 
-  const hasLocalSession = typeof window !== 'undefined' && Object.keys(localStorage).some(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
-  
   const isResolvingAuth = loading || (user && profileLoading);
   const isPublicPage = pathname === '/' || pathname === '/onboarding' || pathname === '/tos' || pathname === '/privacy' || pathname === '/support' || pathname === '/auth';
 

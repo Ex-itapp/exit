@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
-import { createServerSupabase, createAdminSupabase } from '../../../lib/supabase-server';
+import { createServerSupabase, createSupabaseWithToken } from '../../../lib/supabase-server';
 import { getDodoClient } from '../../../lib/dodo';
+import { getLifetimeProductIds, subscriptionGrantsAccess } from '../../../lib/subscription';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 function buildLogContext(requestId: string, userId: string, productId: string, paymentType: string) {
   return {
@@ -20,7 +22,7 @@ function getAllowedProductIds(paymentType: string) {
       process.env.NEXT_PUBLIC_DODO_PRODUCT_YEARLY,
     ].filter(Boolean) as string[];
   }
-  return [];
+  return getLifetimeProductIds();
 }
 
 function getErrorDetails(error: unknown) {
@@ -45,14 +47,11 @@ function getErrorDetails(error: unknown) {
   return { raw: error };
 }
 
-async function getExistingProAccess(userId: string) {
-  const adminSupabase = createAdminSupabase();
-
-  const { data: subscription, error: subscriptionError } = await adminSupabase
+async function getExistingProAccess(db: SupabaseClient, userId: string) {
+  const { data: subscription, error: subscriptionError } = await db
     .from('subscriptions')
     .select('status, current_period_end')
     .eq('user_id', userId)
-    .in('status', ['active', 'trialing'])
     .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -61,7 +60,7 @@ async function getExistingProAccess(userId: string) {
     throw new Error(`Subscription lookup failed: ${subscriptionError.message}`);
   }
 
-  if (subscription) {
+  if (subscription && subscriptionGrantsAccess(subscription.status, subscription.current_period_end)) {
     return {
       isPro: true,
       source: 'subscription' as const,
@@ -70,11 +69,15 @@ async function getExistingProAccess(userId: string) {
     };
   }
 
-  const { data: payment, error: paymentError } = await adminSupabase
+  const lifetimeProductIds = getLifetimeProductIds();
+  const lifetimeProductFilter = lifetimeProductIds.length > 0 ? lifetimeProductIds : ['__none__'];
+
+  const { data: payment, error: paymentError } = await db
     .from('payments')
-    .select('status, created_at')
+    .select('status, product_id, created_at')
     .eq('user_id', userId)
     .eq('status', 'succeeded')
+    .in('product_id', lifetimeProductFilter)
     .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -83,7 +86,7 @@ async function getExistingProAccess(userId: string) {
     throw new Error(`Payment lookup failed: ${paymentError.message}`);
   }
 
-  if (payment) {
+  if (payment?.product_id && lifetimeProductIds.includes(payment.product_id)) {
     return {
       isPro: true,
       source: 'payment' as const,
@@ -108,13 +111,15 @@ export async function POST(request: Request) {
 
     // Authenticate user
     const authHeader = request.headers.get('authorization');
-    const token = authHeader?.replace('Bearer ', '') || '';
+    const token = authHeader?.replace(/^Bearer\s+/i, '') || '';
     const { data: { user }, error: authError } = token ? await supabase.auth.getUser(token) : await supabase.auth.getUser();
     
     if (authError || !user) {
       console.error('[checkout] unauthorized', { requestId, authError: authError?.message });
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const db = token ? createSupabaseWithToken(token) : supabase;
 
     const body = await request.json();
     const { product_id, payment_type } = body;
@@ -127,13 +132,13 @@ export async function POST(request: Request) {
     }
 
     const allowedProductIds = getAllowedProductIds(paymentType);
-    if (allowedProductIds.length > 0 && !allowedProductIds.includes(product_id)) {
+    if (!allowedProductIds.includes(product_id)) {
       console.error('[checkout] invalid product_id', { ...logContext, allowedProductIds });
       return NextResponse.json({ error: 'Invalid product selected' }, { status: 400 });
     }
 
     // Block if user already has pro access
-    const existingAccess = await getExistingProAccess(user.id);
+    const existingAccess = await getExistingProAccess(db, user.id);
     if (existingAccess.isPro) {
       console.warn('[checkout] blocked duplicate checkout for pro user', {
         ...logContext,

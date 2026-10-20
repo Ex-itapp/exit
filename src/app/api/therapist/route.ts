@@ -1,20 +1,13 @@
 import { NextResponse } from 'next/server';
 import { callAIRouter } from '@/lib/ai/router';
 import { requirePro } from '@/lib/requirePro';
-
-function sanitizeForPrompt(text: string): string {
-  // Strip characters that could break out of prompt context
-  return text
-    .replace(/["`'\\]/g, '')
-    .replace(/\n{3,}/g, '\n\n')
-    .slice(0, 2000);
-}
+import { sanitizeForPrompt } from '@/lib/prompt';
 
 export async function POST(req: Request) {
   try {
     const proCheck = await requirePro();
     if (proCheck.error) return proCheck.error;
-    const { messages, systemInstruction, userGoal, tone } = await req.json();
+    const { messages, userGoal, tone } = await req.json();
     
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json({ error: 'Missing messages array' }, { status: 400 });
@@ -26,7 +19,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Last message must be from user' }, { status: 400 });
     }
     const rawUserText = latestMessage.parts?.[0]?.text || (typeof latestMessage.content === 'string' ? latestMessage.content : "");
-    const userText = sanitizeForPrompt(rawUserText);
+    const userText = sanitizeForPrompt(String(rawUserText || ''));
 
     // Call 1 - Crisis Classifier (Only on the latest message, using lightning classifier tier)
     const classifierPrompt = `System: You are a safety classifier for a breakup-support app. Read the user's check-in text below. Respond with ONLY one word: "RISK" or "SAFE".
@@ -53,6 +46,7 @@ User check-in text:
     };
 
     const activeTone = tone && toneModifiers[tone] ? toneModifiers[tone] : toneModifiers['gentle'];
+    const safeGoal = sanitizeForPrompt(String(userGoal || 'Finding peace and clarity'), 200);
 
     const defaultSystemInstruction = `You are the user's ride-or-die best friend texting them through their breakup recovery. You are NOT a clinical therapist and NOT a robotic AI. You are a real, funny, hyper-supportive, and honest friend on iMessage.
 
@@ -66,7 +60,7 @@ VIBE & TEXTING RULES:
 
 ${activeTone}
 
-CONTEXT: The user's healing focus is "${userGoal || 'Finding peace and clarity'}".`;
+CONTEXT: The user's healing focus is "${safeGoal}".`;
 
     // Format messages for router - sanitize each user message
     const formattedHistory = messages.map((m: any) => ({
@@ -81,7 +75,7 @@ CONTEXT: The user's healing focus is "${userGoal || 'Finding peace and clarity'}
     const classifierPromise = callAIRouter({ prompt: classifierPrompt, tier: 'classifier', temperature: 0.1 });
 
     const replyPromise = callAIRouter({
-      systemPrompt: systemInstruction || defaultSystemInstruction,
+      systemPrompt: defaultSystemInstruction,
       messages: formattedHistory,
       tier: 'fast',
       temperature: 0.7
@@ -89,7 +83,8 @@ CONTEXT: The user's healing focus is "${userGoal || 'Finding peace and clarity'}
 
     const [classifierResultText, aiReply] = await Promise.all([classifierPromise, replyPromise]);
 
-    const isSafe = !classifierResultText || classifierResultText.toUpperCase().includes('SAFE');
+    const classifierVerdict = (classifierResultText || '').trim().toUpperCase();
+    const isSafe = !classifierVerdict || classifierVerdict.startsWith('SAFE');
 
     if (!isSafe) {
       return NextResponse.json({

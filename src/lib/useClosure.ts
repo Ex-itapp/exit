@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabase";
 
 export interface VoiceProfile {
@@ -84,21 +84,31 @@ export function useClosure() {
   const [sessionsUsedCount, setSessionsUsedCountState] = useState<number>(0);
   const maxSessionsAllowed = 9999; // Unlimited
 
+  // Refs mirror the latest state so rapid sequential mutations (e.g. adding a
+  // user message and then the AI reply) never overwrite each other.
+  const messagesRef = useRef<ClosureMessage[]>([]);
+  const sessionsRef = useRef<ClosureSession[]>([]);
+  const memoriesRef = useRef<MemoryBankEntry[]>([]);
+
+  useEffect(() => { messagesRef.current = messages; }, [messages]);
+  useEffect(() => { sessionsRef.current = sessions; }, [sessions]);
+  useEffect(() => { memoriesRef.current = memories; }, [memories]);
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     // Load from local cache first for instant UI responsiveness
     const savedProf = localStorage.getItem(STORAGE_KEY_PROFILE);
-    if (savedProf) try { setProfileState(JSON.parse(savedProf)); } catch (e) { }
+    if (savedProf) try { setProfileState(JSON.parse(savedProf)); } catch { }
 
     const savedMem = localStorage.getItem(STORAGE_KEY_MEMORIES);
-    if (savedMem) try { setMemoriesState(JSON.parse(savedMem)); } catch (e) { }
+    if (savedMem) try { setMemoriesState(JSON.parse(savedMem)); } catch { }
 
     const savedSess = localStorage.getItem(STORAGE_KEY_SESSIONS);
-    if (savedSess) try { setSessionsState(JSON.parse(savedSess)); } catch (e) { }
+    if (savedSess) try { setSessionsState(JSON.parse(savedSess)); } catch { }
 
     const savedMsg = localStorage.getItem(STORAGE_KEY_MESSAGES);
-    if (savedMsg) try { setMessagesState(JSON.parse(savedMsg)); } catch (e) { }
+    if (savedMsg) try { setMessagesState(JSON.parse(savedMsg)); } catch { }
 
     const savedUsed = localStorage.getItem(STORAGE_KEY_SESSIONS_USED);
     if (savedUsed) setSessionsUsedCountState(parseInt(savedUsed, 10) || 0);
@@ -111,7 +121,13 @@ export function useClosure() {
       const userId = session.user.id;
 
       // 1. Fetch Profile
-      const { data: profData } = await supabase.from('ex_profiles').select('*').eq('user_id', userId).maybeSingle();
+      const { data: profData } = await supabase
+        .from('ex_profiles')
+        .select('*')
+        .eq('user_id', userId)
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
       if (profData) {
         const loadedProf: ExProfile = {
           id: profData.id,
@@ -221,29 +237,31 @@ export function useClosure() {
           correctionText
         })
       });
+      if (!res.ok) return false;
       const data = await res.json();
-      if (data.updatedVoiceProfile) {
-        updateVoiceProfile(data.updatedVoiceProfile);
+      if (data.updatedVoiceProfile || data.updatedVoice) {
+        updateVoiceProfile(data.updatedVoiceProfile || data.updatedVoice);
         return true;
       }
-    } catch (e) {
-      console.error("Error tuning voice:", e);
+    } catch {
+      console.error("Error tuning voice");
     }
     return false;
   };
 
   const addMemory = async (content: string, topic_tags: string[], emotional_weight: MemoryBankEntry['emotional_weight'], source: MemoryBankEntry['source'] = 'user_added') => {
-    const memId = "mem-" + Date.now();
+    const memId = crypto.randomUUID();
     const newEntry: MemoryBankEntry = {
       id: memId,
-      ex_profile_id: profile?.id || "default-ex-profile",
+      ex_profile_id: profile?.id || '',
       content,
       topic_tags,
       emotional_weight,
       source,
       created_at: new Date().toISOString()
     };
-    const updated = [newEntry, ...memories];
+    const updated = [newEntry, ...memoriesRef.current];
+    memoriesRef.current = updated;
     setMemoriesState(updated);
     localStorage.setItem(STORAGE_KEY_MEMORIES, JSON.stringify(updated));
 
@@ -265,7 +283,8 @@ export function useClosure() {
   };
 
   const deleteMemory = async (id: string) => {
-    const updated = memories.filter(m => m.id !== id);
+    const updated = memoriesRef.current.filter(m => m.id !== id);
+    memoriesRef.current = updated;
     setMemoriesState(updated);
     localStorage.setItem(STORAGE_KEY_MEMORIES, JSON.stringify(updated));
 
@@ -280,19 +299,14 @@ export function useClosure() {
   };
 
   const createSession = async (): Promise<{ session?: ClosureSession; error?: string }> => {
-    // Use callback form to get the latest state, avoiding race conditions
-    let active: ClosureSession | undefined;
-    setSessionsState(prev => {
-      active = prev.find(s => s.status === 'active');
-      return prev;
-    });
+    const active = sessionsRef.current.find(s => s.status === 'active');
     if (active) return { session: active };
 
     if (!profile) {
       return { error: "Please set up your Persona profile before initiating a session." };
     }
 
-    const sessId = "sess-" + Date.now();
+    const sessId = crypto.randomUUID();
     const newSession: ClosureSession = {
       id: sessId,
       ex_profile_id: profile.id,
@@ -302,7 +316,8 @@ export function useClosure() {
       started_at: new Date().toISOString()
     };
 
-    const updatedSessions = [newSession, ...sessions];
+    const updatedSessions = [newSession, ...sessionsRef.current];
+    sessionsRef.current = updatedSessions;
     setSessionsState(updatedSessions);
     localStorage.setItem(STORAGE_KEY_SESSIONS, JSON.stringify(updatedSessions));
 
@@ -312,13 +327,14 @@ export function useClosure() {
 
     // Add initial scripted greeting
     const starterMsg: ClosureMessage = {
-      id: "msg-" + Date.now(),
+      id: crypto.randomUUID(),
       session_id: newSession.id,
       role: 'ex_simulation',
       content: "Hey. I didn't expect to hear from you... what did you want to say?",
       created_at: new Date().toISOString()
     };
-    const updatedMessages = [...messages, starterMsg];
+    const updatedMessages = [...messagesRef.current, starterMsg];
+    messagesRef.current = updatedMessages;
     setMessagesState(updatedMessages);
     localStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(updatedMessages));
 
@@ -349,7 +365,7 @@ export function useClosure() {
   };
 
   const addMessage = async (sessionId: string, role: ClosureMessage['role'], content: string, flagged = false) => {
-    const msgId = "msg-" + Date.now() + Math.random().toString(36).substring(2, 5);
+    const msgId = crypto.randomUUID();
     const newMsg: ClosureMessage = {
       id: msgId,
       session_id: sessionId,
@@ -358,24 +374,20 @@ export function useClosure() {
       flagged_and_regenerated: flagged,
       created_at: new Date().toISOString()
     };
-    let updatedMessages: ClosureMessage[] = [];
-    setMessagesState(prev => {
-      updatedMessages = [...prev, newMsg];
-      localStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(updatedMessages));
-      return updatedMessages;
-    });
+    const updatedMessages = [...messagesRef.current, newMsg];
+    messagesRef.current = updatedMessages;
+    setMessagesState(updatedMessages);
+    localStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(updatedMessages));
 
-    let updatedSessions: ClosureSession[] = [];
-    setSessionsState(prevSess => {
-      updatedSessions = prevSess.map(s => {
-        if (s.id === sessionId) {
-          return { ...s, message_count: s.message_count + 1 };
-        }
-        return s;
-      });
-      localStorage.setItem(STORAGE_KEY_SESSIONS, JSON.stringify(updatedSessions));
-      return updatedSessions;
+    const updatedSessions = sessionsRef.current.map(s => {
+      if (s.id === sessionId) {
+        return { ...s, message_count: s.message_count + 1 };
+      }
+      return s;
     });
+    sessionsRef.current = updatedSessions;
+    setSessionsState(updatedSessions);
+    localStorage.setItem(STORAGE_KEY_SESSIONS, JSON.stringify(updatedSessions));
 
     // Sync to Supabase DB
     const { data: { session } } = await supabase.auth.getSession();
@@ -403,7 +415,7 @@ export function useClosure() {
 
   const endSession = async (sessionId: string, reflection?: string, status: 'completed' | 'paused_crisis' = 'completed') => {
     const endedAt = new Date().toISOString();
-    const updatedSessions = sessions.map(s => {
+    const updatedSessions = sessionsRef.current.map(s => {
       if (s.id === sessionId) {
         return {
           ...s,
@@ -414,6 +426,7 @@ export function useClosure() {
       }
       return s;
     });
+    sessionsRef.current = updatedSessions;
     setSessionsState(updatedSessions);
     localStorage.setItem(STORAGE_KEY_SESSIONS, JSON.stringify(updatedSessions));
 
@@ -432,15 +445,18 @@ export function useClosure() {
   };
 
   const retrieveRelevantMemories = (queryText: string, limit = 3): MemoryBankEntry[] => {
-    if (!memories || memories.length === 0) return [];
+    const memoryList = memoriesRef.current;
+    if (!memoryList || memoryList.length === 0) return [];
     const queryLower = queryText.toLowerCase();
 
-    const scored = memories.map(mem => {
+    const scored = memoryList.map(mem => {
       let score = 0;
-      mem.topic_tags.forEach(tag => {
-        if (queryLower.includes(tag.toLowerCase())) score += 3;
+      const tags = Array.isArray(mem.topic_tags) ? mem.topic_tags : [];
+      tags.forEach(tag => {
+        if (queryLower.includes(String(tag).toLowerCase())) score += 3;
       });
-      const words = mem.content.toLowerCase().split(/\s+/);
+      const content = String(mem.content || '');
+      const words = content.toLowerCase().split(/\s+/);
       words.forEach(w => {
         if (w.length > 4 && queryLower.includes(w)) score += 1;
       });
@@ -448,7 +464,10 @@ export function useClosure() {
     });
 
     scored.sort((a, b) => b.score - a.score);
-    return scored.slice(0, limit).map(item => item.mem);
+    return scored
+      .filter(item => item.score > 0)
+      .slice(0, limit)
+      .map(item => item.mem);
   };
 
   const resetAllClosureData = () => {
@@ -457,6 +476,9 @@ export function useClosure() {
     localStorage.removeItem(STORAGE_KEY_SESSIONS);
     localStorage.removeItem(STORAGE_KEY_MESSAGES);
     localStorage.removeItem(STORAGE_KEY_SESSIONS_USED);
+    sessionsRef.current = [];
+    memoriesRef.current = [];
+    messagesRef.current = [];
     setProfileState(null);
     setMemoriesState([]);
     setSessionsState([]);

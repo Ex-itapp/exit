@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createServerSupabase, createAdminSupabase } from '../../../lib/supabase-server';
+import { createServerSupabase } from '../../../lib/supabase-server';
 import { getDodoClient } from '../../../lib/dodo';
 
 export async function POST() {
@@ -10,8 +10,7 @@ export async function POST() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const adminSupabase = createAdminSupabase();
-    const { data: sub } = await adminSupabase
+    const { data: sub } = await supabase
       .from('subscriptions')
       .select('dodo_subscription_id')
       .eq('user_id', user.id)

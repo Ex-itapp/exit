@@ -6,32 +6,29 @@ import { useUser } from "@/lib/useUser";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/lib/supabase";
 import { usePro } from "@/lib/usePro";
-import { usePWAInstall, forceShowPWABanner } from "@/lib/usePWAInstall";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { User, Compass, Anchor, AlertTriangle, RefreshCcw, Save, CheckCircle2, X, LogOut, CreditCard, Bell } from "lucide-react";
+import { AlertTriangle, RefreshCcw, CheckCircle2, LogOut, CreditCard, Bell } from "lucide-react";
 import { usePushNotifications } from "@/lib/usePushNotifications";
 import { cn } from "@/lib/utils";
 import { 
   Avatar, 
-  AvatarConfig, 
   AVATAR_SHAPES, 
   AVATAR_COLORS, 
   AVATAR_EYES, 
   AVATAR_MOUTHS, 
   AVATAR_ACCESSORIES 
 } from '@/components/ui/Avatar';
+import type { AvatarConfig } from '@/components/ui/Avatar';
 import { DEFAULT_AVATAR } from '@/lib/useUser';
 
 export default function AccountPage() {
   const router = useRouter();
   const { signOut } = useAuth();
-  const { isPro, expiresAt, endedPro, loading: proLoading } = usePro();
+  const { isPro, expiresAt } = usePro();
   const { userName, userGoal, userAnchor, breakupDate, updateProfile, resetAccount, userAvatar } = useUser();
-  const { isMobile } = usePWAInstall();
-  const { isSupported, permission, subscription, loading: pushLoading, subscribe, unsubscribe, sendTestNotification } = usePushNotifications();
+  const { isSupported, permission, subscription, loading: pushLoading, subscribe, unsubscribe } = usePushNotifications();
 
   const [name, setName] = useState(userName || "Friend");
   const [goal, setGoal] = useState(userGoal || "Finding peace and clarity");
@@ -50,7 +47,7 @@ export default function AccountPage() {
     if (breakupDate) {
       try {
         setDate(new Date(breakupDate).toISOString().split('T')[0]);
-      } catch (e) {
+      } catch {
         setDate(new Date().toISOString().split('T')[0]);
       }
     }
@@ -303,7 +300,7 @@ export default function AccountPage() {
                   const data = await res.json();
                   if (data.url) window.location.href = data.url;
                   else alert(data.error || 'Failed to open billing portal');
-                } catch (e) {
+                } catch {
                   alert('Something went wrong.');
                 }
               }}

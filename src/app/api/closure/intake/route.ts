@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { callAIRouter } from '@/lib/ai/router';
 import { requirePro } from '@/lib/requirePro';
+import { sanitizeForPrompt } from '@/lib/prompt';
 
 export async function POST(req: Request) {
   try {
@@ -11,6 +12,8 @@ export async function POST(req: Request) {
     if (!rawText || typeof rawText !== 'string' || rawText.trim().length < 10) {
       return NextResponse.json({ error: 'Please provide at least a few sample text messages.' }, { status: 400 });
     }
+
+    const safeRawText = sanitizeForPrompt(rawText.trim(), 8000);
 
     const systemPrompt = `You are building a structured communication-style profile from real text messages, for a personal journaling and reflection tool. This is for one user's private use to process their own unresolved feelings — not for public distribution or impersonation of anyone in public.
 
@@ -32,7 +35,7 @@ Given the message samples below (all from one person, the "subject"), output ONL
 For "top_verbatim_example_lines", select the 8-10 messages that most distinctly capture how this person actually writes — prioritize variety (a conflict message, a casual message, an affectionate message, etc.) over just picking the longest ones.
 
 Messages:
-${rawText}`;
+${safeRawText}`;
 
     // Call AI Router (Uses DeepSeek v4 Flash for behavioral trait extraction)
     const resultText = await callAIRouter({
@@ -45,7 +48,7 @@ ${rawText}`;
 
     if (!resultText) {
       // Graceful local simulation fallback if all APIs fail/rate-limit
-      const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      const lines = safeRawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
       const sampleLines = lines.slice(0, 8);
       return NextResponse.json({
         voiceProfile: {

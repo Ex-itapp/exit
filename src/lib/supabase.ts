@@ -1,20 +1,24 @@
-import { createClient } from '@supabase/supabase-js';
+import { createBrowserClient } from '@supabase/ssr';
 
-// Safe fallbacks to prevent Vercel static prerendering build failures if environment variables are not yet added to the dashboard
-const FALLBACK_URL = 'https://offvvtoftvijrlpdjmlb.supabase.co';
-const FALLBACK_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZnZ2dG9mdHZpanJscGRqbWxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwMzU1OTcsImV4cCI6MjEwMDYxMTU5N30.-JXyj-rL8gFsq8DP413MSIasuyArxft3UKL7Wphpnac';
+// Never hard-code a real project here: a missing env var must not silently
+// point the app at someone else's database. Placeholder values keep the module
+// importable during static builds; runtime calls will fail loudly if unset.
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || 'placeholder-key';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || FALLBACK_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || FALLBACK_ANON;
+if (typeof window !== 'undefined' && (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)) {
+  console.error('[supabase] NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY are not set.');
+}
 
-export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder-key',
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true,
-    },
-  }
-);
+/**
+ * Browser client backed by cookies (not localStorage). This is what lets the
+ * server-side `createServerSupabase()` client see the session and keeps RLS
+ * scoped to the signed-in user for API routes.
+ */
+export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+  },
+});

@@ -8,7 +8,7 @@ interface TypingIndicatorProps {
   className?: string;
 }
 
-export function TypingIndicator({ mood, className }: TypingIndicatorProps) {
+export function TypingIndicator({ className }: TypingIndicatorProps) {
   return (
     <div className={cn("flex w-full justify-start animate-indicator-in", className)}>
       <div className="flex items-center justify-center gap-1.5 rounded-none border border-ink/10 bg-ink/5 w-[60px] h-[32px]">

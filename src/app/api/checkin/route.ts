@@ -1,27 +1,18 @@
 import { NextResponse } from 'next/server';
 import { callAIRouter } from '@/lib/ai/router';
 import { createServerSupabase } from '@/lib/supabase-server';
-
-function sanitizeForPrompt(text: string): string {
-  // Strip prompt-breaking characters and truncate to prevent injection
-  return text
-    .replace(/["`'\\]/g, '')
-    .replace(/\n{3,}/g, '\n\n')
-    .slice(0, 2000);
-}
+import { sanitizeForPrompt } from '@/lib/prompt';
 
 export async function POST(req: Request) {
   try {
-    // Require authentication
+    // Require authentication (bearer token or Supabase session cookie)
     const authHeader = req.headers.get('Authorization');
-    const token = authHeader?.split('Bearer ')[1];
-    
-    if (!token) {
-      return NextResponse.json({ error: 'Missing auth token' }, { status: 401 });
-    }
+    const token = authHeader?.replace(/^Bearer\s+/i, '') || '';
 
     const supabase = await createServerSupabase();
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    const { data: { user }, error: authError } = token
+      ? await supabase.auth.getUser(token)
+      : await supabase.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -33,7 +24,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing user check-in text' }, { status: 400 });
     }
 
-    const sanitizedText = sanitizeForPrompt(userText.trim().slice(0, 2000));
+    const sanitizedText = sanitizeForPrompt(userText.trim(), 2000);
+    const safeContext = typeof contextBlock === 'string'
+      ? sanitizeForPrompt(contextBlock, 2000)
+      : '';
 
     // Call 1 - Crisis Classifier
     const classifierPrompt = `System: You are a safety classifier for a breakup-support app. Read the user's check-in text below. Respond with ONLY one word: "RISK" or "SAFE".
@@ -57,7 +51,7 @@ User check-in text:
       tier: 'classifier', 
       temperature: 0.1 
     });
-    const isSafe = !classifierResultText || classifierResultText.toUpperCase().includes('SAFE');
+    const isSafe = !classifierResultText || classifierResultText.trim().toUpperCase().startsWith('SAFE');
 
     if (!isSafe) {
       return NextResponse.json({
@@ -79,7 +73,7 @@ Hard rules:
 - Keep the whole reply under 80 words. Tone: warm but plain-spoken, never saccharine, never clinical.
 
 Context:
-${contextBlock || 'No additional context available.'}
+${safeContext || 'No additional context available.'}
 
 Today's check-in:
 "${sanitizedText}"

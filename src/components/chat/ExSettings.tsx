@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { ChatTheme, THEME_PREVIEWS } from '@/lib/useTheme';
+import { THEME_PREVIEWS } from '@/lib/useTheme';
+import type { ChatTheme } from '@/lib/useTheme';
 import type { MemoryBankEntry } from '@/lib/useClosure';
 import { AnimatePresence, motion } from 'motion/react';
-import { Camera, Trash2, Check, BrainCircuit, ChevronRight, EyeOff } from 'lucide-react';
+import { Camera, Trash2, Check, BrainCircuit, ChevronRight, EyeOff, FileText } from 'lucide-react';
 
 interface ExSettingsProps {
   isOpen: boolean;
@@ -46,7 +47,6 @@ export function ExSettings({
   onTogglePrivacyBlur,
   onClearChat,
   onAddMemory,
-  personaName,
   onOpenPersonaEngine,
   sessionMessageCount,
   sessionStartTime,

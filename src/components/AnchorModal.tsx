@@ -1,11 +1,9 @@
 "use client";
 
-import React from "react";
 import { Button } from "@/components/ui/Button";
 import { useUser } from "@/lib/useUser";
 import { Anchor, Shield, Sparkles, Heart, Compass, X, MessageSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
 
 interface AnchorModalProps {
   onClose: () => void;

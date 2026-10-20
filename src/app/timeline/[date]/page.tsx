@@ -2,10 +2,8 @@
 
 import { use, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
 import { useTimeline, type TimelineEvent } from "@/lib/useTimeline";
-import { CheckCircle, Flag, BookOpen, Lock, ArrowLeft, SmilePlus } from "lucide-react";
+import { CheckCircle, Flag, BookOpen, Lock, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 // Next.js 15 requires awaiting dynamic route params using `use()` if they are promises.

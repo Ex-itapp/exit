@@ -1,4 +1,3 @@
-import React from 'react';
 import { getMoodColor, getMoodEmoji } from '@/lib/visualSystem';
 
 export function DiaryShareTemplate({ data }: { data: any }) {

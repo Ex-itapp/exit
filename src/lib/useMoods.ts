@@ -23,7 +23,7 @@ export function useMoods() {
     if (saved) {
       try {
         setMoodLogs(JSON.parse(saved));
-      } catch (e) {}
+      } catch {}
     }
 
     // Sync with Supabase if logged in

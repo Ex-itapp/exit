@@ -1,18 +1,16 @@
 import { NextResponse } from 'next/server';
-import { createServerSupabase, createAdminSupabase } from '../../../lib/supabase-server';
+import { createServerSupabase, createSupabaseWithToken } from '../../../lib/supabase-server';
+import { getLifetimeProductIds, subscriptionGrantsAccess } from '../../../lib/subscription';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const queryUserId = searchParams.get('userId');
-
     // Always authenticate via cookie session first, or fallback to Authorization header
     const supabase = await createServerSupabase();
     const authHeader = request.headers.get('authorization');
-    const token = authHeader?.replace('Bearer ', '') || '';
+    const token = authHeader?.replace(/^Bearer\s+/i, '') || '';
     const { data: { user }, error: authError } = token ? await supabase.auth.getUser(token) : await supabase.auth.getUser();
     
     if (authError || !user) {
@@ -21,7 +19,9 @@ export async function GET(request: Request) {
 
     // Always use the authenticated user's ID — ignore any query param userId to prevent IDOR
     const userId = user.id;
-    const adminSupabase = createAdminSupabase();
+    // RLS scopes subscriptions/payments to the current user. Prefer a
+    // token-scoped client when the request authenticated via bearer token.
+    const db = token ? createSupabaseWithToken(token) : supabase;
 
     const userInfo = {
       id: user.id,
@@ -34,33 +34,29 @@ export async function GET(request: Request) {
       return NextResponse.json({ user: null, isPro: false, paymentFailed: false });
     }
 
-    // Run subscription & payment checks in parallel using admin client (bypasses RLS)
-    const [subResult, expiredSubResult, paymentResult, failedPaymentResult] = await Promise.all([
-      adminSupabase
+    // Run subscription & payment checks in parallel. Queries are scoped by RLS
+    // to the authenticated user.
+    const lifetimeProductIds = getLifetimeProductIds();
+    const lifetimeProductFilter = lifetimeProductIds.length > 0 ? lifetimeProductIds : ['__none__'];
+
+    const [subResult, paymentResult, failedPaymentResult] = await Promise.all([
+      db
         .from('subscriptions')
         .select('status, current_period_end')
         .eq('user_id', userId)
-        .in('status', ['active', 'trialing'])
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle(),
-      adminSupabase
-        .from('subscriptions')
-        .select('status, current_period_end')
-        .eq('user_id', userId)
-        .in('status', ['cancelled', 'expired'])
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle(),
-      adminSupabase
+      db
         .from('payments')
-        .select('status')
+        .select('status, product_id')
         .eq('user_id', userId)
         .eq('status', 'succeeded')
+        .in('product_id', lifetimeProductFilter)
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle(),
-      adminSupabase
+      db
         .from('payments')
         .select('status, created_at')
         .eq('user_id', userId)
@@ -71,14 +67,15 @@ export async function GET(request: Request) {
     ]);
 
     if (subResult.error) console.error('[api/user] subscription lookup failed:', subResult.error);
-    if (expiredSubResult.error) console.error('[api/user] expired sub lookup failed:', expiredSubResult.error);
     if (paymentResult.error) console.error('[api/user] payment lookup failed:', paymentResult.error);
     if (failedPaymentResult.error) console.error('[api/user] failed payment lookup failed:', failedPaymentResult.error);
 
     const sub = subResult.data;
-    const expiredSub = expiredSubResult.data;
     const payment = paymentResult.data;
     const failedPayment = failedPaymentResult.data;
+    const hasLifetimeAccess = Boolean(
+      payment?.product_id && lifetimeProductIds.includes(payment.product_id)
+    );
 
     const isRecentFailure = (createdAt: string) => {
       const ts = new Date(createdAt).getTime();
@@ -87,29 +84,34 @@ export async function GET(request: Request) {
     };
 
     const paymentFailed = failedPayment ? isRecentFailure(failedPayment.created_at) : false;
+    const hasSubscriptionAccess = sub
+      ? subscriptionGrantsAccess(sub.status, sub.current_period_end)
+      : false;
 
-    if (sub) {
+    if (hasSubscriptionAccess) {
       return NextResponse.json({
         user: userInfo,
         isPro: true,
-        subscriptionStatus: sub.status,
-        expiresAt: sub.current_period_end,
+        subscriptionStatus: sub!.status,
+        expiresAt: sub!.current_period_end,
         paymentFailed: false,
         endedPro: null,
       });
     }
 
-    const endedPro = expiredSub
+    const endedAtMs = sub?.current_period_end ? new Date(sub.current_period_end).getTime() : null;
+    const hasEnded = endedAtMs !== null && !Number.isNaN(endedAtMs) && endedAtMs <= Date.now();
+    const endedPro = sub && hasEnded
       ? {
-          status: expiredSub.status,
-          endedAt: expiredSub.current_period_end,
+          status: sub.status,
+          endedAt: sub.current_period_end,
         }
       : null;
 
     return NextResponse.json({
       user: userInfo,
-      isPro: !!payment,
-      subscriptionStatus: payment ? 'lifetime' : null,
+      isPro: hasLifetimeAccess,
+      subscriptionStatus: hasLifetimeAccess ? 'lifetime' : null,
       expiresAt: null,
       paymentFailed,
       endedPro,

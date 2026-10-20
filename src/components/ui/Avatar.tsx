@@ -1,4 +1,3 @@
-import React from 'react';
 import { cn } from '@/lib/utils';
 
 export type AvatarShape = 'circle' | 'square' | 'blob' | 'heart' | 'hexagon' | 'star';
@@ -97,7 +96,6 @@ function ShapeLayer({ shape, fill }: { shape: AvatarShape, fill: string }) {
       return (
         <path 
           d="M50,10 L61.5,35 L88,38 L68,56 L73.5,83 L50,70 L26.5,83 L32,56 L12,38 L38.5,35 Z" 
-          strokeLinejoin="round"
           {...props} 
         />
       );

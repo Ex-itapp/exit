@@ -1,4 +1,3 @@
-import React from 'react';
 import { getMoodColor, getFlagColor } from '@/lib/visualSystem';
 
 // --- Page 1: Overview ---

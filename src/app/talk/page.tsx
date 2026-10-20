@@ -1,18 +1,18 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { motion } from "motion/react";
+import { motion, type Variants } from "motion/react";
 import { Zap, MessageSquare, ChevronRight, PenLine, Settings } from "lucide-react";
 import { useDiary } from "@/lib/useDiary";
 import { getMoodEmoji } from "@/lib/visualSystem";
 import Link from "next/link";
 
-const container = {
+const container: Variants = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.08 } }
 };
 
-const item = {
+const item: Variants = {
   hidden: { opacity: 0, y: 12 },
   show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 400, damping: 28 } }
 };
@@ -100,7 +100,7 @@ export default function TalkPage() {
               recentEntries.map((entry) => (
                 <div key={entry.id} className="border-2 border-ink/15 bg-white p-3 flex flex-col gap-2 shadow-sm transition-transform hover:-translate-y-0.5">
                   <div className="flex items-start gap-2">
-                    {entry.mood && <span className="text-base leading-none pt-0.5">{getMoodEmoji(entry.mood)}</span>}
+                    {entry.moods?.[0] && <span className="text-base leading-none pt-0.5">{getMoodEmoji(entry.moods[0])}</span>}
                     <p className="font-sans text-sm text-ink line-clamp-2 leading-relaxed flex-1">
                       {entry.content}
                     </p>

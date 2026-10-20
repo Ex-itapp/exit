@@ -22,10 +22,10 @@ export function useDiary() {
     if (typeof window === 'undefined') return;
 
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) try { setEntries(JSON.parse(saved)); } catch (e) {}
+    if (saved) try { setEntries(JSON.parse(saved)); } catch {}
 
     const savedArchives = localStorage.getItem(ARCHIVE_KEY);
-    if (savedArchives) try { setArchivedIds(JSON.parse(savedArchives)); } catch (e) {}
+    if (savedArchives) try { setArchivedIds(JSON.parse(savedArchives)); } catch {}
 
     async function syncDB() {
       const { data: { session } } = await supabase.auth.getSession();

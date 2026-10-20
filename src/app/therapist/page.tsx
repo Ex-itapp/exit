@@ -2,9 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useDiary } from "@/lib/useDiary";
-import { useFlags } from "@/lib/useFlags";
-import { useCheckins } from "@/lib/useCheckins";
 import { usePro } from "@/lib/usePro";
 import { useUser } from "@/lib/useUser";
 import { useTheme } from "@/lib/useTheme";
@@ -28,11 +25,8 @@ interface Message {
 
 export const TherapistPage = () => {
   const router = useRouter();
-  const { entries } = useDiary();
-  const { flags } = useFlags();
-  const { checkins } = useCheckins();
   const { isPro } = usePro();
-  const { goal } = useUser();
+  const { userGoal } = useUser();
   const { theme, changeTheme, tone, changeTone, isLoaded } = useTheme('companion');
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -51,7 +45,7 @@ export const TherapistPage = () => {
     if (saved) {
       try {
         setMessages(JSON.parse(saved));
-      } catch (e) {}
+      } catch {}
     }
   }, []);
 
@@ -78,47 +72,6 @@ export const TherapistPage = () => {
     }
   }, [messages, isLoading]);
 
-  const startAnalysisMode = async () => {
-    if (!isPro) return;
-
-    setIsLoading(true);
-    setErrorBanner(null);
-
-    const context = `Diary entries: ${JSON.stringify(entries)}\nFlags: ${JSON.stringify(flags)}\nCheckins: ${JSON.stringify(checkins)}`;
-    const systemInstruction = `Analyze the user's data and provide helpful insights based on their goal: ${goal || "healing"}. Use the following context:\n${context}`;
-
-    try {
-      const res = await fetch("/api/therapist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [{ role: 'user', parts: [{ text: "Analyze my recent activity." }] }],
-          systemInstruction,
-          userGoal: goal,
-          tone
-        }),
-      });
-
-      if (!res.ok) throw new Error("Failed to get analysis");
-
-      const data = await res.json();
-      
-      if (data.crisisPathTriggered) {
-        setIsCrisis(true);
-      }
-
-      setMessages((prev) => [
-        ...prev,
-        { role: 'model', parts: [{ text: data.aiReply }] }
-      ]);
-      triggerPWAActivity();
-    } catch (err) {
-      setErrorBanner("Failed to connect. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const startPresetChat = async (prompt: string) => {
     if (!isPro) return;
 
@@ -132,7 +85,7 @@ export const TherapistPage = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: [{ role: 'user', parts: [{ text: prompt }] }],
-          userGoal: goal,
+          userGoal: userGoal,
           tone
         }),
       });
@@ -150,7 +103,7 @@ export const TherapistPage = () => {
         { role: 'model', parts: [{ text: data.aiReply }] }
       ]);
       triggerPWAActivity();
-    } catch (err) {
+    } catch {
       setErrorBanner("Failed to connect. Please try again.");
       setMessages([]);
     } finally {
@@ -175,7 +128,7 @@ export const TherapistPage = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: updatedMessages,
-          userGoal: goal,
+          userGoal: userGoal,
           tone: tone,
         })
       });
@@ -193,7 +146,7 @@ export const TherapistPage = () => {
         { role: 'model', parts: [{ text: data.aiReply }] }
       ]);
       triggerPWAActivity();
-    } catch (err) {
+    } catch {
       setErrorBanner("Failed to send message. Please try again.");
       setMessages(messages); // Revert
       setInputText(newMessage.parts[0].text); // Restore input
@@ -214,6 +167,11 @@ export const TherapistPage = () => {
       />
       
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
+        {errorBanner && (
+          <div className="mx-auto max-w-3xl border-2 border-danger/40 bg-danger/10 px-3 py-2 font-mono text-xs text-danger">
+            {errorBanner}
+          </div>
+        )}
         {messages.length === 0 && !isLoading ? (
           <div className="flex-1 h-full flex flex-col items-center justify-center gap-4">
             <div className="w-16 h-16 bg-brand/10 rounded-none border border-brand/20 flex items-center justify-center">
@@ -249,6 +207,7 @@ export const TherapistPage = () => {
       {!isScreenshotMode && !isCrisis && (
         <div className="shrink-0 p-4 pb-6 sm:pb-8 max-w-3xl mx-auto w-full">
           <ChatInput 
+            mood="companion"
             value={inputText}
             onChange={setInputText}
             onSend={sendMessage}
@@ -274,7 +233,6 @@ export const TherapistPage = () => {
       
       {showProGate && (
         <ProGateModal 
-          isOpen={true}
           onClose={() => router.push('/dashboard')}
           feature={showProGate}
         />

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { usePro } from '../lib/usePro';
 import { supabase } from '../lib/supabase';
 import { savePaymentDebugRecord } from '../lib/paymentDebug';
@@ -12,7 +11,6 @@ import {
   MessageSquare,
   Heart,
   Star,
-  Check,
   Crown,
 } from 'lucide-react';
 
@@ -65,7 +63,6 @@ function useCurrentUser() {
 export function PricingClient() {
   const { user, authLoading } = useCurrentUser();
   const { isPro, loading: proLoading } = usePro();
-  const router = useRouter();
 
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('annual');
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);

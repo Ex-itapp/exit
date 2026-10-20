@@ -1,17 +1,15 @@
 import { NextResponse } from 'next/server';
-import { createServerSupabase } from '@/lib/supabase-server';
+import { createServerSupabase, createSupabaseWithToken } from '@/lib/supabase-server';
 
 export async function POST(req: Request) {
   try {
     const authHeader = req.headers.get('Authorization');
-    const token = authHeader?.split('Bearer ')[1];
-    
-    if (!token) {
-      return NextResponse.json({ error: 'Missing auth token' }, { status: 401 });
-    }
+    const token = authHeader?.replace(/^Bearer\s+/i, '') || '';
 
     const supabase = await createServerSupabase();
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    const { data: { user }, error: authError } = token
+      ? await supabase.auth.getUser(token)
+      : await supabase.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized', details: authError?.message }, { status: 401 });
@@ -23,12 +21,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing endpoint' }, { status: 400 });
     }
 
-    const { createAdminSupabase } = await import('@/lib/supabase-server');
-    const adminSupabase = createAdminSupabase();
+    const db = token ? createSupabaseWithToken(token) : supabase;
 
-    const { error } = await adminSupabase
+    const { error } = await db
       .from('push_subscriptions')
       .delete()
+      .eq('user_id', user.id)
       .eq('endpoint', endpoint);
 
     if (error) {

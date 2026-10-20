@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createServerSupabase, createAdminSupabase } from '../../../../lib/supabase-server';
+import { createServerSupabase, createSupabaseWithToken } from '../../../../lib/supabase-server';
 import { getDodoClient } from '../../../../lib/dodo';
 
 export async function POST(request: Request) {
@@ -8,7 +8,7 @@ export async function POST(request: Request) {
 
     // 1. Authenticate user
     const authHeader = request.headers.get('authorization');
-    const token = authHeader?.replace('Bearer ', '') || '';
+    const token = authHeader?.replace(/^Bearer\s+/i, '') || '';
     const { data: { user }, error: authError } = token ? await supabase.auth.getUser(token) : await supabase.auth.getUser();
     
     if (authError || !user) {
@@ -16,12 +16,14 @@ export async function POST(request: Request) {
     }
 
     // 2. Fetch the user's latest active subscription to get their Dodo customer ID
-    const adminSupabase = createAdminSupabase();
-    const { data: subscription, error: subError } = await adminSupabase
+    // RLS scopes this to the authenticated user; prefer a token-scoped client
+    // when the request authenticated via bearer token.
+    const db = token ? createSupabaseWithToken(token) : supabase;
+    const { data: subscription, error: subError } = await db
       .from('subscriptions')
       .select('dodo_customer_id')
       .eq('user_id', user.id)
-      .in('status', ['active', 'trialing', 'paused'])
+      .in('status', ['active', 'trialing', 'paused', 'cancelled'])
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();

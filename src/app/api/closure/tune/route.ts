@@ -1,16 +1,24 @@
 import { NextResponse } from 'next/server';
 import { callAIRouter } from '@/lib/ai/router';
 import { requirePro } from '@/lib/requirePro';
+import { sanitizeForPrompt } from '@/lib/prompt';
 
 export async function POST(req: Request) {
   try {
     const proCheck = await requirePro();
     if (proCheck.error) return proCheck.error;
-    const { voiceProfile, aiMsg, correctionText } = await req.json();
+    const body = await req.json();
+    // Accept both the current names and the older aliases for backwards compatibility.
+    const voiceProfile = body.voiceProfile || body.currentVoice;
+    const aiMsg = body.aiMsg;
+    const correctionText = body.correctionText || body.userCorrection;
 
-    if (!voiceProfile || !correctionText) {
+    if (!voiceProfile || typeof voiceProfile !== 'object' || Array.isArray(voiceProfile) || !correctionText) {
       return NextResponse.json({ error: 'Missing voice profile or correction text' }, { status: 400 });
     }
+
+    const safeCorrection = sanitizeForPrompt(String(correctionText));
+    const safeAiMsg = sanitizeForPrompt(String(aiMsg || ''));
 
     const systemPrompt = `You are an AI voice tuning engine. A user is communicating with a simulated persona in a healing app. The AI generated a message that didn't sound right, and the user provided a correction of what the person would ACTUALLY have said.
 
@@ -19,8 +27,8 @@ Your task is to analyze the user's correction and adjust the existing JSON Voice
 Current JSON Voice Profile:
 ${JSON.stringify(voiceProfile, null, 2)}
 
-AI Message that felt off: "${aiMsg}"
-User Correction (what they actually would have said): "${correctionText}"
+AI Message that felt off: "${safeAiMsg}"
+User Correction (what they actually would have said): "${safeCorrection}"
 
 Output ONLY the updated complete JSON Voice Profile with the exact same keys:
 {
@@ -52,10 +60,13 @@ Instructions for updating:
     if (!updatedJsonText) {
       // Manual fallback tuning if API is unreachable
       const updated = { ...voiceProfile };
-      if (!updated.top_verbatim_example_lines.includes(correctionText)) {
-        updated.top_verbatim_example_lines = [correctionText, ...updated.top_verbatim_example_lines].slice(0, 10);
+      const existingLines = Array.isArray(updated.top_verbatim_example_lines)
+        ? updated.top_verbatim_example_lines
+        : [];
+      if (!existingLines.includes(correctionText)) {
+        updated.top_verbatim_example_lines = [correctionText, ...existingLines].slice(0, 10);
       }
-      return NextResponse.json({ updatedVoiceProfile: updated, simulated: true });
+      return NextResponse.json({ updatedVoiceProfile: updated, updatedVoice: updated, simulated: true });
     }
 
     let parsed: any = {};
@@ -65,13 +76,16 @@ Instructions for updating:
     } catch (e) {
       console.warn("JSON parse error in tune:", e);
       const updated = { ...voiceProfile };
-      if (!updated.top_verbatim_example_lines.includes(correctionText)) {
-        updated.top_verbatim_example_lines = [correctionText, ...updated.top_verbatim_example_lines].slice(0, 10);
+      const existingLines = Array.isArray(updated.top_verbatim_example_lines)
+        ? updated.top_verbatim_example_lines
+        : [];
+      if (!existingLines.includes(correctionText)) {
+        updated.top_verbatim_example_lines = [correctionText, ...existingLines].slice(0, 10);
       }
-      return NextResponse.json({ updatedVoiceProfile: updated, simulated: true });
+      return NextResponse.json({ updatedVoiceProfile: updated, updatedVoice: updated, simulated: true });
     }
 
-    return NextResponse.json({ updatedVoiceProfile: parsed, simulated: false });
+    return NextResponse.json({ updatedVoiceProfile: parsed, updatedVoice: parsed, simulated: false });
 
   } catch (error: any) {
     console.error('Tune API Error:', error);

@@ -6,11 +6,10 @@ import { Card } from "@/components/ui/Card";
 import { Textarea } from "@/components/ui/Textarea";
 import { Input } from "@/components/ui/Input";
 import { 
-  MessageSquare, AlertTriangle, Send, Sparkles, BrainCircuit, 
+  MessageSquare, AlertTriangle, Sparkles, 
   CheckCircle2, RefreshCw, Trash2, 
-  Lock, ArrowRight, X, Heart, Plus,
-  FileText, Upload, Sliders, ArrowLeft, Settings, ChevronRight, Clock,
-  Camera, EyeOff
+  Lock, ArrowRight, X, Plus,
+  FileText, Upload, Sliders, ArrowLeft, 
 } from "lucide-react";
 import { useClosure, type MemoryBankEntry, type VoiceProfile, type TraitProfile } from "@/lib/useClosure";
 import { useDiary } from "@/lib/useDiary";
@@ -33,7 +32,7 @@ import { BrandWatermark } from "@/components/chat/BrandWatermark";
 export default function ClosurePage() {
   const router = useRouter();
   const {
-    profile, memories, sessions, messages, sessionsUsedCount,
+    profile, memories, messages, sessionsUsedCount,
     saveProfile, updateVoiceProfile,
     addMemory, deleteMemory, getActiveSession, createSession, addMessage, endSession,
     retrieveRelevantMemories
@@ -73,8 +72,6 @@ export default function ClosurePage() {
   const [tuneToast, setTuneToast] = useState<string | null>(null);
 
   // Persona Intake Form State
-  const [sampleText, setSampleText] = useState("");
-  const [isAnalyzingVoice, setIsAnalyzingVoice] = useState(false);
   const [personLabel, setPersonLabel] = useState(profile?.label || "My Ex");
   const [voiceForm, setVoiceForm] = useState<VoiceProfile>(profile?.voice_profile || {
     response_time: "",
@@ -137,7 +134,7 @@ export default function ClosurePage() {
           // WhatsApp parser
           const lines = text.split('\n');
           for (const line of lines) {
-            const match = line.match(/(?:\]|\-)\s+([^:]+):\s+(.*)/);
+            const match = line.match(/(?:\]|-)\s+([^:]+):\s+(.*)/);
             if (match) {
               const sender = match[1].trim();
               const msg = match[2].trim();
@@ -259,17 +256,28 @@ export default function ClosurePage() {
     setIsLoading(true);
     try {
       const relevantMems = retrieveRelevantMemories(userText, 3);
+      const sessionHistory = messages
+        .filter(m => m.session_id === currentSessId)
+        .map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content }));
       const res = await fetch('/api/closure/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userMessage: userText,
-          history: [...allChronologicalMsgs, { role: 'user', content: userText }],
+          history: [...sessionHistory, { role: 'user', content: userText }],
           voiceProfile: profile?.voice_profile || voiceForm,
           traitProfile: profile?.trait_profile || traitForm,
           retrievedMemories: relevantMems
         })
       });
+
+      if (!res.ok) {
+        if (res.status === 401 || res.status === 403) {
+          setShowProGate("AI Closure");
+          return;
+        }
+        throw new Error(`Chat request failed (${res.status})`);
+      }
 
       const data = await res.json();
 
@@ -324,15 +332,19 @@ export default function ClosurePage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          voiceProfile: profile?.voice_profile || voiceForm,
           aiMsg,
-          userCorrection: correctionText,
-          currentVoice: voiceForm
+          correctionText: correctionText.trim()
         })
       });
+      if (!res.ok) {
+        throw new Error(`Voice tuning failed (${res.status})`);
+      }
       const data = await res.json();
-      if (data.updatedVoice) {
-        setVoiceForm(data.updatedVoice);
-        await updateVoiceProfile(data.updatedVoice);
+      const tunedProfile = data.updatedVoiceProfile || data.updatedVoice;
+      if (tunedProfile) {
+        setVoiceForm(tunedProfile);
+        await updateVoiceProfile(tunedProfile);
         setTuneToast("✨ We gently analyzed that and attuned their communication rhythm!");
         setTimeout(() => setTuneToast(null), 4000);
       }
@@ -344,30 +356,6 @@ export default function ClosurePage() {
       setIsTuning(false);
       setCorrectingMsgId(null);
       setCorrectionText("");
-    }
-  };
-
-  const handleAnalyzeVoiceSamples = async () => {
-    if (!sampleText.trim() || sampleText.trim().length < 10) return;
-    setIsAnalyzingVoice(true);
-    try {
-      const res = await fetch('/api/closure/intake', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rawText: sampleText })
-      });
-      const data = await res.json();
-      if (data.voiceProfile) {
-        setVoiceForm(data.voiceProfile);
-        setTuneToast("✨ We gently analyzed those text samples and attuned the conversation style!");
-        setTimeout(() => setTuneToast(null), 4000);
-      }
-    } catch (err) {
-      console.error(err);
-      setTuneToast("Error analyzing samples. Using current settings.");
-      setTimeout(() => setTuneToast(null), 4000);
-    } finally {
-      setIsAnalyzingVoice(false);
     }
   };
 

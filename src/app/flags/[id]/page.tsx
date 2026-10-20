@@ -2,10 +2,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useFlags, Flag } from "@/lib/useFlags";
+import { useFlags, type Flag } from "@/lib/useFlags";
 import { Button } from "@/components/ui/Button";
 import { ArrowLeft, Share2, Archive, ArchiveRestore, Trash2, Flag as FlagIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export default function FlagEntryPage() {
   const { id } = useParams();

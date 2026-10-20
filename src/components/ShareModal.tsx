@@ -1,8 +1,5 @@
-import { useRef, useState, useEffect } from "react";
-import domtoimage from "dom-to-image-more";
-import { X, Download, Lock, Flag as FlagIcon } from "lucide-react";
-import { Button } from "./ui/Button";
-import { Badge } from "./ui/Badge";
+import { useState, useEffect } from "react";
+import { X, Download } from "lucide-react";
 import { getMoodColor } from "@/lib/visualSystem";
 
 export interface ShareEntryData {
@@ -20,21 +17,17 @@ interface ShareModalProps {
 }
 
 export function ShareModal({ entry, onClose }: ShareModalProps) {
-  const exportRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [ogUrl, setOgUrl] = useState<string | null>(null);
   const [bgColor, setBgColor] = useState(() => entry ? getMoodColor(entry.tags[0] || 'DEFAULT') : '#F5EFE6');
 
-  // Cleanup blob URLs on unmount or when ogUrl changes
-  useEffect(() => {
-    return () => {
-      if (ogUrl) URL.revokeObjectURL(ogUrl);
-    };
-  }, [ogUrl]);
+  const formatTime = (isoString: string) => {
+    const date = new Date(isoString);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
+  };
 
-  if (!entry) return null;
-
-  const handleGenerate = async () => {
+  const handleGenerate = async (color: string = bgColor) => {
+    if (!entry) return;
     setIsDownloading(true);
     try {
       const res = await fetch('/api/render-card', {
@@ -47,10 +40,13 @@ export function ShareModal({ entry, onClose }: ShareModalProps) {
             date: formatTime(entry.createdAt),
             mood: entry.tags[0] || 'default',
             tag: entry.type === 'flag' ? 'Red Flag' : entry.isUnsent ? 'Unsent' : 'Diary',
-            bgColor: bgColor
+            bgColor: color
           }
         })
       });
+      if (!res.ok) {
+        throw new Error(`Card generation failed (${res.status})`);
+      }
       const blob = await res.blob();
       // Revoke previous blob URL to prevent memory leak
       if (ogUrl) URL.revokeObjectURL(ogUrl);
@@ -62,15 +58,23 @@ export function ShareModal({ entry, onClose }: ShareModalProps) {
     }
   };
 
+  // Cleanup blob URLs on unmount or when ogUrl changes
   useEffect(() => {
-    handleGenerate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bgColor]);
+    return () => {
+      if (ogUrl) URL.revokeObjectURL(ogUrl);
+    };
+  }, [ogUrl]);
 
-  const formatTime = (isoString: string) => {
-    const date = new Date(isoString);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
-  };
+  useEffect(() => {
+    if (!entry) return;
+    const nextColor = getMoodColor(entry.tags[0] || 'DEFAULT');
+    setBgColor(nextColor);
+    void handleGenerate(nextColor);
+    // Regenerate only when a different entry is opened.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entry?.id]);
+
+  if (!entry) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
@@ -107,7 +111,11 @@ export function ShareModal({ entry, onClose }: ShareModalProps) {
                   <input 
                     type="color" 
                     value={bgColor} 
-                    onChange={(e) => setBgColor(e.target.value)}
+                    onChange={(e) => {
+                      const nextColor = e.target.value;
+                      setBgColor(nextColor);
+                      void handleGenerate(nextColor);
+                    }}
                     className="w-8 h-8 rounded-full border-2 border-ink/15 cursor-pointer p-0 overflow-hidden"
                   />
                 </div>

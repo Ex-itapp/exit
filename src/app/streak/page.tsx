@@ -4,13 +4,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { useUser } from "@/lib/useUser";
-import { useDiary } from "@/lib/useDiary";
-import { useFlags } from "@/lib/useFlags";
-import { useCheckins } from "@/lib/useCheckins";
-import { AlertTriangle, RefreshCcw, Settings2, ShieldAlert, BookOpen, Anchor, CheckCircle2, X, Flag, MessageSquare } from "lucide-react";
+import { AlertTriangle, RefreshCcw, Settings2, ShieldAlert, CheckCircle2, X } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { CalendarTile } from "@/components/CalendarTile";
-import { Badge } from "@/components/ui/Badge";
 
 export default function Streak() {
   const { streakDays, breakupDate, userAnchor, userGoal, appMode, setAppMode } = useUser();
@@ -49,9 +45,6 @@ export default function Streak() {
   };
 
   const goalIntervention = getGoalIntervention();
-  const { entries } = useDiary();
-  const { flags } = useFlags();
-  const { checkins } = useCheckins();
 
   const [isEditingSettings, setIsEditingSettings] = useState(false);
   const [newBreakupDate, setNewBreakupDate] = useState(

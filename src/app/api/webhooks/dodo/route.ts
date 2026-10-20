@@ -66,7 +66,7 @@ export async function POST(request: Request) {
             .from('profiles')
             .select('id')
             .eq('email', customerEmail)
-            .single();
+            .maybeSingle();
           resolvedUserId = profile?.id || null;
         }
 
@@ -111,7 +111,9 @@ export async function POST(request: Request) {
 
       // ─── SUBSCRIPTION EVENTS ───
       case 'subscription.active':
-      case 'subscription_active': {
+      case 'subscription.renewed':
+      case 'subscription_active':
+      case 'subscription_renewed': {
         const subData = data as Record<string, unknown>;
         const userId = ((subData.metadata as Record<string, string>)?.supabase_user_id) || null;
         const checkoutRequestId = ((subData.metadata as Record<string, string>)?.checkout_request_id) || null;
@@ -135,7 +137,7 @@ export async function POST(request: Request) {
             .from('profiles')
             .select('id')
             .eq('email', customerEmail)
-            .single();
+            .maybeSingle();
           resolvedUserId = profile?.id || null;
         }
 
@@ -186,9 +188,18 @@ export async function POST(request: Request) {
 
         if (subscriptionId) {
           const status = eventType.includes('cancelled') ? 'cancelled' : 'expired';
+          const periodEnd =
+            (subData.current_period_end as string) ||
+            (subData.next_billing_date as string) ||
+            (subData.expires_at as string) ||
+            null;
           const { error: updateError } = await supabase
             .from('subscriptions')
-            .update({ status, updated_at: new Date().toISOString() })
+            .update({
+              status,
+              ...(periodEnd ? { current_period_end: periodEnd } : {}),
+              updated_at: new Date().toISOString(),
+            })
             .eq('dodo_subscription_id', subscriptionId);
 
           if (updateError) {
@@ -239,7 +250,7 @@ export async function POST(request: Request) {
             .from('profiles')
             .select('id')
             .eq('email', customerEmail)
-            .single();
+            .maybeSingle();
           resolvedUserId = profile?.id || null;
         }
 

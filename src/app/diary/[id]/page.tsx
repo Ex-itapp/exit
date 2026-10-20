@@ -2,11 +2,10 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useDiary, DiaryEntry } from "@/lib/useDiary";
+import { useDiary, type DiaryEntry } from "@/lib/useDiary";
 import { Button } from "@/components/ui/Button";
 import { ArrowLeft, Share2, Archive, ArchiveRestore, Trash2 } from "lucide-react";
-import { getMoodColor, getMoodTailwind, getMoodEmoji } from "@/lib/visualSystem";
-import { cn } from "@/lib/utils";
+import { getMoodColor } from "@/lib/visualSystem";
 import { BrandMark } from "@/components/BrandMark";
 
 export default function DiaryEntryPage() {
@@ -17,7 +16,7 @@ export default function DiaryEntryPage() {
   const [entry, setEntry] = useState<DiaryEntry | null>(null);
   const exportRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
-  const [customBg, setCustomBg] = useState<string | null>(null);
+  const [customBg] = useState<string | null>(null);
   const [isArchived, setIsArchived] = useState(false);
 
   useEffect(() => {

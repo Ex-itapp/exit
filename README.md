@@ -34,6 +34,28 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+## Database setup
+
+Run these in the Supabase SQL editor, in order:
+
+1. `supabase_migration.sql`
+2. `supabase_payments_migration.sql`
+3. `supabase_mood_logs_migration.sql`
+4. `supabase_missing_tables_migration.sql`
+
+The last file adds `user_avatars`, `push_subscriptions`, `vault_entries`, and
+`user_profiles.last_active_at`, which are required by the app.
+
+## Environment notes
+
+- `SUPABASE_SERVICE_ROLE_KEY` is required for the Dodo webhook, cron jobs, and
+  admin push broadcasts. Never expose it to the browser.
+- `CRON_SECRET` must match the secret configured for the Vercel cron jobs.
+- `DODO_PRODUCT_LIFETIME` is optional. Set it only if you sell a one-time
+  lifetime plan; without it, no payment grants permanent Pro access.
+- `NEXT_PUBLIC_AUTH_BYPASS=true` skips auth and Pro checks for local development.
+  Never set it in production.
+
 ## Deployment
 
 Live at [ex-it-black.vercel.app](https://ex-it-black.vercel.app) (Vercel).

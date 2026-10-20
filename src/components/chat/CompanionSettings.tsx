@@ -1,8 +1,8 @@
 "use client";
 
-import React from 'react';
 import { cn } from '@/lib/utils';
-import { ChatTheme, ToneOption, THEME_PREVIEWS, TONE_OPTIONS } from '@/lib/useTheme';
+import { THEME_PREVIEWS, TONE_OPTIONS } from '@/lib/useTheme';
+import type { ChatTheme, ToneOption } from '@/lib/useTheme';
 import { AnimatePresence, motion } from 'motion/react';
 import { Camera, Trash2, Check } from 'lucide-react';
 

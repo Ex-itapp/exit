@@ -1,13 +1,7 @@
 import { NextResponse } from 'next/server';
 import { callAIRouter } from '@/lib/ai/router';
 import { requirePro } from '@/lib/requirePro';
-
-function sanitizeForPrompt(text: string): string {
-  return text
-    .replace(/["`'\\]/g, '')
-    .replace(/\n{3,}/g, '\n\n')
-    .slice(0, 2000);
-}
+import { sanitizeForPrompt } from '@/lib/prompt';
 
 export async function POST(req: Request) {
   try {
@@ -55,8 +49,15 @@ User text: "${safeUserMessage}"`;
     // 2. Assemble the 4-Layer Persona System Prompt
     const vp = voiceProfile || {};
     const tp = traitProfile || {};
-    const mems = (retrievedMemories || []).map((m: any, idx: number) => `[Memory ${idx + 1} (${m.emotional_weight || 'neutral'})]: ${m.content}`).join('\n');
-    const examples = (vp.top_verbatim_example_lines || []).join('\n- ');
+    const mems = (retrievedMemories || [])
+      .map((m: any, idx: number) =>
+        `[Memory ${idx + 1} (${m.emotional_weight || 'neutral'})]: ${sanitizeForPrompt(String(m.content || ''))}`
+      )
+      .join('\n');
+    const examples = (vp.top_verbatim_example_lines || [])
+      .map((line: unknown) => sanitizeForPrompt(String(line || '')))
+      .join('\n- ');
+    const rawExport = vp.raw_chat_export ? sanitizeForPrompt(String(vp.raw_chat_export), 8000) : '';
 
     const systemPrompt = `You are roleplaying as the user's REAL EX in an intense, raw closure simulation. You are NOT an AI assistant, NOT a counselor, and NOT trying to make them feel good or bad artificially. You are reacting like an actual ex-partner when texted out of nowhere after a breakup.
 
@@ -83,7 +84,7 @@ ${mems || 'None'}
 EX'S REAL SAMPLE MESSAGES (Imitate this cadence and syntax strictly):
 - ${examples}
 
-${vp.raw_chat_export ? `EX'S RAW CHAT EXPORT (Most crucial reference for tone and style):\n${vp.raw_chat_export}\n` : ''}
+${rawExport ? `EX'S RAW CHAT EXPORT (Most crucial reference for tone and style):\n${rawExport}\n` : ''}
 CORE BEHAVIOR RULES (GOATED REALISM):
 1. NO AI BLEEDTHROUGH: Never apologize like a customer service agent or say things like "I hear where you're coming from" or "I validate that". Use real human texting language.
 2. STICK TO UNRESOLVED TOPICS: Address unanswered questions, blame, regret, or awkward truths with real human imperfection.
@@ -92,10 +93,17 @@ CORE BEHAVIOR RULES (GOATED REALISM):
 
     // Sanitize all history messages
     const formattedMessages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }> = (history || []).map((h: any) => ({
-      role: h.role === 'ex_simulation' || h.role === 'assistant' ? 'assistant' : 'user',
-      content: h.role === 'user' ? sanitizeForPrompt(h.content) : h.content
+      role: h.role === 'ex_simulation' || h.role === 'assistant' || h.role === 'system_scripted' ? 'assistant' : 'user',
+      content: h.role === 'user'
+        ? sanitizeForPrompt(String(h.content || ''))
+        : String(h.content || '')
     }));
-    formattedMessages.push({ role: 'user', content: safeUserMessage });
+
+    // Only append the current message if the caller didn't already include it
+    const lastMessage = formattedMessages[formattedMessages.length - 1];
+    if (!lastMessage || lastMessage.role !== 'user' || lastMessage.content !== safeUserMessage) {
+      formattedMessages.push({ role: 'user', content: safeUserMessage });
+    }
 
     // Call AI Router
     let generatedReply = await callAIRouter({
@@ -131,7 +139,7 @@ CORE BEHAVIOR RULES (GOATED REALISM):
       const driftPrompt = `System: Read the AI-generated reply below, from a bounded closure-conversation simulation. Respond with ONLY "PASS" or "FLAG".
 Respond "FLAG" if the reply contains romantic, sexual, or intimate roleplay content, or attempts to recreate an ongoing relationship rather than address unresolved closure topics.
 Respond "PASS" otherwise.
-Reply to check: "${generatedReply}"`;
+Reply to check: "${sanitizeForPrompt(generatedReply)}"`;
       const driftCheck = await callAIRouter({
         prompt: driftPrompt,
         tier: 'classifier',

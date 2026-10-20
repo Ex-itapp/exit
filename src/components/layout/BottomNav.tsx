@@ -62,9 +62,11 @@ export function BottomNav() {
           })}
         </nav>
 
-        {/* Profile Avatar Pattern Report Link */}
+        {/* Profile Avatar Weekly Reality Check Link */}
         <Link 
           href="/pattern-report"
+          title="Weekly Reality Check"
+          aria-label="Weekly Reality Check"
           className="shrink-0 aspect-square h-[56px] sm:h-[64px] rounded-full border-2 border-ink/20 shadow-lg shadow-black/5 bg-bg flex items-center justify-center hover:border-ink/40 transition-colors relative overflow-hidden group"
         >
           <div className="w-[80%] h-[80%] flex items-center justify-center transition-transform group-hover:scale-110">

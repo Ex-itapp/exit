@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Sparkles, BookOpen, ShieldCheck, Flag, CheckCircle, Zap, PenLine, Award, Lock } from "lucide-react";
 import { type RewardBadge } from "@/lib/useRewards";
 import { cn } from "@/lib/utils";

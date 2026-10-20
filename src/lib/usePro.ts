@@ -55,6 +55,8 @@ function readBootCachedStatus(): CachedProStatus | null {
  * usePro — standalone hook for Dodo payment / subscription status.
  * Separate from useUser so existing profile logic is untouched.
  */
+const BYPASS_PRO = process.env.NEXT_PUBLIC_AUTH_BYPASS === 'true';
+
 export function usePro() {
   const bootCachedStatus = useMemo(() => readBootCachedStatus(), []);
 
@@ -123,7 +125,7 @@ export function usePro() {
         const { data: { session } } = await supabase.auth.getSession();
         const token = session?.access_token;
         
-        const apiRes = await fetch(`/api/user?userId=${userId}&_t=${Date.now()}`, {
+        const apiRes = await fetch(`/api/user?_t=${Date.now()}`, {
           cache: 'no-store',
           headers: {
             ...(token ? { 'Authorization': `Bearer ${token}` } : {})
@@ -224,11 +226,11 @@ export function usePro() {
   }, [checkSubscription]);
 
   return {
-    isPro: true, // TEST MODE UNLOCKED
-    subscriptionStatus: 'active',
+    isPro: BYPASS_PRO ? true : isPro,
+    subscriptionStatus: BYPASS_PRO ? 'active' : subscriptionStatus,
     expiresAt,
     endedPro,
-    loading: false,
+    loading: BYPASS_PRO ? false : loading,
     paymentFailed,
     refreshSubscription,
   };

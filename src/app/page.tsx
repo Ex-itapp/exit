@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform, AnimatePresence } from "motion/react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence, type Variants } from "motion/react";
 import {
   HeartCrack, Heart, MessageSquare, Flag, Flame, Check, ArrowRight, ChevronDown
 } from "lucide-react";
@@ -10,18 +10,19 @@ import Link from "next/link";
 /* ─────────────────────────────────────────────
    Typewriter
 ───────────────────────────────────────────── */
+const TYPEWRITER_MESSAGES = [
+  "I saw a dog today that looked exactly like Buster. I almost called you.",
+  "I heard our song at the coffee shop. I left before it finished.",
+  "Your mom's birthday is next week. I still have the date memorized.",
+];
+
 const TypewriterEffect = () => {
-  const messages = [
-    "I saw a dog today that looked exactly like Buster. I almost called you.",
-    "I heard our song at the coffee shop. I left before it finished.",
-    "Your mom's birthday is next week. I still have the date memorized.",
-  ];
   const [idx, setIdx] = useState(0);
   const [text, setText] = useState("");
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    const full = messages[idx];
+    const full = TYPEWRITER_MESSAGES[idx];
     let t: NodeJS.Timeout;
     if (!deleting && text.length < full.length)
       t = setTimeout(() => setText(full.slice(0, text.length + 1)), 40);
@@ -29,7 +30,7 @@ const TypewriterEffect = () => {
       t = setTimeout(() => setDeleting(true), 2800);
     else if (deleting && text.length > 0)
       t = setTimeout(() => setText(text.slice(0, -2)), 15);
-    else { setDeleting(false); setIdx(p => (p + 1) % messages.length); }
+    else { setDeleting(false); setIdx(p => (p + 1) % TYPEWRITER_MESSAGES.length); }
     return () => clearTimeout(t);
   }, [text, deleting, idx]);
 
@@ -81,7 +82,7 @@ const RedFlagDemo = () => {
       <AnimatePresence>
         {boom && (
           <motion.div initial={{ opacity: 0, scale: 0.5, rotate: -15 }} animate={{ opacity: 1, scale: 1, rotate: 5 }}
-            exit={{ opacity: 0, scale: 0.8, opacity: 0 }}
+            exit={{ opacity: 0, scale: 0.8 }}
             transition={{ type: "spring", damping: 15, stiffness: 300 }}
             className="absolute inset-0 m-auto w-fit h-fit bg-positive border-3 sm:border-4 border-ink text-ink font-heading px-6 py-4 sm:px-8 sm:py-6 z-20 shadow-[6px_6px_0px_0px_rgba(17,17,17,1)] text-xl sm:text-3xl uppercase tracking-widest text-center">
             FLAG DROPPED!<br/>🚩
@@ -177,7 +178,7 @@ const features = [
 const AnimatedTitle = ({ text }: { text: string | string[] }) => {
   const words = Array.isArray(text) ? text : text.split(" ");
   
-  const container = {
+  const container: Variants = {
     hidden: { opacity: 0 },
     visible: (i = 1) => ({
       opacity: 1,
@@ -185,7 +186,7 @@ const AnimatedTitle = ({ text }: { text: string | string[] }) => {
     }),
   };
 
-  const child = {
+  const child: Variants = {
     visible: {
       opacity: 1,
       y: 0,
@@ -245,7 +246,7 @@ export default function LandingPage() {
   }, []);
 
   // Floating nav entrance
-  const navVariants = {
+  const navVariants: Variants = {
     hidden: { opacity: 0, y: -20 },
     visible: { opacity: 1, y: 0, transition: { delay: 1.5, duration: 0.8, ease: "easeOut" } }
   };

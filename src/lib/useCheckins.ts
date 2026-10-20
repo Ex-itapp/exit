@@ -8,6 +8,7 @@ export interface Checkin {
   content: string;
   createdAt: string;
   classifierResult?: 'SAFE' | 'RISK';
+  mood?: string;
   aiReply?: string | null;
   crisisPathTriggered?: boolean;
   followUpAnswer?: string;
@@ -22,7 +23,7 @@ export function useCheckins() {
     if (typeof window === 'undefined') return;
 
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) try { setCheckins(JSON.parse(saved)); } catch (e) {}
+    if (saved) try { setCheckins(JSON.parse(saved)); } catch {}
 
     async function syncDB() {
       const { data: { session } } = await supabase.auth.getSession();
@@ -33,6 +34,7 @@ export function useCheckins() {
           id: c.id,
           content: c.content,
           createdAt: c.created_at,
+          classifierResult: c.mood === 'RISK' ? 'RISK' : c.mood === 'SAFE' ? 'SAFE' : undefined,
           mood: c.mood
         }));
         setCheckins(mapped);

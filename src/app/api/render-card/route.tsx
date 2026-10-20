@@ -3,23 +3,20 @@ import { NextRequest } from 'next/server';
 import { PatternReportOverview, PatternReportDiary, PatternReportRedFlags } from '@/components/templates/PatternReportTemplates';
 import { CertificateTemplate } from '@/components/templates/CertificateTemplates';
 import { DiaryShareTemplate } from '@/components/templates/DiaryShareTemplate';
-import React from 'react';
 import { createServerSupabase } from '@/lib/supabase-server';
 
 export const runtime = 'edge';
 
 export async function POST(req: NextRequest) {
   try {
-    // Require authentication
+    // Require authentication — accept either a Bearer token or the Supabase
+    // session cookie so same-origin browser requests work out of the box.
     const authHeader = req.headers.get('Authorization');
-    const token = authHeader?.split('Bearer ')[1];
-    
-    if (!token) {
-      return new Response(JSON.stringify({ error: 'Missing auth token' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-    }
-
+    const token = authHeader?.replace(/^Bearer\s+/i, '') || '';
     const supabase = await createServerSupabase();
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    const { data: { user }, error: authError } = token
+      ? await supabase.auth.getUser(token)
+      : await supabase.auth.getUser();
 
     if (authError || !user) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { 'Content-Type': 'application/json' } });

@@ -1,6 +1,3 @@
-import React from 'react';
-import { getMoodColor } from '@/lib/visualSystem';
-
 export function CertificateTemplate({ data }: { data: any }) {
   const { title, date, stat, caseNumber, streakType } = data;
   

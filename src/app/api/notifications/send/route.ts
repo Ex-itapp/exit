@@ -1,47 +1,45 @@
 import { NextResponse } from 'next/server';
-import webpush from 'web-push';
-import { createServerSupabase } from '@/lib/supabase-server';
-
-webpush.setVapidDetails(
-  'mailto:hello@ex-it.app',
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-);
+import { createAdminSupabase, createServerSupabase, createSupabaseWithToken } from '@/lib/supabase-server';
+import { safeCompare } from '@/lib/crypto';
+import { getWebPush } from '@/lib/webpush';
 
 export async function POST(req: Request) {
   try {
     const authHeader = req.headers.get('Authorization');
-    const token = authHeader?.split('Bearer ')[1];
-    
-    if (!token) {
-      return NextResponse.json({ error: 'Missing auth token' }, { status: 401 });
-    }
+    const token = authHeader?.replace(/^Bearer\s+/i, '') || '';
 
     const supabase = await createServerSupabase();
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    const { data: { user }, error: authError } = token
+      ? await supabase.auth.getUser(token)
+      : await supabase.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized', details: authError?.message }, { status: 401 });
     }
 
     const { title, body, data, targetUserId, adminSecret } = await req.json();
-    
-    // Security check: Only allow users to ping themselves, UNLESS they provide the admin secret
-    // If ADMIN_API_KEY is not set, adminSecret will never match — so cross-user targeting is always blocked
-    if (targetUserId && targetUserId !== user.id) {
+
+    // Users may only notify themselves. Cross-user targeting requires the
+    // server-side admin key, compared in constant time.
+    const isCrossUser = Boolean(targetUserId) && targetUserId !== user.id;
+    if (isCrossUser) {
       const adminApiKey = process.env.ADMIN_API_KEY;
-      if (!adminApiKey || !adminSecret || adminSecret !== adminApiKey) {
+      if (!adminApiKey || typeof adminSecret !== 'string' || !safeCompare(adminSecret, adminApiKey)) {
         return NextResponse.json({ error: 'Unauthorized to ping other users' }, { status: 403 });
       }
     }
 
     const userIdToNotify = targetUserId || user.id;
 
-    const { createAdminSupabase } = await import('@/lib/supabase-server');
-    const adminSupabase = createAdminSupabase();
+    // Self-sends use RLS (token-scoped client when requested via bearer auth);
+    // cross-user sends need the admin client.
+    const db = isCrossUser
+      ? createAdminSupabase()
+      : token
+        ? createSupabaseWithToken(token)
+        : supabase;
 
-    // Fetch all active subscriptions for the user
-    const { data: subscriptions, error } = await adminSupabase
+    const { data: subscriptions, error } = await db
       .from('push_subscriptions')
       .select('*')
       .eq('user_id', userIdToNotify);
@@ -50,11 +48,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'No subscriptions found' }, { status: 404 });
     }
 
-    const payload = JSON.stringify({
-      title,
-      body,
-      data,
-    });
+    const payload = JSON.stringify({ title, body, data });
+    const webpush = getWebPush();
 
     const sendPromises = subscriptions.map(async (sub) => {
       try {
@@ -68,7 +63,7 @@ export async function POST(req: Request) {
         await webpush.sendNotification(pushSubscription, payload, { urgency: 'high', TTL: 86400 });
       } catch (err: any) {
         if (err.statusCode === 410 || err.statusCode === 404) {
-          await adminSupabase.from('push_subscriptions').delete().eq('id', sub.id);
+          await db.from('push_subscriptions').delete().eq('id', sub.id);
         } else {
           console.error('Error sending push notification:', err);
         }

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChatMood } from "@/lib/useTheme";
+import type { ChatMood } from "@/lib/useTheme";
 import { ArrowLeft, Sparkles, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
