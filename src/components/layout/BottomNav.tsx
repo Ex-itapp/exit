@@ -25,7 +25,7 @@ export function BottomNav() {
   return (
     <div className="fixed bottom-3 sm:bottom-6 left-0 right-0 z-40 pointer-events-none flex justify-center w-full px-2 sm:px-4">
       <div className="flex items-center gap-3 w-full max-w-2xl pointer-events-auto">
-        <nav className="flex-1 bg-bg border-2 border-ink/20 shadow-lg shadow-black/5 rounded-full flex items-center justify-between p-1 sm:p-1.5">
+        <nav className="flex-1 bg-bg border-2 border-ink shadow-[inset_0_1.5px_0_0_rgba(255,255,255,0.85),inset_0_-2px_0_0_rgba(0,0,0,0.08),0_4px_0_0_var(--color-ink),0_8px_16px_-2px_rgba(0,0,0,0.15)] rounded-full flex items-center justify-between p-1 sm:p-1.5">
           {navItems.map((item) => {
             const isActive = pathname === item.path;
             return (
@@ -67,7 +67,7 @@ export function BottomNav() {
           href="/pattern-report"
           title="Weekly Reality Check"
           aria-label="Weekly Reality Check"
-          className="shrink-0 aspect-square h-[56px] sm:h-[64px] rounded-full border-2 border-ink/20 shadow-lg shadow-black/5 bg-bg flex items-center justify-center hover:border-ink/40 transition-colors relative overflow-hidden group"
+          className="shrink-0 aspect-square h-[56px] sm:h-[64px] rounded-full border-2 border-ink shadow-[inset_0_1.5px_0_0_rgba(255,255,255,0.85),inset_0_-2px_0_0_rgba(0,0,0,0.08),0_4px_0_0_var(--color-ink),0_8px_16px_-2px_rgba(0,0,0,0.15)] bg-bg flex items-center justify-center hover:opacity-90 active:translate-y-[2px] active:shadow-[inset_0_1.5px_0_0_rgba(255,255,255,0.85),inset_0_-2px_0_0_rgba(0,0,0,0.08),0_2px_0_0_var(--color-ink),0_4px_8px_-2px_rgba(0,0,0,0.12)] transition-all relative overflow-hidden group"
         >
           <div className="w-[80%] h-[80%] flex items-center justify-center transition-transform group-hover:scale-110">
             <Avatar config={typeof userAvatar === 'object' ? userAvatar : DEFAULT_AVATAR} size="100%" />
