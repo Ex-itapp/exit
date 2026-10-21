@@ -147,27 +147,27 @@ export function ClientLayout({ children }: { children: ReactNode }) {
                 <span className="inline">Back</span>
               </button>
             )}
-            <div 
-              className="flex items-center bg-white px-2.5 sm:px-3 h-9 sm:h-10 border-2 border-ink brutalist-shadow-sm cursor-pointer hover:opacity-90 transition-opacity shrink-0" 
+            <button 
               onClick={() => router.push('/dashboard')}
+              className="cursor-pointer hover:opacity-75 transition-opacity shrink-0 flex items-center p-0 bg-transparent border-0" 
+              title="Dashboard"
             >
               <img 
                 src="/logo.png" 
                 alt="exit" 
-                className="h-5 sm:h-6 w-auto object-contain" 
+                className="h-6 sm:h-7 w-auto object-contain" 
               />
-            </div>
+            </button>
           </div>
           {user && (
             <div className="pointer-events-auto shrink-0">
               {isPro ? (
                 <button
                   onClick={() => router.push('/account')}
-                  className="flex items-center gap-1.5 sm:gap-2 bg-ink text-bg px-2.5 sm:px-3 py-1 sm:py-1.5 border-2 border-ink brutalist-shadow-sm hover:opacity-90 transition-opacity cursor-pointer"
-                  title="Pro status"
+                  className="flex items-center justify-center px-2.5 py-1 bg-ink text-bg font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest border border-ink hover:opacity-85 transition-opacity cursor-pointer"
+                  title="Pro account"
                 >
-                  <Crown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand" />
-                  <span className="font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest">Pro Active</span>
+                  PRO
                 </button>
               ) : (
                 <button

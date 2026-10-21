@@ -278,7 +278,7 @@ export default function AccountPage() {
               <CreditCard className="w-5 h-5" />
             </div>
             <div>
-              <p className="font-heading text-sm sm:text-base uppercase font-black tracking-tight">{isPro ? "Pro Active" : "Free Plan"}</p>
+              <p className="font-heading text-sm sm:text-base uppercase font-black tracking-tight">{isPro ? "Pro" : "Free Plan"}</p>
               {isPro && daysRemaining !== null && (
                 <p className="font-mono text-[10px] sm:text-xs text-ink/60">{daysRemaining} days left</p>
               )}
