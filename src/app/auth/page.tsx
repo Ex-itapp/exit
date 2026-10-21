@@ -45,9 +45,10 @@ export default function AuthPage() {
               <h2 className="text-2xl md:text-3xl font-heading uppercase font-black tracking-tight leading-none">
                 Your Safe Space
               </h2>
-              <h1 className="font-heading text-2xl sm:text-3xl uppercase tracking-tight">
-                Sign In to EX-it
-              </h1>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="font-heading text-lg sm:text-xl uppercase tracking-tight text-ink/70">Sign In to</span>
+                <img src="/logo.png" alt="exit" className="h-5 sm:h-6 w-auto object-contain inline-block" />
+              </div>
             </div>
           </div>
 

@@ -28,6 +28,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/logo.png" type="image/png" />
         <link rel="apple-touch-icon" href="/icons/icon-180.svg" />
         <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.svg" />
       </head>

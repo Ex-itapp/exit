@@ -148,13 +148,14 @@ export function ClientLayout({ children }: { children: ReactNode }) {
               </button>
             )}
             <div 
-              className="flex items-center gap-1.5 sm:gap-2 bg-white px-2.5 sm:px-3 py-1 sm:py-1.5 border-2 border-ink brutalist-shadow-sm cursor-pointer hover:opacity-90 transition-opacity" 
+              className="flex items-center bg-white px-2.5 sm:px-3 h-9 sm:h-10 border-2 border-ink brutalist-shadow-sm cursor-pointer hover:opacity-90 transition-opacity shrink-0" 
               onClick={() => router.push('/dashboard')}
             >
-              <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 bg-brand border border-ink block transform -rotate-6" />
-              <h1 className="font-heading text-lg sm:text-xl tracking-tight font-black uppercase">
-                EX-it<span className="text-brand">.</span>
-              </h1>
+              <img 
+                src="/logo.png" 
+                alt="exit" 
+                className="h-5 sm:h-6 w-auto object-contain" 
+              />
             </div>
           </div>
           {user && (

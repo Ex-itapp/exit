@@ -258,12 +258,16 @@ export default function LandingPage() {
         variants={navVariants} initial="hidden" animate="visible"
         className="fixed top-5 left-5 sm:top-8 sm:left-8 z-50 pointer-events-auto"
       >
-        <Link href="/" className="flex items-center gap-2 group">
+        <Link href="/" className="flex items-center gap-3 group">
           <motion.div whileHover={{ rotate: -15, scale: 1.15 }} transition={{ type: "spring", stiffness: 400 }}
             className="bg-ink w-10 h-10 sm:w-12 sm:h-12 border-3 sm:border-4 border-bg rotate-3 flex items-center justify-center shadow-[3px_3px_0px_0px_rgba(255,51,102,1)] group-hover:shadow-[5px_5px_0px_0px_rgba(255,51,102,1)] transition-shadow">
             <HeartCrack className="text-white w-5 h-5 sm:w-6 sm:h-6" />
           </motion.div>
-          <span className="font-heading text-xl sm:text-2xl tracking-tighter hidden sm:block">EX-it.</span>
+          <img 
+            src="/logo.png" 
+            alt="exit" 
+            className="h-6 sm:h-8 w-auto object-contain hidden sm:block" 
+          />
         </Link>
       </motion.div>
 
@@ -638,8 +642,12 @@ export default function LandingPage() {
           {/* Footer inline at bottom of last section */}
           <footer className="absolute bottom-0 w-full border-t-4 border-ink bg-ink text-white py-4 sm:py-6 px-4 z-20">
             <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
-              <span className="font-heading text-lg sm:text-xl tracking-tighter">EX-it.</span>
-              <p className="font-mono text-[10px] sm:text-xs text-white/40">© {new Date().getFullYear()} EX-it. All rights reserved.</p>
+              <img 
+                src="/logo-white.png" 
+                alt="exit" 
+                className="h-6 sm:h-7 w-auto object-contain" 
+              />
+              <p className="font-mono text-[10px] sm:text-xs text-white/40">© {new Date().getFullYear()} exit. All rights reserved.</p>
               <div className="flex gap-4 sm:gap-6 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest text-white/50">
                 <Link href="/privacy" className="hover:text-brand transition-colors">Privacy</Link>
                 <Link href="/tos" className="hover:text-brand transition-colors">Terms</Link>

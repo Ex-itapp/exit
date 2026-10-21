@@ -26,8 +26,14 @@ export function Sidebar() {
   return (
     <aside className="w-64 border-r border-ink/10 bg-bg h-screen sticky top-0 flex flex-col hidden md:flex">
       <div className="p-6 border-b-4 border-ink">
-        <h1 className="text-3xl font-heading tracking-tighter">EX-it.</h1>
-        <div className="mt-2 flex items-center gap-2">
+        <Link href="/dashboard" className="block">
+          <img 
+            src="/logo.png" 
+            alt="exit" 
+            className="h-8 w-auto object-contain"
+          />
+        </Link>
+        <div className="mt-3 flex items-center gap-2">
           <span className="w-3 h-3 bg-positive rounded-none border-2 border-ink block animate-pulse"></span>
           <span className="font-mono text-xs font-bold uppercase">System Active</span>
         </div>
