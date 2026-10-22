@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useRewards, type RewardBadge } from "@/lib/useRewards";
 import { BadgeTile } from "@/components/BadgeTile";
 import { Button } from "@/components/ui/Button";
-import { Award, Lock, Sparkles, X } from "lucide-react";
+import { Award, Lock, Sparkles, X, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function RewardsPage() {
+  const router = useRouter();
   const { badges, unlockedCount, totalCount } = useRewards();
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [selectedBadge, setSelectedBadge] = useState<RewardBadge | null>(null);
@@ -53,6 +55,16 @@ export default function RewardsPage() {
       {/* Header */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b-2 border-ink/15 pb-6">
         <div>
+          <div className="flex items-center gap-3 mb-2">
+            <button
+              onClick={() => router.push('/dashboard')}
+              className="flex items-center gap-1.5 px-2.5 h-7 bg-white border-2 border-ink/20 shadow-xs hover:bg-ink hover:text-bg transition-colors font-mono text-[11px] font-bold uppercase shrink-0 cursor-pointer"
+              title="Back to Dashboard"
+            >
+              <ArrowLeft className="w-3 h-3" />
+              <span>Back</span>
+            </button>
+          </div>
           <h1 className="text-4xl md:text-5xl font-heading tracking-tighter uppercase">REWARDS & MILESTONES</h1>
           <p className="font-mono text-ink/70 mt-2 text-sm md:text-base">CELEBRATE EVERY STEP OF YOUR HEALING.</p>
         </div>

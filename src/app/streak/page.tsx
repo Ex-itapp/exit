@@ -1,14 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { useUser } from "@/lib/useUser";
-import { AlertTriangle, RefreshCcw, Settings2, ShieldAlert, CheckCircle2, X } from "lucide-react";
+import { AlertTriangle, RefreshCcw, Settings2, ShieldAlert, CheckCircle2, X, ArrowLeft } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { CalendarTile } from "@/components/CalendarTile";
 
 export default function Streak() {
+  const router = useRouter();
   const { streakDays, breakupDate, userAnchor, userGoal, appMode, setAppMode } = useUser();
 
   const getGoalIntervention = () => {
@@ -107,10 +109,20 @@ export default function Streak() {
 
       <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b-2 border-ink/15 pb-6">
         <div>
-          <span className="font-mono text-xs font-bold uppercase tracking-widest bg-ink text-bg px-2.5 py-1">
-            Active Protection Mode
-          </span>
-          <h1 className="text-4xl md:text-5xl font-heading tracking-tighter uppercase mt-2">STREAK & CLARITY</h1>
+          <div className="flex items-center gap-3 mb-2">
+            <button
+              onClick={() => router.push('/dashboard')}
+              className="flex items-center gap-1 px-2.5 h-7 bg-white border-2 border-ink/20 shadow-xs hover:bg-ink hover:text-bg transition-colors font-mono text-[11px] font-bold uppercase shrink-0 cursor-pointer"
+              title="Back to Dashboard"
+            >
+              <ArrowLeft className="w-3 h-3" />
+              <span>Back</span>
+            </button>
+            <span className="font-mono text-xs font-bold uppercase tracking-widest bg-ink text-bg px-2.5 py-1">
+              Active Protection Mode
+            </span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-heading tracking-tighter uppercase mt-1">STREAK & CLARITY</h1>
           <p className="font-mono text-ink/70 mt-1 text-sm md:text-base uppercase">Every day is an act of self-respect.</p>
         </div>
         <div className="text-left sm:text-right bg-white border-2 border-ink/15 px-6 py-3 shadow-xs">

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { usePro } from '../lib/usePro';
 import { supabase } from '../lib/supabase';
 import { savePaymentDebugRecord } from '../lib/paymentDebug';
@@ -12,6 +13,7 @@ import {
   Heart,
   Star,
   Crown,
+  ArrowLeft,
 } from 'lucide-react';
 
 type BillingCycle = 'monthly' | 'annual';
@@ -61,6 +63,7 @@ function useCurrentUser() {
 }
 
 export function PricingClient() {
+  const router = useRouter();
   const { user, authLoading } = useCurrentUser();
   const { isPro, loading: proLoading } = usePro();
 
@@ -131,9 +134,21 @@ export function PricingClient() {
   };
 
   return (
-    <div className="w-full text-ink font-sans selection:bg-brand selection:text-ink pt-8 pb-24">
+    <div className="w-full text-ink font-sans selection:bg-brand selection:text-ink pt-4 sm:pt-6 pb-24">
       <main className="max-w-5xl mx-auto">
         
+        {/* Back navigation */}
+        <div className="flex justify-start px-4 mb-6">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center gap-1.5 px-3 h-8 bg-white border-2 border-ink shadow-xs hover:bg-ink hover:text-bg transition-colors font-mono text-xs font-bold uppercase cursor-pointer"
+            title="Go Back"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Back</span>
+          </button>
+        </div>
+
         {/* ── HERO ── */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-white border-2 border-ink/15 px-4 py-1.5 shadow-xs mb-6">

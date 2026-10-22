@@ -95,14 +95,24 @@ export default function RebuildPage() {
     <div className="max-w-2xl mx-auto w-full px-4 pt-2 pb-24 space-y-5">
       
       {/* 1. Header */}
-      <div className="flex items-center justify-between pt-1 pb-2">
-        <div>
-          <h1 className="font-heading text-3xl sm:text-4xl uppercase tracking-tighter text-ink leading-none">
-            REBUILD
-          </h1>
-          <span className="font-mono text-xs font-bold uppercase tracking-wider text-ink/50 mt-1 block">
-            {todayFormatted} · DAILY ANCHORS
-          </span>
+      <div className="flex items-center justify-between pt-2 pb-1">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => router.push('/dashboard')}
+            className="flex items-center gap-1.5 px-2.5 h-8 sm:h-9 bg-white border-2 border-ink shadow-xs hover:bg-ink hover:text-bg transition-colors font-mono text-xs font-bold uppercase shrink-0 cursor-pointer"
+            title="Back to Dashboard"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Back</span>
+          </button>
+          <div>
+            <h1 className="font-heading text-2xl sm:text-4xl uppercase tracking-tighter text-ink leading-none">
+              REBUILD
+            </h1>
+            <span className="font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider text-ink/50 mt-1 block">
+              {todayFormatted} · DAILY ANCHORS
+            </span>
+          </div>
         </div>
       </div>
 

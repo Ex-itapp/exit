@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { useAuth, MOCK_USER_ID } from "@/lib/useAuth";
 import { usePro } from "@/lib/usePro";
-import { ArrowLeft, Crown } from "lucide-react";
+import { Crown } from "lucide-react";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { PWANotificationsPrompt } from "@/components/PWANotificationsPrompt";
 import { CompulsoryAuthGate } from "@/components/auth/CompulsoryAuthGate";
@@ -107,20 +107,6 @@ export function ClientLayout({ children }: { children: ReactNode }) {
     return <CompulsoryAuthGate />;
   }
 
-  const hasCustomBackButton = [
-    '/dashboard', 
-    '/onboarding', 
-    '/auth',
-    '/therapist',
-    '/closure',
-    '/diary/new',
-    '/flags/new',
-    '/privacy',
-    '/tos',
-    '/support',
-    '/talk'
-  ].includes(pathname) || pathname?.startsWith('/timeline/');
-
   // Public pages
   if (isPublicPage) {
     return (
@@ -133,54 +119,46 @@ export function ClientLayout({ children }: { children: ReactNode }) {
   return (
       <div suppressHydrationWarning className="w-full min-h-screen flex flex-col bg-bg relative">
         
-        {/* Clean, Minimal Floating Logo Header */}
-        <header className="px-3 sm:px-4 md:px-8 pt-3 sm:pt-6 pb-2 flex items-center justify-between sticky top-0 z-40 bg-transparent pointer-events-none transition-all duration-200">
-          <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto">
-            {!hasCustomBackButton && (
-              <button
-                onClick={() => router.back()}
-                className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 h-9 sm:h-10 bg-white border-2 border-ink brutalist-shadow-sm hover:bg-ink hover:text-bg transition-colors font-mono text-xs font-bold uppercase shrink-0"
-                title="Go Back"
+        {/* Brand header: only displayed on the Home Dashboard */}
+        {pathname === '/dashboard' && (
+          <header className="max-w-2xl mx-auto w-full px-4 pt-4 sm:pt-6 pb-2 flex items-center justify-between bg-bg shrink-0">
+            <div className="flex items-center">
+              <button 
+                onClick={() => router.push('/dashboard')}
+                className="cursor-pointer hover:opacity-75 transition-opacity shrink-0 flex items-center p-0 bg-transparent border-0" 
+                title="Dashboard"
               >
-                <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                <span className="inline">Back</span>
+                <img 
+                  src="/logo.png" 
+                  alt="exit" 
+                  className="h-6 sm:h-7 w-auto object-contain" 
+                />
               </button>
-            )}
-            <button 
-              onClick={() => router.push('/dashboard')}
-              className="cursor-pointer hover:opacity-75 transition-opacity shrink-0 flex items-center p-0 bg-transparent border-0" 
-              title="Dashboard"
-            >
-              <img 
-                src="/logo.png" 
-                alt="exit" 
-                className="h-6 sm:h-7 w-auto object-contain" 
-              />
-            </button>
-          </div>
-          {user && (
-            <div className="pointer-events-auto shrink-0">
-              {isPro ? (
-                <button
-                  onClick={() => router.push('/account')}
-                  className="flex items-center justify-center px-2.5 py-1 bg-ink text-bg font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest border border-ink hover:opacity-85 transition-opacity cursor-pointer"
-                  title="Pro account"
-                >
-                  PRO
-                </button>
-              ) : (
-                <button
-                  onClick={() => router.push('/pricing')}
-                  className="flex items-center gap-1.5 sm:gap-2 bg-white px-2.5 sm:px-3 py-1 sm:py-1.5 border-2 border-ink brutalist-shadow-sm hover:bg-brand hover:text-ink transition-colors cursor-pointer"
-                  title="Upgrade to Pro"
-                >
-                  <Crown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-ink" />
-                  <span className="font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest">Try Pro</span>
-                </button>
-              )}
             </div>
-          )}
-        </header>
+            {user && (
+              <div className="shrink-0">
+                {isPro ? (
+                  <button
+                    onClick={() => router.push('/account')}
+                    className="flex items-center justify-center px-2.5 py-1 bg-ink text-bg font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest border border-ink hover:opacity-85 transition-opacity cursor-pointer"
+                    title="Pro account"
+                  >
+                    PRO
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => router.push('/pricing')}
+                    className="flex items-center gap-1.5 sm:gap-2 bg-white px-2.5 sm:px-3 py-1 sm:py-1.5 border-2 border-ink brutalist-shadow-sm hover:bg-brand hover:text-ink transition-colors cursor-pointer"
+                    title="Upgrade to Pro"
+                  >
+                    <Crown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-ink" />
+                    <span className="font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest">Try Pro</span>
+                  </button>
+                )}
+              </div>
+            )}
+          </header>
+        )}
 
         <main className="flex-1 overflow-y-auto p-2 sm:p-4 md:p-8 relative custom-scrollbar">
           {/* Subtle background grid pattern for brutalist feel */}
