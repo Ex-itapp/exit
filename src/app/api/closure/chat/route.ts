@@ -2,12 +2,13 @@ import { NextResponse } from 'next/server';
 import { callAIRouter } from '@/lib/ai/router';
 import { requirePro } from '@/lib/requirePro';
 import { sanitizeForPrompt } from '@/lib/prompt';
+import { buildTimeAwareContext } from '@/lib/timeAwareness';
 
 export async function POST(req: Request) {
   try {
     const proCheck = await requirePro();
     if (proCheck.error) return proCheck.error;
-    const { userMessage, history, voiceProfile, traitProfile, retrievedMemories } = await req.json();
+    const { userMessage, history, voiceProfile, traitProfile, retrievedMemories, userLocalTime, userTimezone } = await req.json();
 
     if (!userMessage || typeof userMessage !== 'string') {
       return NextResponse.json({ error: 'Missing user message' }, { status: 400 });
@@ -59,6 +60,30 @@ User text: "${safeUserMessage}"`;
       .join('\n- ');
     const rawExport = vp.raw_chat_export ? sanitizeForPrompt(String(vp.raw_chat_export), 8000) : '';
 
+    // Build temporal awareness context from history and timestamps
+    const rawHistoryList = (history || []).map((h: any) => ({
+      role: h.role === 'ex_simulation' || h.role === 'assistant' || h.role === 'system_scripted' ? 'assistant' : 'user',
+      content: h.role === 'user' ? sanitizeForPrompt(String(h.content || '')) : String(h.content || ''),
+      created_at: h.created_at || h.timestamp
+    }));
+
+    // Ensure the current user message is included
+    const lastMsg = rawHistoryList[rawHistoryList.length - 1];
+    if (!lastMsg || lastMsg.role !== 'user' || lastMsg.content !== safeUserMessage) {
+      rawHistoryList.push({
+        role: 'user',
+        content: safeUserMessage,
+        created_at: userLocalTime || new Date().toISOString()
+      });
+    }
+
+    const { timeInstruction, formattedMessages } = buildTimeAwareContext({
+      messages: rawHistoryList,
+      userLocalTime,
+      userTimezone,
+      mode: 'ex'
+    });
+
     const systemPrompt = `You are roleplaying as the user's REAL EX in an intense, raw closure simulation. You are NOT an AI assistant, NOT a counselor, and NOT trying to make them feel good or bad artificially. You are reacting like an actual ex-partner when texted out of nowhere after a breakup.
 
 EX'S EXACT TEXTING PROFILE:
@@ -85,25 +110,13 @@ EX'S REAL SAMPLE MESSAGES (Imitate this cadence and syntax strictly):
 - ${examples}
 
 ${rawExport ? `EX'S RAW CHAT EXPORT (Most crucial reference for tone and style):\n${rawExport}\n` : ''}
+${timeInstruction}
+
 CORE BEHAVIOR RULES (GOATED REALISM):
 1. NO AI BLEEDTHROUGH: Never apologize like a customer service agent or say things like "I hear where you're coming from" or "I validate that". Use real human texting language.
 2. STICK TO UNRESOLVED TOPICS: Address unanswered questions, blame, regret, or awkward truths with real human imperfection.
 3. MATCH LENGTH EXACTLY: Keep every text short (1-2 sentences max). Real exes don't text long paragraphs unless they are writing an essay.
 4. NO ROMANTIC DRIFT: Do not fall back into flirting or romantic roleplay. Keep the focus on closure and unresolved feelings.`;
-
-    // Sanitize all history messages
-    const formattedMessages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }> = (history || []).map((h: any) => ({
-      role: h.role === 'ex_simulation' || h.role === 'assistant' || h.role === 'system_scripted' ? 'assistant' : 'user',
-      content: h.role === 'user'
-        ? sanitizeForPrompt(String(h.content || ''))
-        : String(h.content || '')
-    }));
-
-    // Only append the current message if the caller didn't already include it
-    const lastMessage = formattedMessages[formattedMessages.length - 1];
-    if (!lastMessage || lastMessage.role !== 'user' || lastMessage.content !== safeUserMessage) {
-      formattedMessages.push({ role: 'user', content: safeUserMessage });
-    }
 
     // Call AI Router
     let generatedReply = await callAIRouter({

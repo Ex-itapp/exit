@@ -2,12 +2,13 @@ import { NextResponse } from 'next/server';
 import { callAIRouter } from '@/lib/ai/router';
 import { requirePro } from '@/lib/requirePro';
 import { sanitizeForPrompt } from '@/lib/prompt';
+import { buildTimeAwareContext } from '@/lib/timeAwareness';
 
 export async function POST(req: Request) {
   try {
     const proCheck = await requirePro();
     if (proCheck.error) return proCheck.error;
-    const { messages, userGoal, tone, habitsSummary } = await req.json();
+    const { messages, userGoal, tone, habitsSummary, userLocalTime, userTimezone } = await req.json();
     
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json({ error: 'Missing messages array' }, { status: 400 });
@@ -52,6 +53,22 @@ User check-in text:
       ? `\nREBUILD HABITS CONTEXT: The user is currently building these daily habits instead of texting their ex: "${sanitizeForPrompt(String(habitsSummary), 600)}". When relevant, you can naturally celebrate their consistency (e.g. "proud of you for keeping up the routine"), but NEVER guilt or shame them if they missed any.`
       : '';
 
+    // Build time-aware context for Companion
+    const rawHistoryList = (messages || []).map((m: any) => ({
+      role: m.role === 'model' || m.role === 'assistant' ? 'assistant' : 'user',
+      content: m.role === 'user' 
+        ? sanitizeForPrompt(m.parts?.[0]?.text || m.content || "")
+        : (m.parts?.[0]?.text || m.content || ""),
+      created_at: m.timestamp || m.created_at
+    })).filter((m: any) => m.content.length > 0);
+
+    const { timeInstruction, formattedMessages } = buildTimeAwareContext({
+      messages: rawHistoryList,
+      userLocalTime,
+      userTimezone,
+      mode: 'companion'
+    });
+
     const defaultSystemInstruction = `You are the user's ride-or-die best friend texting them through their breakup recovery. You are NOT a clinical therapist and NOT a robotic AI. You are a real, funny, hyper-supportive, and honest friend on iMessage.
 
 VIBE & TEXTING RULES:
@@ -63,16 +80,9 @@ VIBE & TEXTING RULES:
 - When the chat feels like it's wrapping up, naturally suggest an in-app feature: "Go vent in your Diary", "Log that red flag", or "Check your No-Contact Streak".
 
 ${activeTone}
+${timeInstruction}
 
 CONTEXT: The user's healing focus is "${safeGoal}".${habitsContext}`;
-
-    // Format messages for router - sanitize each user message
-    const formattedHistory = messages.map((m: any) => ({
-      role: m.role === 'model' || m.role === 'assistant' ? 'assistant' as const : 'user' as const,
-      content: m.role === 'user' 
-        ? sanitizeForPrompt(m.parts?.[0]?.text || m.content || "")
-        : (m.parts?.[0]?.text || m.content || "")
-    })).filter(m => m.content.length > 0);
 
     // We run the Crisis Classifier (Call 1) and the Main Reply (Call 2) IN PARALLEL
     // to significantly reduce the waiting time for the user.
@@ -80,7 +90,7 @@ CONTEXT: The user's healing focus is "${safeGoal}".${habitsContext}`;
 
     const replyPromise = callAIRouter({
       systemPrompt: defaultSystemInstruction,
-      messages: formattedHistory,
+      messages: formattedMessages,
       tier: 'fast',
       temperature: 0.7
     });

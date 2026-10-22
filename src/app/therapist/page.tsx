@@ -18,10 +18,12 @@ import { ChatHeader } from "@/components/chat/ChatHeader";
 import { QuickActions } from "@/components/chat/QuickActions";
 import { CompanionSettings } from "@/components/chat/CompanionSettings";
 import { BrandWatermark } from "@/components/chat/BrandWatermark";
+import { formatChatDivider } from "@/lib/timeAwareness";
 
 interface Message {
   role: 'user' | 'model';
   parts: { text: string }[];
+  timestamp?: string;
 }
 
 export const TherapistPage = () => {
@@ -85,16 +87,21 @@ export const TherapistPage = () => {
   const startPresetChat = async (prompt: string) => {
     if (!isPro) return;
 
+    const nowIso = new Date().toISOString();
+    const userMsg: Message = { role: 'user', parts: [{ text: prompt }], timestamp: nowIso };
+
     setIsLoading(true);
     setErrorBanner(null);
-    setMessages([{ role: 'user', parts: [{ text: prompt }] }]);
+    setMessages([userMsg]);
 
     try {
       const res = await fetch("/api/therapist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: [{ role: 'user', parts: [{ text: prompt }] }],
+          messages: [{ role: 'user', parts: [{ text: prompt }], timestamp: nowIso }],
+          userLocalTime: nowIso,
+          userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           userGoal: userGoal,
           tone,
           habitsSummary
@@ -111,7 +118,7 @@ export const TherapistPage = () => {
 
       setMessages((prev) => [
         ...prev,
-        { role: 'model', parts: [{ text: data.aiReply }] }
+        { role: 'model', parts: [{ text: data.aiReply }], timestamp: new Date().toISOString() }
       ]);
       triggerPWAActivity();
     } catch {
@@ -125,7 +132,8 @@ export const TherapistPage = () => {
   const sendMessage = async () => {
     if (!inputText.trim() || !isPro) return;
 
-    const newMessage: Message = { role: 'user', parts: [{ text: inputText.trim() }] };
+    const nowIso = new Date().toISOString();
+    const newMessage: Message = { role: 'user', parts: [{ text: inputText.trim() }], timestamp: nowIso };
     const updatedMessages = [...messages, newMessage];
     
     setMessages(updatedMessages);
@@ -138,7 +146,13 @@ export const TherapistPage = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: updatedMessages,
+          messages: updatedMessages.map(m => ({
+            role: m.role,
+            parts: m.parts,
+            timestamp: m.timestamp || nowIso
+          })),
+          userLocalTime: nowIso,
+          userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           userGoal: userGoal,
           tone: tone,
           habitsSummary
@@ -155,7 +169,7 @@ export const TherapistPage = () => {
 
       setMessages((prev) => [
         ...prev,
-        { role: 'model', parts: [{ text: data.aiReply }] }
+        { role: 'model', parts: [{ text: data.aiReply }], timestamp: new Date().toISOString() }
       ]);
       triggerPWAActivity();
     } catch {
@@ -194,14 +208,33 @@ export const TherapistPage = () => {
             </p>
           </div>
         ) : (
-          messages.map((msg, i) => (
-            <MessageBubble 
-              key={i}
-              message={msg}
-              mood="companion"
-              isScreenshotMode={isScreenshotMode}
-            />
-          ))
+          messages.map((msg, i) => {
+            const prevMsg = i > 0 ? messages[i - 1] : null;
+            const timeDiff = prevMsg?.timestamp && msg.timestamp 
+              ? Math.max(0, new Date(msg.timestamp).getTime() - new Date(prevMsg.timestamp).getTime())
+              : 0;
+            const showDivider = i === 0 || timeDiff >= 15 * 60 * 1000;
+            const showTimestamp = i === 0 || timeDiff > 60 * 1000 || i === messages.length - 1;
+
+            return (
+              <div key={i}>
+                {showDivider && msg.timestamp && (
+                  <div className="flex justify-center my-3 select-none">
+                    <span className="font-mono text-[9px] uppercase font-bold text-ink/40 bg-ink/5 px-2.5 py-0.5 border border-ink/10">
+                      {formatChatDivider(msg.timestamp, prevMsg?.timestamp)}
+                    </span>
+                  </div>
+                )}
+                <MessageBubble 
+                  message={msg}
+                  mood="companion"
+                  timestamp={msg.timestamp}
+                  showTimestamp={showTimestamp}
+                  isScreenshotMode={isScreenshotMode}
+                />
+              </div>
+            );
+          })
         )}
         
         {isLoading && <TypingIndicator mood="companion" />}

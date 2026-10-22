@@ -28,6 +28,7 @@ import { ChatInput } from "@/components/chat/ChatInput";
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { ExSettings } from "@/components/chat/ExSettings";
 import { BrandWatermark } from "@/components/chat/BrandWatermark";
+import { formatChatDivider } from "@/lib/timeAwareness";
 
 export default function ClosurePage() {
   const router = useRouter();
@@ -258,13 +259,19 @@ export default function ClosurePage() {
       const relevantMems = retrieveRelevantMemories(userText, 3);
       const sessionHistory = messages
         .filter(m => m.session_id === currentSessId)
-        .map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content }));
+        .map(m => ({ 
+          role: m.role === 'user' ? 'user' : 'assistant', 
+          content: m.content,
+          created_at: m.created_at
+        }));
       const res = await fetch('/api/closure/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userMessage: userText,
-          history: [...sessionHistory, { role: 'user', content: userText }],
+          history: [...sessionHistory, { role: 'user', content: userText, created_at: new Date().toISOString() }],
+          userLocalTime: new Date().toISOString(),
+          userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           voiceProfile: profile?.voice_profile || voiceForm,
           traitProfile: profile?.trait_profile || traitForm,
           retrievedMemories: relevantMems
@@ -569,14 +576,27 @@ export default function ClosurePage() {
                         );
                       }
 
+                      const prevMsg = idx > 0 ? allChronologicalMsgs[idx - 1] : null;
+                      const timeDiff = prevMsg ? Math.max(0, new Date(m.created_at).getTime() - new Date(prevMsg.created_at).getTime()) : 0;
+                      const showDivider = idx === 0 || timeDiff >= 15 * 60 * 1000;
+                      const showTimestamp = idx === 0 || timeDiff > 60 * 1000 || idx === allChronologicalMsgs.length - 1;
+
                       return (
                         <div key={m.id}>
+                          {showDivider && (
+                            <div className="flex justify-center my-3 select-none">
+                              <span className="font-mono text-[9px] uppercase font-bold text-ink/40 bg-ink/5 px-2.5 py-0.5 border border-ink/10">
+                                {formatChatDivider(m.created_at, prevMsg?.created_at)}
+                              </span>
+                            </div>
+                          )}
+
                           <MessageBubble
                             content={m.content}
                             isUser={isUser}
                             mood="ex"
                             timestamp={m.created_at}
-                            showTimestamp={idx === 0 || (idx > 0 && (new Date(m.created_at).getTime() - new Date(allChronologicalMsgs[idx - 1].created_at).getTime()) > 300000)}
+                            showTimestamp={showTimestamp}
                             animationDelay={idx * 40}
                           />
 
