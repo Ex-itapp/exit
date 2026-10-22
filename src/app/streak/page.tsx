@@ -112,11 +112,11 @@ export default function Streak() {
           <div className="flex items-center gap-3 mb-2">
             <button
               onClick={() => router.push('/dashboard')}
-              className="flex items-center gap-1 px-2.5 h-7 bg-white border-2 border-ink/20 shadow-xs hover:bg-ink hover:text-bg transition-colors font-mono text-[11px] font-bold uppercase shrink-0 cursor-pointer"
+              className="w-7 h-7 flex items-center justify-center bg-white border-2 border-ink/20 shadow-xs hover:bg-ink hover:text-bg transition-colors shrink-0 cursor-pointer"
               title="Back to Dashboard"
+              aria-label="Back to Dashboard"
             >
-              <ArrowLeft className="w-3 h-3" />
-              <span>Back</span>
+              <ArrowLeft className="w-3.5 h-3.5" />
             </button>
             <span className="font-mono text-xs font-bold uppercase tracking-widest bg-ink text-bg px-2.5 py-1">
               Active Protection Mode

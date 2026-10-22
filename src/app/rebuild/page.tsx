@@ -98,11 +98,11 @@ export default function RebuildPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push('/dashboard')}
-            className="flex items-center gap-1.5 px-2.5 h-8 sm:h-9 bg-white border-2 border-ink shadow-xs hover:bg-ink hover:text-bg transition-colors font-mono text-xs font-bold uppercase shrink-0 cursor-pointer"
+            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center bg-white border-2 border-ink shadow-xs hover:bg-ink hover:text-bg transition-colors shrink-0 cursor-pointer"
             title="Back to Dashboard"
+            aria-label="Back to Dashboard"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back</span>
+            <ArrowLeft className="w-4 h-4" />
           </button>
           <div>
             <h1 className="font-heading text-2xl sm:text-4xl uppercase tracking-tighter text-ink leading-none">

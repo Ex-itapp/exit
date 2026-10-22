@@ -141,11 +141,11 @@ export function PricingClient() {
         <div className="flex justify-start px-4 mb-6">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-1.5 px-3 h-8 bg-white border-2 border-ink shadow-xs hover:bg-ink hover:text-bg transition-colors font-mono text-xs font-bold uppercase cursor-pointer"
+            className="w-8 h-8 flex items-center justify-center bg-white border-2 border-ink shadow-xs hover:bg-ink hover:text-bg transition-colors shrink-0 cursor-pointer"
             title="Go Back"
+            aria-label="Go Back"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back</span>
+            <ArrowLeft className="w-4 h-4" />
           </button>
         </div>
 
