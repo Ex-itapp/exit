@@ -23,6 +23,7 @@ interface ExSettingsProps {
   // Persona engine
   personaName: string;
   onOpenPersonaEngine: () => void;
+  onOpenMemories?: () => void;
   // Session info
   sessionMessageCount: number;
   sessionStartTime?: string;
@@ -48,6 +49,7 @@ export function ExSettings({
   onClearChat,
   onAddMemory,
   onOpenPersonaEngine,
+  onOpenMemories,
   sessionMessageCount,
   sessionStartTime,
 }: ExSettingsProps) {
@@ -178,8 +180,11 @@ export function ExSettings({
                   <div
                     onClick={() => {
                       onClose();
-                      // @ts-ignore - hacking it through window since ExSettings doesn't accept onOpenMemories
-                      window.dispatchEvent(new CustomEvent('unsent_open_memories'));
+                      if (onOpenMemories) {
+                        onOpenMemories();
+                      } else {
+                        window.dispatchEvent(new CustomEvent('unsent_open_memories'));
+                      }
                     }}
                     className="flex-1 rounded-none bg-ink/5 border border-ink/10 p-3 sm:p-4 flex items-center justify-between cursor-pointer hover:bg-ink/10 transition-colors"
                   >

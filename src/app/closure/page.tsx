@@ -72,34 +72,39 @@ export default function ClosurePage() {
   const [isTuning, setIsTuning] = useState(false);
   const [tuneToast, setTuneToast] = useState<string | null>(null);
 
-  // Persona Intake Form State
-  const [personLabel, setPersonLabel] = useState(profile?.label || "My Ex");
-  const [voiceForm, setVoiceForm] = useState<VoiceProfile>(profile?.voice_profile || {
-    response_time: "",
-    typing_quirks: "",
-    double_texting: "",
-    capitalization: "",
-    punctuation_habits: "",
-    avg_message_length: "",
-    emoji_usage: "",
-    common_words_phrases: [],
-    tone_baseline: "",
-    tone_under_conflict: "",
-    tone_when_affectionate: "",
-    recurring_topics: [],
-    top_verbatim_example_lines: []
+  // Helper to ensure voiceForm and traitForm never have undefined/null properties that cause crashes
+  const sanitizeVoiceProfile = (vp?: Partial<VoiceProfile> | null): VoiceProfile => ({
+    response_time: vp?.response_time || "",
+    typing_quirks: vp?.typing_quirks || "",
+    double_texting: vp?.double_texting || "",
+    capitalization: vp?.capitalization || "",
+    punctuation_habits: vp?.punctuation_habits || "",
+    avg_message_length: vp?.avg_message_length || "",
+    emoji_usage: vp?.emoji_usage || "",
+    common_words_phrases: Array.isArray(vp?.common_words_phrases) ? vp.common_words_phrases : [],
+    tone_baseline: vp?.tone_baseline || "",
+    tone_under_conflict: vp?.tone_under_conflict || "",
+    tone_when_affectionate: vp?.tone_when_affectionate || "",
+    recurring_topics: Array.isArray(vp?.recurring_topics) ? vp.recurring_topics : [],
+    top_verbatim_example_lines: Array.isArray(vp?.top_verbatim_example_lines) ? vp.top_verbatim_example_lines : [],
+    raw_chat_export: vp?.raw_chat_export || ""
   });
 
-  const [traitForm, setTraitForm] = useState<TraitProfile>(profile?.trait_profile || {
-    flaws_or_toxic_traits: "",
-    breakup_context: "",
-    trigger_phrase: "",
-    values: "",
-    love_language: "",
-    conflict_behavior: "",
-    humor_notes: "",
-    relationship_context: ""
+  const sanitizeTraitProfile = (tp?: Partial<TraitProfile> | null): TraitProfile => ({
+    flaws_or_toxic_traits: tp?.flaws_or_toxic_traits || "",
+    breakup_context: tp?.breakup_context || "",
+    trigger_phrase: tp?.trigger_phrase || "",
+    values: tp?.values || "",
+    love_language: tp?.love_language || "",
+    conflict_behavior: tp?.conflict_behavior || "",
+    humor_notes: tp?.humor_notes || "",
+    relationship_context: tp?.relationship_context || ""
   });
+
+  // Persona Intake Form State
+  const [personLabel, setPersonLabel] = useState(profile?.label || "My Ex");
+  const [voiceForm, setVoiceForm] = useState<VoiceProfile>(() => sanitizeVoiceProfile(profile?.voice_profile));
+  const [traitForm, setTraitForm] = useState<TraitProfile>(() => sanitizeTraitProfile(profile?.trait_profile));
 
   // Memory Bank New Entry Form State
   const [newMemContent, setNewMemContent] = useState("");
@@ -206,10 +211,21 @@ export default function ClosurePage() {
   useEffect(() => {
     if (profile) {
       setPersonLabel(profile.label || "My Ex");
-      setVoiceForm(profile.voice_profile);
-      setTraitForm(profile.trait_profile);
+      setVoiceForm(sanitizeVoiceProfile(profile.voice_profile));
+      setTraitForm(sanitizeTraitProfile(profile.trait_profile));
     }
   }, [profile]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('mode') === 'settings') {
+        setActiveTab('engine');
+      } else if (params.get('mode') === 'memories') {
+        setActiveTab('memories');
+      }
+    }
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -350,8 +366,9 @@ export default function ClosurePage() {
       const data = await res.json();
       const tunedProfile = data.updatedVoiceProfile || data.updatedVoice;
       if (tunedProfile) {
-        setVoiceForm(tunedProfile);
-        await updateVoiceProfile(tunedProfile);
+        const sanitized = sanitizeVoiceProfile(tunedProfile);
+        setVoiceForm(sanitized);
+        await updateVoiceProfile(sanitized);
         setTuneToast("✨ We gently analyzed that and attuned their communication rhythm!");
         setTimeout(() => setTuneToast(null), 4000);
       }
@@ -677,6 +694,7 @@ export default function ClosurePage() {
                 onAddMemory={(content, tags, weight) => addMemory(content, tags, weight)}
                 personaName={profile.label || "Their Profile"}
                 onOpenPersonaEngine={() => { setShowExSettings(false); setActiveTab('engine'); }}
+                onOpenMemories={() => { setShowExSettings(false); setActiveTab('memories'); }}
                 sessionMessageCount={allChronologicalMsgs.length}
                 sessionStartTime={activeSession?.started_at}
               />
@@ -740,15 +758,14 @@ export default function ClosurePage() {
           <div className="max-w-3xl mx-auto w-full p-4 sm:p-8 flex-1 flex flex-col justify-center my-auto min-h-min">
             
             <div className="mb-6 flex justify-between items-center">
-              {profile && (
-                <Button
-                  variant="secondary"
-                  onClick={() => setActiveTab('sessions')}
-                  className="font-mono font-bold text-xs uppercase bg-white border-2 border-ink h-10 px-4 hover:bg-ink hover:text-white"
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" /> Cancel Setup
-                </Button>
-              )}
+              <button
+                type="button"
+                onClick={() => setActiveTab('sessions')}
+                className="w-10 h-10 flex items-center justify-center bg-white border-2 border-ink hover:bg-ink hover:text-white transition-colors"
+                aria-label="Back"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
             </div>
 
             {isCreatingPersona ? (
@@ -832,7 +849,7 @@ export default function ClosurePage() {
                     <div className="space-y-2">
                       <label className="font-mono text-xs font-bold uppercase block">Their Name / Nickname</label>
                       <Input
-                        value={personLabel}
+                        value={personLabel || ""}
                         onChange={(e) => setPersonLabel(e.target.value)}
                         placeholder="e.g. Alex, J, Ex-partner"
                         className="h-12 border-3 border-ink text-base bg-white font-sans font-bold"
@@ -842,7 +859,7 @@ export default function ClosurePage() {
                     <div className="space-y-2">
                       <label className="font-mono text-xs font-bold uppercase block">Who were they to you?</label>
                       <Input
-                        value={traitForm.relationship_context}
+                        value={traitForm.relationship_context || ""}
                         onChange={(e) => setTraitForm({ ...traitForm, relationship_context: e.target.value })}
                         placeholder="e.g. Ex-fiancé of 3 years, college partner, long-distance ex"
                         className="h-12 border-3 border-ink text-base bg-white font-sans font-bold"
@@ -861,7 +878,7 @@ export default function ClosurePage() {
                       type="file" 
                       accept=".txt,.json,.html" 
                       onChange={handleFileUpload}
-                      disabled={isParsingExport || !personLabel.trim()}
+                      disabled={isParsingExport || !personLabel?.trim()}
                       className="text-xs font-mono file:mr-4 file:py-2 file:px-4 file:border-2 file:border-ink file:text-xs file:font-bold file:uppercase file:bg-bg file:text-ink hover:file:bg-brand cursor-pointer w-full disabled:opacity-50"
                     />
                     {voiceForm.raw_chat_export && (
@@ -873,7 +890,7 @@ export default function ClosurePage() {
                     <Button 
                       className="h-14 px-8 bg-brand hover:bg-brand/90 text-ink shadow-md font-bold uppercase" 
                       onClick={() => setEngineStep(2)}
-                      disabled={!personLabel.trim() || !traitForm.relationship_context.trim()}
+                      disabled={!personLabel?.trim() || !traitForm.relationship_context?.trim()}
                     >
                       Next Stage: Detailed Texting Style <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
@@ -896,7 +913,7 @@ export default function ClosurePage() {
                     <div className="space-y-1">
                       <label className="font-mono text-xs font-bold uppercase opacity-80">Response Time Vibe</label>
                       <Input
-                        value={voiceForm.response_time}
+                        value={voiceForm.response_time || ""}
                         onChange={(e) => setVoiceForm({ ...voiceForm, response_time: e.target.value })}
                         placeholder="e.g. Instant replier, takes 6 hours, leaves on read"
                         className="h-10 text-xs border-2 border-ink bg-white font-mono"
@@ -905,7 +922,7 @@ export default function ClosurePage() {
                     <div className="space-y-1">
                       <label className="font-mono text-xs font-bold uppercase opacity-80">Double Texting Habit</label>
                       <Input
-                        value={voiceForm.double_texting}
+                        value={voiceForm.double_texting || ""}
                         onChange={(e) => setVoiceForm({ ...voiceForm, double_texting: e.target.value })}
                         placeholder="e.g. Spams 5 texts at once, never double texts"
                         className="h-10 text-xs border-2 border-ink bg-white font-mono"
@@ -914,7 +931,7 @@ export default function ClosurePage() {
                     <div className="space-y-1">
                       <label className="font-mono text-xs font-bold uppercase opacity-80">Typing Quirks / Typos</label>
                       <Input
-                        value={voiceForm.typing_quirks}
+                        value={voiceForm.typing_quirks || ""}
                         onChange={(e) => setVoiceForm({ ...voiceForm, typing_quirks: e.target.value })}
                         placeholder="e.g. Uses 'u' & 'r', bad autocorrect, lots of '???'"
                         className="h-10 text-xs border-2 border-ink bg-white font-mono"
@@ -923,7 +940,7 @@ export default function ClosurePage() {
                     <div className="space-y-1">
                       <label className="font-mono text-xs font-bold uppercase opacity-80">Capitalization</label>
                       <Input
-                        value={voiceForm.capitalization}
+                        value={voiceForm.capitalization || ""}
                         onChange={(e) => setVoiceForm({ ...voiceForm, capitalization: e.target.value })}
                         placeholder="e.g. all lowercase, proper punctuation"
                         className="h-10 text-xs border-2 border-ink bg-white font-mono"
@@ -935,7 +952,7 @@ export default function ClosurePage() {
                     <div className="space-y-1">
                       <label className="font-mono text-xs font-bold uppercase opacity-80">Avg Message Length</label>
                       <Input
-                        value={voiceForm.avg_message_length}
+                        value={voiceForm.avg_message_length || ""}
                         onChange={(e) => setVoiceForm({ ...voiceForm, avg_message_length: e.target.value })}
                         placeholder="e.g. 1 word replies ('k', 'yeah'), long essays"
                         className="h-10 text-xs border-2 border-ink bg-white font-mono"
@@ -944,7 +961,7 @@ export default function ClosurePage() {
                     <div className="space-y-1">
                       <label className="font-mono text-xs font-bold uppercase opacity-80">Catchphrases / Slang</label>
                       <Input
-                        value={voiceForm.common_words_phrases.join(', ')}
+                        value={(voiceForm.common_words_phrases || []).join(', ')}
                         onChange={(e) => setVoiceForm({ ...voiceForm, common_words_phrases: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
                         placeholder="e.g. tbh, bro, honestly, I mean..."
                         className="h-10 text-xs border-2 border-ink bg-white font-mono"
@@ -959,7 +976,7 @@ export default function ClosurePage() {
                     <Button 
                       className="h-14 px-8 bg-brand hover:bg-brand/90 text-ink shadow-md font-bold uppercase" 
                       onClick={() => setEngineStep(3)}
-                      disabled={!voiceForm.response_time.trim() || !voiceForm.double_texting.trim() || !voiceForm.typing_quirks.trim() || !voiceForm.capitalization.trim() || !voiceForm.avg_message_length.trim()}
+                      disabled={!voiceForm.response_time?.trim() || !voiceForm.double_texting?.trim() || !voiceForm.typing_quirks?.trim() || !voiceForm.capitalization?.trim() || !voiceForm.avg_message_length?.trim()}
                     >
                       Next Stage: Emotional Tone & Conflict <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
@@ -982,7 +999,7 @@ export default function ClosurePage() {
                     <div className="space-y-1">
                       <label className="font-mono text-xs font-bold uppercase block">Everyday Tone</label>
                       <Textarea
-                        value={voiceForm.tone_baseline}
+                        value={voiceForm.tone_baseline || ""}
                         onChange={(e) => setVoiceForm({ ...voiceForm, tone_baseline: e.target.value })}
                         placeholder="e.g. Casual, warm, slightly distant, practical, intellectual..."
                         className="min-h-[70px] border-2 border-ink/20 text-sm p-3 bg-white"
@@ -992,7 +1009,7 @@ export default function ClosurePage() {
                     <div className="space-y-1">
                       <label className="font-mono text-xs font-bold uppercase block">Under Conflict or Emotional Stress</label>
                       <Textarea
-                        value={voiceForm.tone_under_conflict}
+                        value={voiceForm.tone_under_conflict || ""}
                         onChange={(e) => setVoiceForm({ ...voiceForm, tone_under_conflict: e.target.value })}
                         placeholder="e.g. Withdraws into silence, gets defensive, turns things back on me..."
                         className="min-h-[70px] border-2 border-ink/20 text-sm p-3 bg-white"
@@ -1007,7 +1024,7 @@ export default function ClosurePage() {
                     <Button 
                       className="h-14 px-8 bg-brand hover:bg-brand/90 text-ink shadow-md font-bold uppercase" 
                       onClick={() => setEngineStep(4)}
-                      disabled={!voiceForm.tone_baseline.trim() || !voiceForm.tone_under_conflict.trim()}
+                      disabled={!voiceForm.tone_baseline?.trim() || !voiceForm.tone_under_conflict?.trim()}
                     >
                       Next Stage: Flaws & Breakup Context <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
@@ -1030,7 +1047,7 @@ export default function ClosurePage() {
                     <div className="space-y-1">
                       <label className="font-mono text-xs font-bold uppercase block">Biggest Flaws or Toxic Traits</label>
                       <Textarea
-                        value={traitForm.flaws_or_toxic_traits}
+                        value={traitForm.flaws_or_toxic_traits || ""}
                         onChange={(e) => setTraitForm({ ...traitForm, flaws_or_toxic_traits: e.target.value })}
                         placeholder="e.g. Emotionally unavailable, gaslights when caught lying, always acts like the victim..."
                         className="min-h-[70px] border-2 border-ink/20 text-sm p-3 bg-white"
@@ -1040,7 +1057,7 @@ export default function ClosurePage() {
                     <div className="space-y-1">
                       <label className="font-mono text-xs font-bold uppercase block">How did the relationship end?</label>
                       <Textarea
-                        value={traitForm.breakup_context}
+                        value={traitForm.breakup_context || ""}
                         onChange={(e) => setTraitForm({ ...traitForm, breakup_context: e.target.value })}
                         placeholder="e.g. Ghosted after an argument, mutual breakup, they ended it out of nowhere..."
                         className="min-h-[70px] border-2 border-ink/20 text-sm p-3 bg-white"
@@ -1050,7 +1067,7 @@ export default function ClosurePage() {
                     <div className="space-y-1">
                       <label className="font-mono text-xs font-bold uppercase block">Trigger Phrase / Soft Spot (Optional)</label>
                       <Input
-                        value={traitForm.trigger_phrase}
+                        value={traitForm.trigger_phrase || ""}
                         onChange={(e) => setTraitForm({ ...traitForm, trigger_phrase: e.target.value })}
                         placeholder="e.g. Mentioning their ex, bringing up commitment, asking 'are you free'"
                         className="h-12 border-3 border-ink text-sm bg-white font-sans"
@@ -1065,7 +1082,7 @@ export default function ClosurePage() {
                     <Button 
                       className="h-14 px-8 bg-brand hover:bg-brand/90 text-ink shadow-md font-bold uppercase" 
                       onClick={() => setEngineStep(5)}
-                      disabled={!traitForm.flaws_or_toxic_traits.trim() || !traitForm.breakup_context.trim()}
+                      disabled={!traitForm.flaws_or_toxic_traits?.trim() || !traitForm.breakup_context?.trim()}
                     >
                       Generate Persona Report <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
@@ -1130,15 +1147,16 @@ export default function ClosurePage() {
       {/* TAB 3: MEMORY BANK */}
       {activeTab === 'memories' && (
         <div className="space-y-6 animate-in fade-in">
-          {profile && (
-            <Button
-              variant="secondary"
+          <div className="mb-4">
+            <button
+              type="button"
               onClick={() => setActiveTab('sessions')}
-              className="font-mono font-bold text-xs uppercase bg-white border-2 border-ink/20 h-10 px-4 hover:bg-ink hover:text-white"
+              className="w-10 h-10 flex items-center justify-center bg-white border-2 border-ink hover:bg-ink hover:text-white transition-colors"
+              aria-label="Back"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" /> Back to Persona
-            </Button>
-          )}
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+          </div>
           <div className="bg-white border-2 border-ink/15 shadow-sm p-6 sm:p-10 space-y-8">
             <div className="border-b-2 border-ink/15 pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
