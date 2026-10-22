@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles, BookOpen, ShieldCheck, Flag, CheckCircle, Zap, PenLine, Award, Lock } from "lucide-react";
+import { Sparkles, BookOpen, ShieldCheck, Flag, CheckCircle, Zap, PenLine, Award, Lock, CheckSquare, Trophy } from "lucide-react";
 import { type RewardBadge } from "@/lib/useRewards";
 import { cn } from "@/lib/utils";
 import { motion } from "motion/react";
@@ -19,6 +19,8 @@ export function BadgeTile({ badge, onClick }: BadgeTileProps) {
       case 'ShieldCheck': return <ShieldCheck {...props} />;
       case 'Flag': return <Flag {...props} />;
       case 'CheckCircle': return <CheckCircle {...props} />;
+      case 'CheckSquare': return <CheckSquare {...props} />;
+      case 'Trophy': return <Trophy {...props} />;
       case 'Zap': return <Zap {...props} />;
       case 'PenLine': return <PenLine {...props} />;
       case 'Award': return <Award {...props} />;

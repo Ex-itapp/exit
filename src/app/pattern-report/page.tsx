@@ -43,7 +43,7 @@ export default function RealityCheckPage() {
     generateReport
   } = useRealityCheck();
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'diary' | 'redflags'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'diary' | 'redflags' | 'rebuild'>('overview');
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [downloadSuccess, setDownloadSuccess] = useState<boolean>(false);
   const [selectedHistoricalReport, setSelectedHistoricalReport] = useState<RealityCheckData | null>(null);
@@ -307,11 +307,11 @@ export default function RealityCheckPage() {
             </div>
 
             {/* Tab Switcher */}
-            <div className="grid grid-cols-3 gap-2 border-b-2 border-ink/15 pb-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2 border-b-2 border-ink/15 pb-2">
               <button
                 onClick={() => setActiveTab('overview')}
                 className={cn(
-                  "py-2.5 px-2 font-mono text-xs uppercase font-bold tracking-wider border-2 transition-all text-center",
+                  "py-2.5 px-1.5 sm:px-2 font-mono text-xs uppercase font-bold tracking-wider border-2 transition-all text-center",
                   activeTab === 'overview' 
                     ? "bg-ink text-bg border-ink shadow-xs" 
                     : "bg-white text-ink/60 border-ink/15 hover:border-ink/40"
@@ -323,7 +323,7 @@ export default function RealityCheckPage() {
               <button
                 onClick={() => setActiveTab('diary')}
                 className={cn(
-                  "py-2.5 px-2 font-mono text-xs uppercase font-bold tracking-wider border-2 transition-all text-center",
+                  "py-2.5 px-1.5 sm:px-2 font-mono text-xs uppercase font-bold tracking-wider border-2 transition-all text-center",
                   activeTab === 'diary' 
                     ? "bg-ink text-bg border-ink shadow-xs" 
                     : "bg-white text-ink/60 border-ink/15 hover:border-ink/40"
@@ -335,13 +335,25 @@ export default function RealityCheckPage() {
               <button
                 onClick={() => setActiveTab('redflags')}
                 className={cn(
-                  "py-2.5 px-2 font-mono text-xs uppercase font-bold tracking-wider border-2 transition-all text-center",
+                  "py-2.5 px-1.5 sm:px-2 font-mono text-xs uppercase font-bold tracking-wider border-2 transition-all text-center",
                   activeTab === 'redflags' 
                     ? "bg-ink text-bg border-ink shadow-xs" 
                     : "bg-white text-ink/60 border-ink/15 hover:border-ink/40"
                 )}
               >
                 3. Blindspots
+              </button>
+
+              <button
+                onClick={() => setActiveTab('rebuild')}
+                className={cn(
+                  "py-2.5 px-1.5 sm:px-2 font-mono text-xs uppercase font-bold tracking-wider border-2 transition-all text-center",
+                  activeTab === 'rebuild' 
+                    ? "bg-ink text-bg border-ink shadow-xs" 
+                    : "bg-white text-ink/60 border-ink/15 hover:border-ink/40"
+                )}
+              >
+                4. Rebuild
               </button>
             </div>
 
@@ -491,6 +503,69 @@ export default function RealityCheckPage() {
 
                   <div className="p-4 bg-bg/10 border-2 border-bg/20 font-sans text-sm sm:text-base font-semibold leading-relaxed text-brand">
                     {displayReport.page3_redflags.insight_line}
+                  </div>
+                </motion.div>
+              )}
+
+              {activeTab === 'rebuild' && (
+                <motion.div
+                  key="rebuild"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.15 }}
+                  className="bg-positive/10 text-ink border-4 border-ink p-6 sm:p-10 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-8"
+                >
+                  <div className="flex items-center justify-between border-b-2 border-ink/15 pb-4">
+                    <span className="font-heading uppercase tracking-tight text-ink text-lg font-black">
+                      EX-IT. / REBUILD REVIEW
+                    </span>
+                    <span className="font-mono text-xs uppercase font-bold tracking-widest text-ink/50">
+                      CARD 04
+                    </span>
+                  </div>
+
+                  <h3 className="font-heading text-3xl sm:text-4xl font-black uppercase tracking-tight leading-tight">
+                    {displayReport.page4_rebuild?.headline || "Rebuilding beyond the past"}
+                  </h3>
+
+                  {/* Completion Comparison Badge */}
+                  <div className="bg-white border-2 border-ink p-5 space-y-1 shadow-sm">
+                    <div className="font-mono text-[10px] uppercase font-bold text-ink/60">
+                      Habit Consistency
+                    </div>
+                    <div className="font-heading text-xl sm:text-2xl font-black uppercase text-ink">
+                      {displayReport.page4_rebuild?.completion_comparison || "Consistency tracking active"}
+                    </div>
+                  </div>
+
+                  {/* Strongest and Weakest Habits */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="p-4 bg-white border-2 border-ink space-y-1">
+                      <span className="font-mono text-[10px] uppercase font-bold text-positive bg-positive/15 px-2 py-0.5 border border-positive/30 inline-block">
+                        Strongest Anchor
+                      </span>
+                      <p className="font-sans text-sm font-bold text-ink mt-1">
+                        {displayReport.page4_rebuild?.strongest_habit || "Solid progress logged"}
+                      </p>
+                    </div>
+
+                    <div className="p-4 bg-white border-2 border-ink space-y-1">
+                      <span className="font-mono text-[10px] uppercase font-bold text-accent bg-accent/15 px-2 py-0.5 border border-accent/30 inline-block">
+                        Needs Attention
+                      </span>
+                      <p className="font-sans text-sm font-bold text-ink mt-1">
+                        {displayReport.page4_rebuild?.weakest_habit || "Keep building your rhythm"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Concrete Suggestion */}
+                  <div className="p-4 bg-white border-2 border-ink font-sans text-sm sm:text-base font-semibold leading-relaxed text-ink shadow-xs">
+                    <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-ink/50 block mb-1">
+                      Next Week&apos;s Focus
+                    </span>
+                    {displayReport.page4_rebuild?.next_week_suggestion || "Protect your sleep and morning routine before checking notifications."}
                   </div>
                 </motion.div>
               )}

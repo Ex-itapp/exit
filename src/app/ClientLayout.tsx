@@ -111,7 +111,6 @@ export function ClientLayout({ children }: { children: ReactNode }) {
     '/dashboard', 
     '/onboarding', 
     '/auth',
-    '/roadmap',
     '/therapist',
     '/closure',
     '/diary/new',

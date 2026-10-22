@@ -18,7 +18,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { diary_entries_current, diary_entries_comparison, red_flags_current } = await req.json();
+    const { diary_entries_current, diary_entries_comparison, red_flags_current, habits_current } = await req.json();
 
     // Sanitize inputs
     const safeDiaryCurrent = typeof diary_entries_current === 'string' 
@@ -30,6 +30,9 @@ export async function POST(req: Request) {
     const safeFlags = typeof red_flags_current === 'string' 
       ? sanitizeForPrompt(red_flags_current, 5000) 
       : JSON.stringify(red_flags_current || []).slice(0, 5000);
+    const safeHabits = typeof habits_current === 'string'
+      ? sanitizeForPrompt(habits_current, 3000)
+      : JSON.stringify(habits_current || []).slice(0, 3000);
 
     const systemPrompt = `You are the Reality Check engine for EX-it, a raw, brutalist breakup recovery app.
 Your task is to analyze the user's weekly unfiltered diary entries, red flag logs, and mood history to deliver a crisp, brutally honest "Weekly Reality Check".
@@ -60,6 +63,13 @@ Output ONLY valid JSON matching this exact structure:
       { "category": "Disrespect", "count": 1 }
     ],
     "insight_line": "One blunt, empowering reality check sentence about why they are better off."
+  },
+  "page4_rebuild": {
+    "headline": "Rebuilding beyond the past",
+    "completion_comparison": "A short metric comparing habit consistency this week vs last week (or overall progress)",
+    "strongest_habit": "The habit performed most consistently this week",
+    "weakest_habit": "The habit needing the most care or focus",
+    "next_week_suggestion": "One concrete, grounded action suggestion for next week."
   }
 }
 
@@ -76,6 +86,9 @@ ${safeDiaryComparison}
 
 Red Flags Logged:
 ${safeFlags}
+
+Rebuild Daily Habits Data:
+${safeHabits}
 
 Generate the Weekly Reality Check JSON now.`;
 

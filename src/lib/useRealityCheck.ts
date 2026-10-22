@@ -5,6 +5,7 @@ import { useDiary } from './useDiary';
 import { useFlags } from './useFlags';
 import { useCheckins } from './useCheckins';
 import { useUser } from './useUser';
+import { useHabits } from './useHabits';
 import { supabase } from './supabase';
 
 export interface RealityCheckData {
@@ -29,6 +30,13 @@ export interface RealityCheckData {
     pattern_counts: Array<{ category: string; count: number }>;
     insight_line: string;
   };
+  page4_rebuild?: {
+    headline: string;
+    completion_comparison: string;
+    strongest_habit: string;
+    weakest_habit: string;
+    next_week_suggestion: string;
+  };
 }
 
 const STORAGE_KEY = 'unsent_reality_check_cache';
@@ -41,6 +49,7 @@ export function useRealityCheck() {
   const { flags } = useFlags();
   const { checkins } = useCheckins();
   const { streakDays } = useUser();
+  const { activeHabits, logs, getHabitStreakStats } = useHabits();
 
   const [currentReport, setCurrentReport] = useState<RealityCheckData | null>(null);
   const [history, setHistory] = useState<RealityCheckData[]>([]);
@@ -167,6 +176,12 @@ export function useRealityCheck() {
             category: f.category,
             content: f.content,
             createdAt: f.createdAt
+          })),
+          habits_current: activeHabits.map(h => ({
+            name: h.name,
+            category: h.category,
+            frequency: h.frequency_type,
+            stats: getHabitStreakStats(h)
           }))
         })
       });

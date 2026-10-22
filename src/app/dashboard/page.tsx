@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
-import { Zap, MessageSquare, Sparkles, Send, Award, Flag, Map, Calendar, CheckCircle2 } from "lucide-react";
+import { Zap, MessageSquare, Sparkles, Send, Award, Flag, Map, Calendar, CheckCircle2, CheckSquare } from "lucide-react";
 import { useCheckins } from "@/lib/useCheckins";
 import { useUser } from "@/lib/useUser";
 import { useFlags } from "@/lib/useFlags";
 import { useMoods } from "@/lib/useMoods";
 import { useRewards } from "@/lib/useRewards";
 import { useRealityCheck } from "@/lib/useRealityCheck";
+import { useHabits } from "@/lib/useHabits";
 import { AnchorModal } from "@/components/AnchorModal";
 import { useAuth } from "@/lib/useAuth";
 import { cn } from "@/lib/utils";
@@ -42,6 +43,7 @@ export default function DashboardPage() {
   const { logMood, getMoodForDate } = useMoods();
   const { unlockedCount, totalCount } = useRewards();
   const { currentReport, canGenerate } = useRealityCheck();
+  const { activeHabits, doneTodayCount, isHabitDoneOnDate, todayStr } = useHabits();
   
   const [checkinText, setCheckinText] = useState("");
   const [checkinDone, setCheckinDone] = useState(false);
@@ -104,7 +106,7 @@ export default function DashboardPage() {
           Day {streakDays}
         </div>
         <div 
-          onClick={() => navigate.push('/roadmap')}
+          onClick={() => navigate.push('/streak')}
           className="cursor-pointer hover:translate-y-[-2px] transition-transform space-y-3"
         >
           <div className="flex flex-col items-center justify-center pt-5 pb-3">
@@ -166,7 +168,11 @@ export default function DashboardPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            <h2 className="font-sans font-medium text-base text-ink">How are you feeling today?</h2>
+            <h2 className="font-sans font-medium text-base text-ink">
+              {doneTodayCount >= 2 
+                ? `Checked off ${doneTodayCount} habits today. How are you feeling after that?` 
+                : "How are you feeling today?"}
+            </h2>
             <div className="flex items-center justify-between gap-1.5">
               {MOODS.map(m => {
                 const isActive = todayMood?.emoji === m.emoji;
@@ -241,17 +247,36 @@ export default function DashboardPage() {
           </div>
         </button>
 
-        {/* Roadmap */}
+        {/* Rebuild Card */}
         <button
-          onClick={() => navigate.push('/roadmap')}
+          onClick={() => navigate.push('/rebuild')}
           className="col-span-1 bg-positive/10 border-2 border-ink p-4 flex flex-col gap-3 hover:-translate-y-1 transition-transform text-left"
         >
           <div className="w-10 h-10 bg-positive text-ink border-2 border-ink flex items-center justify-center shrink-0 brutalist-shadow-sm">
-            <Map className="w-5 h-5" />
+            <CheckSquare className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-heading text-lg uppercase text-ink tracking-tighter">Roadmap</h3>
-            <span className="font-mono text-xs text-ink/60">Day {streakDays}/90</span>
+            <h3 className="font-heading text-lg uppercase text-ink tracking-tighter">REBUILD</h3>
+            <span className="font-mono text-xs text-ink/60 block">
+              {activeHabits.length === 0 ? "Start your first habit" : `${doneTodayCount}/${activeHabits.length} today`}
+            </span>
+            {activeHabits.length > 0 && (
+              <div className="flex items-center gap-1.5 mt-2">
+                {activeHabits.map((h) => {
+                  const isDone = isHabitDoneOnDate(h.id, todayStr);
+                  return (
+                    <div 
+                      key={h.id}
+                      className={cn(
+                        "w-3.5 h-3.5 border border-ink",
+                        isDone ? "bg-[#3FA9D6]" : "bg-white"
+                      )}
+                      title={h.name}
+                    />
+                  );
+                })}
+              </div>
+            )}
           </div>
         </button>
 

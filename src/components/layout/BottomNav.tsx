@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -7,6 +8,7 @@ import { Book, Home, MessageCircle, CalendarDays, User } from "lucide-react";
 import { motion } from "motion/react";
 import { useUser, DEFAULT_AVATAR } from "@/lib/useUser";
 import { Avatar } from "@/components/ui/Avatar";
+import { AnchorModal } from "@/components/AnchorModal";
 
 const navItems = [
   { icon: Home, path: "/dashboard", label: "Home" },
@@ -19,6 +21,7 @@ const navItems = [
 export function BottomNav() {
   const pathname = usePathname();
   const { userAvatar } = useUser();
+  const [showUrgeModal, setShowUrgeModal] = useState(false);
 
   if (pathname === '/onboarding' || pathname.startsWith('/closure') || pathname.startsWith('/therapist') || pathname.startsWith('/onboarding') || pathname.includes('/new') || pathname.includes('/edit')) return null;
 
@@ -62,19 +65,21 @@ export function BottomNav() {
           })}
         </nav>
 
-        {/* Profile Avatar Weekly Reality Check Link */}
-        <Link 
-          href="/pattern-report"
-          title="Weekly Reality Check"
-          aria-label="Weekly Reality Check"
-          className="shrink-0 aspect-square h-[56px] sm:h-[64px] rounded-full border-2 border-ink shadow-[inset_0_1.5px_0_0_rgba(255,255,255,0.85),inset_0_-2px_0_0_rgba(0,0,0,0.08),0_4px_0_0_var(--color-ink),0_8px_16px_-2px_rgba(0,0,0,0.15)] bg-bg flex items-center justify-center hover:opacity-90 active:translate-y-[2px] active:shadow-[inset_0_1.5px_0_0_rgba(255,255,255,0.85),inset_0_-2px_0_0_rgba(0,0,0,0.08),0_2px_0_0_var(--color-ink),0_4px_8px_-2px_rgba(0,0,0,0.12)] transition-all relative overflow-hidden group"
+        {/* Urge Intervention FAB */}
+        <button 
+          onClick={() => setShowUrgeModal(true)}
+          title="Urge Intervention & Grounding"
+          aria-label="Urge Intervention & Grounding"
+          className="shrink-0 aspect-square h-[56px] sm:h-[64px] rounded-full border-2 border-ink shadow-[inset_0_1.5px_0_0_rgba(255,255,255,0.85),inset_0_-2px_0_0_rgba(0,0,0,0.08),0_4px_0_0_var(--color-ink),0_8px_16px_-2px_rgba(0,0,0,0.15)] bg-bg flex items-center justify-center hover:opacity-90 active:translate-y-[2px] active:shadow-[inset_0_1.5px_0_0_rgba(255,255,255,0.85),inset_0_-2px_0_0_rgba(0,0,0,0.08),0_2px_0_0_var(--color-ink),0_4px_8px_-2px_rgba(0,0,0,0.12)] transition-all relative overflow-hidden group cursor-pointer"
         >
           <div className="w-[80%] h-[80%] flex items-center justify-center transition-transform group-hover:scale-110">
             <Avatar config={typeof userAvatar === 'object' ? userAvatar : DEFAULT_AVATAR} size="100%" />
           </div>
           <div className="absolute inset-0 border-4 border-transparent rounded-full z-20 pointer-events-none" />
-        </Link>
+        </button>
       </div>
+
+      {showUrgeModal && <AnchorModal onClose={() => setShowUrgeModal(false)} />}
     </div>
   );
 }

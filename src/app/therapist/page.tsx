@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { usePro } from "@/lib/usePro";
 import { useUser } from "@/lib/useUser";
+import { useHabits } from "@/lib/useHabits";
 import { useTheme } from "@/lib/useTheme";
 import { ProGateModal } from "@/components/ProGateModal";
 import { triggerPWAActivity } from "@/lib/usePWAInstall";
@@ -28,6 +29,15 @@ export const TherapistPage = () => {
   const { isPro } = usePro();
   const { userGoal } = useUser();
   const { theme, changeTheme, tone, changeTone, isLoaded } = useTheme('companion');
+  const { activeHabits, getHabitStreakStats } = useHabits();
+
+  const habitsSummary = useMemo(() => {
+    if (activeHabits.length === 0) return '';
+    return activeHabits.map(h => {
+      const stats = getHabitStreakStats(h);
+      return `${h.name} (${stats.currentStreak}-day streak)`;
+    }).join(', ');
+  }, [activeHabits, getHabitStreakStats]);
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
@@ -86,7 +96,8 @@ export const TherapistPage = () => {
         body: JSON.stringify({
           messages: [{ role: 'user', parts: [{ text: prompt }] }],
           userGoal: userGoal,
-          tone
+          tone,
+          habitsSummary
         }),
       });
 
@@ -130,6 +141,7 @@ export const TherapistPage = () => {
           messages: updatedMessages,
           userGoal: userGoal,
           tone: tone,
+          habitsSummary
         })
       });
 

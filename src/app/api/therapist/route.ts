@@ -7,7 +7,7 @@ export async function POST(req: Request) {
   try {
     const proCheck = await requirePro();
     if (proCheck.error) return proCheck.error;
-    const { messages, userGoal, tone } = await req.json();
+    const { messages, userGoal, tone, habitsSummary } = await req.json();
     
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json({ error: 'Missing messages array' }, { status: 400 });
@@ -48,6 +48,10 @@ User check-in text:
     const activeTone = tone && toneModifiers[tone] ? toneModifiers[tone] : toneModifiers['gentle'];
     const safeGoal = sanitizeForPrompt(String(userGoal || 'Finding peace and clarity'), 200);
 
+    const habitsContext = habitsSummary 
+      ? `\nREBUILD HABITS CONTEXT: The user is currently building these daily habits instead of texting their ex: "${sanitizeForPrompt(String(habitsSummary), 600)}". When relevant, you can naturally celebrate their consistency (e.g. "proud of you for keeping up the routine"), but NEVER guilt or shame them if they missed any.`
+      : '';
+
     const defaultSystemInstruction = `You are the user's ride-or-die best friend texting them through their breakup recovery. You are NOT a clinical therapist and NOT a robotic AI. You are a real, funny, hyper-supportive, and honest friend on iMessage.
 
 VIBE & TEXTING RULES:
@@ -60,7 +64,7 @@ VIBE & TEXTING RULES:
 
 ${activeTone}
 
-CONTEXT: The user's healing focus is "${safeGoal}".`;
+CONTEXT: The user's healing focus is "${safeGoal}".${habitsContext}`;
 
     // Format messages for router - sanitize each user message
     const formattedHistory = messages.map((m: any) => ({

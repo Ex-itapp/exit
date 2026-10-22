@@ -2,7 +2,8 @@
 
 import { Button } from "@/components/ui/Button";
 import { useUser } from "@/lib/useUser";
-import { Anchor, Shield, Sparkles, Heart, Compass, X, MessageSquare } from "lucide-react";
+import { useHabits } from "@/lib/useHabits";
+import { Anchor, Shield, Sparkles, Heart, Compass, X, MessageSquare, CheckSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface AnchorModalProps {
@@ -12,6 +13,9 @@ interface AnchorModalProps {
 export function AnchorModal({ onClose }: AnchorModalProps) {
   const navigate = useRouter();
   const { userName, userGoal, userAnchor, streakDays } = useUser();
+  const { activeHabits, isHabitDoneOnDate, todayStr } = useHabits();
+
+  const incompleteHabits = activeHabits.filter(h => !isHabitDoneOnDate(h.id, todayStr));
 
   const getGoalIcon = () => {
     switch (userGoal) {
@@ -77,6 +81,48 @@ export function AnchorModal({ onClose }: AnchorModalProps) {
         <p className="font-sans text-sm md:text-base text-ink/80 leading-relaxed text-center font-medium">
           Take a deep breath. You have protected your peace for <strong>{streakDays} days</strong>. The urge to break no contact is temporary, but the dignity you build today lasts a lifetime.
         </p>
+
+        {/* Urge-Swap Card: Do one of your habits instead */}
+        {incompleteHabits.length > 0 && (
+          <div className="bg-white border-2 border-ink p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-xs font-bold uppercase tracking-wider text-ink flex items-center gap-1.5">
+                <CheckSquare className="w-4 h-4 text-[#3FA9D6]" />
+                Do one of your habits instead
+              </span>
+              <span className="font-mono text-[10px] text-ink/40">
+                {incompleteHabits.length} open today
+              </span>
+            </div>
+
+            <div className="space-y-2">
+              {incompleteHabits.slice(0, 3).map((h) => (
+                <div 
+                  key={h.id}
+                  onClick={() => {
+                    onClose();
+                    navigate.push('/rebuild');
+                  }}
+                  className="p-3 bg-bg border-2 border-ink/15 hover:border-ink flex items-center justify-between cursor-pointer transition-colors group"
+                >
+                  <div className="min-w-0 pr-2">
+                    <span className="font-sans text-xs font-bold text-ink block group-hover:text-brand-dark truncate">
+                      {h.name}
+                    </span>
+                    {h.why_note && (
+                      <span className="font-sans text-[11px] text-ink/60 line-clamp-1 italic mt-0.5">
+                        &quot;{h.why_note}&quot;
+                      </span>
+                    )}
+                  </div>
+                  <span className="shrink-0 font-mono text-[9px] font-bold uppercase px-2 py-1 bg-ink text-bg group-hover:bg-[#3FA9D6] transition-colors">
+                    Do This &rarr;
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-3 pt-2">

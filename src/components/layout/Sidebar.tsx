@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Book, Flag, Target, Award, Home, Clock, Zap, User } from "lucide-react";
+import { Book, Flag, CheckSquare, Award, Home, Clock, Zap, User } from "lucide-react";
 import { useUser } from "@/lib/useUser";
 
 const navItems = [
@@ -11,7 +11,7 @@ const navItems = [
   { icon: Book, label: "Diary", path: "/diary" },
   { icon: Clock, label: "Timeline", path: "/timeline" },
   { icon: Flag, label: "Red Flags", path: "/flags" },
-  { icon: Target, label: "Glow-Up", path: "/glow-up" },
+  { icon: CheckSquare, label: "Rebuild", path: "/rebuild" },
   { icon: Zap, label: "Streak", path: "/streak" },
   { icon: Award, label: "Rewards", path: "/rewards" },
   { icon: User, label: "Account", path: "/account" },

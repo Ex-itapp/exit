@@ -2,11 +2,12 @@ import { useUser } from './useUser';
 import { useDiary } from './useDiary';
 import { useFlags } from './useFlags';
 import { useCheckins } from './useCheckins';
+import { useHabits } from './useHabits';
 
 export interface RewardBadge {
   id: string;
   title: string;
-  category: 'Milestones' | 'Diary' | 'Streaks' | 'Insights';
+  category: 'Milestones' | 'Diary' | 'Streaks' | 'Insights' | 'Habits';
   description: string;
   iconName: string; // Used for lucide icon selection
   isUnlocked: boolean;
@@ -19,6 +20,30 @@ export function useRewards() {
   const { entries } = useDiary();
   const { flags } = useFlags();
   const { checkins } = useCheckins();
+  const { habits, logs, activeHabits, getHabitStreakStats } = useHabits();
+
+  const totalHabitLogs = logs.filter(l => l.status === 'done').length;
+  const maxHabitStreak = habits.reduce((max, h) => {
+    const s = getHabitStreakStats(h);
+    return Math.max(max, s.currentStreak, s.bestStreak);
+  }, 0);
+
+  // Check if all active habits done on any single day
+  const dateCounts: Record<string, number> = {};
+  logs.filter(l => l.status === 'done').forEach(l => {
+    dateCounts[l.log_date] = (dateCounts[l.log_date] || 0) + 1;
+  });
+  const hasFlawlessDay = activeHabits.length > 0 && Object.values(dateCounts).some(cnt => cnt >= activeHabits.length);
+
+  // 4 weeks 80%+ consistency (at least 22 checks in 28 days)
+  const past28Days = new Set<string>();
+  for (let i = 0; i < 28; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    past28Days.add(d.toISOString().split('T')[0]);
+  }
+  const past28Logs = logs.filter(l => l.status === 'done' && past28Days.has(l.log_date)).length;
+  const hasFourWeeksConsistency = past28Logs >= 22;
 
   const badges: RewardBadge[] = [
     {
@@ -92,6 +117,60 @@ export function useRewards() {
       iconName: 'Award',
       isUnlocked: entries.length >= 5 && flags.length >= 5,
       progressText: `${Math.min(entries.length, 5)}/5 Entries, ${Math.min(flags.length, 5)}/5 Flags`
+    },
+    {
+      id: 'first_habit_checkin',
+      title: 'First Brick',
+      category: 'Habits',
+      description: 'Logged your first Rebuild daily habit check-in.',
+      iconName: 'CheckSquare',
+      isUnlocked: totalHabitLogs >= 1,
+      progressText: `${Math.min(totalHabitLogs, 1)} / 1 Check-in`
+    },
+    {
+      id: 'seven_day_habit',
+      title: 'Seven-Day Rhythm',
+      category: 'Habits',
+      description: 'Built a 7-day streak on a Rebuild habit.',
+      iconName: 'Zap',
+      isUnlocked: maxHabitStreak >= 7,
+      progressText: `${Math.min(maxHabitStreak, 7)} / 7 Days`
+    },
+    {
+      id: 'thirty_day_habit',
+      title: 'Rewired',
+      category: 'Habits',
+      description: 'Maintained a 30-day habit streak. You replaced old loops with real discipline.',
+      iconName: 'ShieldCheck',
+      isUnlocked: maxHabitStreak >= 30,
+      progressText: `${Math.min(maxHabitStreak, 30)} / 30 Days`
+    },
+    {
+      id: 'hundred_habits',
+      title: 'Centurion',
+      category: 'Habits',
+      description: 'Completed 100 total habit check-ins across your Rebuild anchors.',
+      iconName: 'Trophy',
+      isUnlocked: totalHabitLogs >= 100,
+      progressText: `${Math.min(totalHabitLogs, 100)} / 100 Check-ins`
+    },
+    {
+      id: 'flawless_day',
+      title: 'Flawless Day',
+      category: 'Habits',
+      description: 'Completed every single one of your active habits in a single day.',
+      iconName: 'Sparkles',
+      isUnlocked: hasFlawlessDay,
+      progressText: hasFlawlessDay ? 'Achieved ✦' : 'Complete All Today'
+    },
+    {
+      id: 'four_weeks_consistency',
+      title: 'Solid Foundation',
+      category: 'Habits',
+      description: 'Maintained 80%+ consistency across your habits over 4 full weeks.',
+      iconName: 'Award',
+      isUnlocked: hasFourWeeksConsistency,
+      progressText: `${Math.min(past28Logs, 22)} / 22 in 28 Days`
     }
   ];
 

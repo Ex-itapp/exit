@@ -14,7 +14,7 @@ export default function RewardsPage() {
   const [certUrl, setCertUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const categories = ["All", "Milestones", "Streaks", "Diary", "Insights"];
+  const categories = ["All", "Habits", "Milestones", "Streaks", "Diary", "Insights"];
 
   const filteredBadges = selectedCategory === "All"
     ? badges
