@@ -222,25 +222,67 @@ export function useHabits() {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session?.user) return;
 
+        // Fetch cloud habits
         const { data: cloudHabits, error: habitErr } = await supabase
           .from('habits')
           .select('*')
           .eq('user_id', session.user.id)
           .order('sort_order', { ascending: true });
 
-        if (!habitErr && cloudHabits) {
-          setHabits(cloudHabits);
-          localStorage.setItem(HABITS_STORAGE_KEY, JSON.stringify(cloudHabits));
+        if (!habitErr && Array.isArray(cloudHabits)) {
+          const localSavedRaw = localStorage.getItem(HABITS_STORAGE_KEY);
+          const localParsed: Habit[] = localSavedRaw ? JSON.parse(localSavedRaw) : [];
+
+          if (cloudHabits.length > 0) {
+            const cloudIds = new Set(cloudHabits.map(h => h.id));
+            const unsyncedLocal = localParsed.filter(h => !cloudIds.has(h.id));
+            
+            if (unsyncedLocal.length > 0) {
+              await supabase.from('habits').upsert(
+                unsyncedLocal.map(h => ({ ...h, user_id: session.user.id }))
+              );
+            }
+            const mergedHabits = [...cloudHabits, ...unsyncedLocal];
+            setHabits(mergedHabits);
+            localStorage.setItem(HABITS_STORAGE_KEY, JSON.stringify(mergedHabits));
+          } else if (localParsed.length > 0) {
+            // Cloud is empty, push local habits to cloud
+            await supabase.from('habits').upsert(
+              localParsed.map(h => ({ ...h, user_id: session.user.id }))
+            );
+          }
         }
 
+        // Fetch cloud logs
         const { data: cloudLogs, error: logErr } = await supabase
           .from('habit_logs')
           .select('*')
           .eq('user_id', session.user.id);
 
-        if (!logErr && cloudLogs) {
-          setLogs(cloudLogs);
-          localStorage.setItem(LOGS_STORAGE_KEY, JSON.stringify(cloudLogs));
+        if (!logErr && Array.isArray(cloudLogs)) {
+          const localLogsRaw = localStorage.getItem(LOGS_STORAGE_KEY);
+          const localLogsParsed: HabitLog[] = localLogsRaw ? JSON.parse(localLogsRaw) : [];
+
+          if (cloudLogs.length > 0) {
+            const cloudKeys = new Set(cloudLogs.map(l => `${l.habit_id}_${l.log_date}`));
+            const unsyncedLogs = localLogsParsed.filter(l => !cloudKeys.has(`${l.habit_id}_${l.log_date}`));
+
+            if (unsyncedLogs.length > 0) {
+              await supabase.from('habit_logs').upsert(
+                unsyncedLogs.map(l => ({ ...l, user_id: session.user.id })),
+                { onConflict: 'habit_id,log_date' }
+              );
+            }
+            const mergedLogs = [...cloudLogs, ...unsyncedLogs];
+            setLogs(mergedLogs);
+            localStorage.setItem(LOGS_STORAGE_KEY, JSON.stringify(mergedLogs));
+          } else if (localLogsParsed.length > 0) {
+            // Cloud is empty, push local logs to cloud
+            await supabase.from('habit_logs').upsert(
+              localLogsParsed.map(l => ({ ...l, user_id: session.user.id })),
+              { onConflict: 'habit_id,log_date' }
+            );
+          }
         }
       } catch (err) {
         // Quietly fallback to local storage

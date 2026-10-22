@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Sparkles, Lock, TrendingUp, Calendar, Zap } from "lucide-react";
+import { Lock, Zap } from "lucide-react";
 import { Habit, HabitLog, getLocalDateString } from "@/lib/useHabits";
 import { usePro } from "@/lib/usePro";
 import { useMoods } from "@/lib/useMoods";
@@ -18,9 +18,10 @@ export function InsightsCard({ habits, logs }: InsightsCardProps) {
   const { moodLogs } = useMoods();
   const router = useRouter();
 
-  // 1. Mood vs Habits Correlation
+  const totalDoneLogs = useMemo(() => logs.filter(l => l.status === 'done').length, [logs]);
+
+  // 1. Mood vs Habits Correlation (Real data only, no fake fallbacks)
   const moodCorrelation = useMemo(() => {
-    // Map emoji to mood score 1-5
     const moodScoreMap: Record<string, number> = {
       "😭": 1,
       "😔": 2,
@@ -48,18 +49,32 @@ export function InsightsCard({ habits, logs }: InsightsCardProps) {
       }
     });
 
-    const avgDone = habitDaysCount > 0 ? (habitDaysTotal / habitDaysCount) : 4.1;
-    const avgMissed = noHabitDaysCount > 0 ? (noHabitDaysTotal / noHabitDaysCount) : 2.7;
+    const hasBoth = habitDaysCount > 0 && noHabitDaysCount > 0;
 
-    return { avgDone: Number(avgDone.toFixed(1)), avgMissed: Number(avgMissed.toFixed(1)) };
+    return {
+      hasBoth,
+      habitDaysCount,
+      noHabitDaysCount,
+      avgDone: habitDaysCount > 0 ? Number((habitDaysTotal / habitDaysCount).toFixed(1)) : null,
+      avgMissed: noHabitDaysCount > 0 ? Number((noHabitDaysTotal / noHabitDaysCount).toFixed(1)) : null,
+    };
   }, [logs, moodLogs]);
 
-  // 2. Best day of week & Most consistent habit
+  // 2. Best day of week & Most consistent habit (Real data only)
   const consistencyStats = useMemo(() => {
+    const doneLogs = logs.filter(l => l.status === 'done');
+    if (doneLogs.length === 0) {
+      return {
+        bestDay: "—",
+        mostConsistent: "—",
+        hasData: false
+      };
+    }
+
     const dayCounts = [0, 0, 0, 0, 0, 0, 0]; // Sun to Sat
     const habitCounts: Record<string, number> = {};
 
-    logs.filter(l => l.status === 'done').forEach((l) => {
+    doneLogs.forEach((l) => {
       const [y, m, d] = l.log_date.split('-').map(Number);
       const date = new Date(y, m - 1, d);
       dayCounts[date.getDay()]++;
@@ -67,7 +82,7 @@ export function InsightsCard({ habits, logs }: InsightsCardProps) {
     });
 
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    let bestDayIdx = 1;
+    let bestDayIdx = -1;
     let maxDayCount = 0;
     dayCounts.forEach((cnt, idx) => {
       if (cnt > maxDayCount) {
@@ -88,17 +103,16 @@ export function InsightsCard({ habits, logs }: InsightsCardProps) {
     const bestHabit = habits.find(h => h.id === bestHabitId);
 
     return {
-      bestDay: dayNames[bestDayIdx],
-      mostConsistent: bestHabit ? bestHabit.name : (habits[0]?.name || "None yet")
+      bestDay: bestDayIdx >= 0 ? `${dayNames[bestDayIdx]} (${maxDayCount})` : "—",
+      mostConsistent: bestHabit ? `${bestHabit.name} (${maxHabitCount})` : "—",
+      hasData: true
     };
   }, [habits, logs]);
 
-  // 3. 12-Week Heatmap
+  // 3. 12-Week Heatmap (Real check-ins)
   const heatmapWeeks = useMemo(() => {
-    // 12 weeks x 7 days
     const weeks: { dateStr: string; count: number }[][] = [];
     const now = new Date();
-    // Start from the most recent Sunday
     const end = new Date(now);
     end.setDate(now.getDate() + (6 - now.getDay()));
 
@@ -137,55 +151,73 @@ export function InsightsCard({ habits, logs }: InsightsCardProps) {
       </div>
 
       <div className={cn("space-y-5 transition-all", !isPro && "blur-xs select-none pointer-events-none")}>
-        {/* Mood vs Habits Bar Pair */}
+        {/* Mood vs Habits Correlation */}
         <div className="space-y-2">
           <div className="flex items-center justify-between font-mono text-[10px] font-bold uppercase text-ink/70">
             <span>Average Mood Comparison</span>
             <span className="text-ink/40">Scale 1–5</span>
           </div>
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-[10px] font-bold text-ink w-24 shrink-0">Habits Done</span>
-              <div className="flex-1 bg-ink/5 border border-ink/20 h-5 relative overflow-hidden flex items-center">
-                <div 
-                  className="bg-[#3FA9D6] h-full border-r border-ink transition-all"
-                  style={{ width: `${(moodCorrelation.avgDone / 5) * 100}%` }}
-                />
-                <span className="font-mono text-[10px] font-bold text-ink ml-2 absolute right-2">
-                  {moodCorrelation.avgDone} / 5
-                </span>
-              </div>
-            </div>
 
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-[10px] font-bold text-ink/60 w-24 shrink-0">Habits Missed</span>
-              <div className="flex-1 bg-ink/5 border border-ink/20 h-5 relative overflow-hidden flex items-center">
-                <div 
-                  className="bg-ink/20 h-full border-r border-ink/40 transition-all"
-                  style={{ width: `${(moodCorrelation.avgMissed / 5) * 100}%` }}
-                />
-                <span className="font-mono text-[10px] font-bold text-ink/60 ml-2 absolute right-2">
-                  {moodCorrelation.avgMissed} / 5
-                </span>
+          {moodCorrelation.hasBoth && moodCorrelation.avgDone !== null && moodCorrelation.avgMissed !== null ? (
+            <div className="space-y-2">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-3">
+                  <span className="font-mono text-[10px] font-bold text-ink w-24 shrink-0">Habits Done</span>
+                  <div className="flex-1 bg-ink/5 border border-ink/20 h-5 relative overflow-hidden flex items-center">
+                    <div 
+                      className="bg-[#3FA9D6] h-full border-r border-ink transition-all"
+                      style={{ width: `${(moodCorrelation.avgDone / 5) * 100}%` }}
+                    />
+                    <span className="font-mono text-[10px] font-bold text-ink ml-2 absolute right-2">
+                      {moodCorrelation.avgDone} / 5
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span className="font-mono text-[10px] font-bold text-ink/60 w-24 shrink-0">Habits Missed</span>
+                  <div className="flex-1 bg-ink/5 border border-ink/20 h-5 relative overflow-hidden flex items-center">
+                    <div 
+                      className="bg-ink/20 h-full border-r border-ink/40 transition-all"
+                      style={{ width: `${(moodCorrelation.avgMissed / 5) * 100}%` }}
+                    />
+                    <span className="font-mono text-[10px] font-bold text-ink/60 ml-2 absolute right-2">
+                      {moodCorrelation.avgMissed} / 5
+                    </span>
+                  </div>
+                </div>
               </div>
+              <p className="font-sans text-[11px] text-ink/60">
+                {moodCorrelation.avgDone > moodCorrelation.avgMissed
+                  ? `Your average mood is ${(moodCorrelation.avgDone - moodCorrelation.avgMissed).toFixed(1)} points higher on days you finish your habits.`
+                  : "Tracking emotional stability across days with and without habits."}
+              </p>
             </div>
-          </div>
-          <p className="font-sans text-[11px] text-ink/60">
-            You report higher emotional stability and clarity on days you complete your daily habits.
-          </p>
+          ) : (
+            <div className="p-4 bg-bg border border-ink/15 text-center space-y-1">
+              <span className="font-mono text-[10px] font-bold uppercase text-ink/50 block">
+                Awaiting Data
+              </span>
+              <p className="font-sans text-xs text-ink/70 leading-relaxed">
+                {moodCorrelation.habitDaysCount === 0 && moodCorrelation.noHabitDaysCount === 0
+                  ? "Log your daily habits and mood to calculate real impact."
+                  : "Need at least one day with habits completed and one day without to calculate correlation."}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Consistency Stats */}
         <div className="grid grid-cols-2 gap-3 pt-1 border-t border-ink/10">
           <div className="bg-bg border border-ink/15 p-2.5">
             <span className="font-mono text-[9px] uppercase font-bold text-ink/50 block">Best Day of Week</span>
-            <span className="font-heading text-base font-bold uppercase text-ink mt-0.5 block">
+            <span className="font-heading text-sm font-bold uppercase text-ink mt-0.5 block truncate">
               {consistencyStats.bestDay}
             </span>
           </div>
           <div className="bg-bg border border-ink/15 p-2.5">
             <span className="font-mono text-[9px] uppercase font-bold text-ink/50 block">Most Consistent</span>
-            <span className="font-heading text-base font-bold uppercase text-ink mt-0.5 block truncate">
+            <span className="font-heading text-sm font-bold uppercase text-ink mt-0.5 block truncate">
               {consistencyStats.mostConsistent}
             </span>
           </div>
@@ -195,7 +227,7 @@ export function InsightsCard({ habits, logs }: InsightsCardProps) {
         <div className="space-y-2 pt-1 border-t border-ink/10">
           <div className="flex items-center justify-between font-mono text-[10px] font-bold uppercase text-ink/70">
             <span>12-Week Activity Heatmap</span>
-            <span className="text-ink/40">Past 84 Days</span>
+            <span className="text-ink/40">{totalDoneLogs} total check-ins</span>
           </div>
 
           <div className="flex gap-1 overflow-x-auto pb-1">
