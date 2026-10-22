@@ -49,7 +49,7 @@ export function useRealityCheck() {
   const { flags } = useFlags();
   const { checkins } = useCheckins();
   const { streakDays } = useUser();
-  const { activeHabits, logs, getHabitStreakStats } = useHabits();
+  const { activeHabits, getHabitStreakStats } = useHabits();
 
   const [currentReport, setCurrentReport] = useState<RealityCheckData | null>(null);
   const [history, setHistory] = useState<RealityCheckData[]>([]);

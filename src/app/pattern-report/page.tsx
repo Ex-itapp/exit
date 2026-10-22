@@ -56,10 +56,11 @@ export default function RealityCheckPage() {
     setIsExporting(true);
 
     try {
-      const templateMap = {
+      const templateMap: Record<string, string> = {
         overview: 'pattern-report-1',
         diary: 'pattern-report-2',
-        redflags: 'pattern-report-3'
+        redflags: 'pattern-report-3',
+        rebuild: 'pattern-report-1'
       };
 
       const res = await fetch('/api/render-card', {

@@ -10,12 +10,14 @@ import {
   Check 
 } from "lucide-react";
 import { 
-  Habit, 
-  HabitCategory, 
-  FrequencyType, 
   CATEGORY_CONFIG, 
   PHASE_SUGGESTIONS, 
   getNoContactPhase,
+} from "@/lib/useHabits";
+import type { 
+  Habit, 
+  HabitCategory, 
+  FrequencyType, 
   HabitSuggestion 
 } from "@/lib/useHabits";
 import { useUser } from "@/lib/useUser";

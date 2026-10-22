@@ -12,14 +12,13 @@ import {
   Play, 
   ArrowLeft 
 } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import { 
   useHabits, 
-  Habit, 
-  HabitCategory, 
   CATEGORY_CONFIG, 
   getLocalDateString 
 } from "@/lib/useHabits";
+import type { Habit, HabitCategory } from "@/lib/useHabits";
 import { HabitModal } from "@/components/rebuild/HabitModal";
 import { HabitDetailModal } from "@/components/rebuild/HabitDetailModal";
 import { InsightsCard } from "@/components/rebuild/InsightsCard";
@@ -144,7 +143,7 @@ export default function RebuildPage() {
         {/* Segmented Progress Bar */}
         {activeHabits.length > 0 && (
           <div className="grid gap-1.5 pt-1" style={{ gridTemplateColumns: `repeat(${activeHabits.length}, minmax(0, 1fr))` }}>
-            {activeHabits.map((h, idx) => {
+            {activeHabits.map((h) => {
               const isDone = isHabitDoneOnDate(h.id, todayStr);
               return (
                 <div 

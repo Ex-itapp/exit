@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
-import { Zap, MessageSquare, Sparkles, Send, Award, Flag, Map, Calendar, CheckCircle2, CheckSquare } from "lucide-react";
+import { Zap, MessageSquare, Sparkles, Send, Award, Flag, Calendar, CheckCircle2, CheckSquare } from "lucide-react";
 import { useCheckins } from "@/lib/useCheckins";
 import { useUser } from "@/lib/useUser";
 import { useFlags } from "@/lib/useFlags";

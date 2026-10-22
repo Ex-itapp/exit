@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Compass, X } from "lucide-react";
-import { Habit, HabitCategory } from "@/lib/useHabits";
+import type { Habit, HabitCategory } from "@/lib/useHabits";
 
 interface RebuildWeeklyFocusProps {
   activeHabits: Habit[];

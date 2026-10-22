@@ -14,10 +14,10 @@ import {
   Save 
 } from "lucide-react";
 import { 
-  Habit, 
   CATEGORY_CONFIG, 
   getLocalDateString 
 } from "@/lib/useHabits";
+import type { Habit } from "@/lib/useHabits";
 import { cn } from "@/lib/utils";
 
 interface HabitDetailModalProps {

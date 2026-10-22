@@ -3,7 +3,8 @@
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Lock, Zap } from "lucide-react";
-import { Habit, HabitLog, getLocalDateString } from "@/lib/useHabits";
+import { getLocalDateString } from "@/lib/useHabits";
+import type { Habit, HabitLog } from "@/lib/useHabits";
 import { usePro } from "@/lib/usePro";
 import { useMoods } from "@/lib/useMoods";
 import { cn } from "@/lib/utils";
